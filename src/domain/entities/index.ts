@@ -8,4 +8,5 @@ export * from './genre.entity';
 export * from './identification_type.entity';
 export * from './phone_type.entity';
 export * from './payment_method.entity';
+export * from './notification.entity';
 export * from './notification_type.entity';

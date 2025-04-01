@@ -10,3 +10,4 @@ export * from './identification_type.db';
 export * from './phone_type.db';
 export * from './payment_method.db';
 export * from './notification_type.db';
+export * from './notification.db';
