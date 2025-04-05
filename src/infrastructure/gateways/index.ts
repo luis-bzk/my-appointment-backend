@@ -1,1 +1,1 @@
-export * from './email.gateway';
+export * from './email/email.gateway';

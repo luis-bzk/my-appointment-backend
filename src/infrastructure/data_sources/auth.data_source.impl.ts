@@ -61,8 +61,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
       const user_found = response.rows[0];
 
       const isMatching = this.comparePassword(
-        user_found.use_password,
         password,
+        user_found.use_password,
       );
 
       if (!isMatching) {

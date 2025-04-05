@@ -56,7 +56,7 @@ export class AuthController {
       .then(async (data) => {
         await EmailGateway.sendEmailVerifyAccount({
           email: data.email,
-          name: data.last_name,
+          name: data.name,
           last_name: data.last_name,
           token: data.token,
         });
