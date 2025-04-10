@@ -3,6 +3,7 @@ import {
   ChangePasswordDto,
   CheckTokenDto,
   ConfirmAccountDto,
+  GoogleAuthDto,
   LoginUserDto,
   RecoverPasswordDto,
   RequireAuthDto,
@@ -25,4 +26,6 @@ export abstract class AuthRepository {
   abstract confirmAccount(confirmAccountDto: ConfirmAccountDto): Promise<User>;
 
   abstract requireAuth(requireAuthDto: RequireAuthDto): Promise<User>;
+
+  abstract googleAuth(googleAuthDto: GoogleAuthDto): Promise<User>;
 }

@@ -5,3 +5,4 @@ export * from './change_password.dto';
 export * from './check_token.dto';
 export * from './confirm_account.dto';
 export * from './require_auth.dto';
+export * from './google_auth.dto';

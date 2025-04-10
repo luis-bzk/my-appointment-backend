@@ -6,6 +6,7 @@ import {
   RecoverPasswordDto,
   RequireAuthDto,
   SignupUserDto,
+  GoogleAuthDto,
 } from '../../domain/dtos/auth';
 import { User } from '../../domain/entities';
 import { AuthRepository } from '../../domain/repositories';
@@ -44,5 +45,9 @@ export class AuthRepositoryImpl implements AuthRepository {
 
   requireAuth(requireAuthDto: RequireAuthDto): Promise<User> {
     return this.authDataSource.requireAuth(requireAuthDto);
+  }
+
+  googleAuth(googleAuthDto: GoogleAuthDto): Promise<User> {
+    return this.authDataSource.googleAuth(googleAuthDto);
   }
 }

@@ -4,6 +4,7 @@ import {
   ChangePasswordDto,
   CheckTokenDto,
   ConfirmAccountDto,
+  GoogleAuthDto,
   LoginUserDto,
   RecoverPasswordDto,
   RequireAuthDto,
@@ -37,19 +38,10 @@ export class AuthDataSourceImpl implements AuthDataSource {
     const { email, password } = loginUserDto;
     try {
       const response = await this.pool.query<UserDB>(
-        `select
-          use_id,
-          use_name,
-          use_last_name,
-          use_email,
-          use_password,
-          use_token,
-          use_created_date,
-          use_record_status
-        from
-          core.core_user use
-        where
-          use.use_email = $1
+        `select use_id, use_name, use_last_name, use_email,
+          use_password, use_token, use_created_date, use_record_status
+        from core.core_user use
+        where use.use_email = $1
           and use.use_record_status = $2;`,
         [email, RECORD_STATUS.AVAILABLE],
       );
@@ -86,15 +78,9 @@ export class AuthDataSourceImpl implements AuthDataSource {
     try {
       // validate email
       const response = await this.pool.query<UserDB>(
-        `select
-          use_id,
-          use_email,
-          use_token,
-          use_record_status
-        from
-          core.core_user use
-        where
-          use.use_email = $1
+        `select use_id, use_email, use_token, use_record_status
+        from core.core_user use
+        where use.use_email = $1
           and use.use_record_status = $2`,
         [email, RECORD_STATUS.AVAILABLE],
       );
@@ -109,16 +95,9 @@ export class AuthDataSourceImpl implements AuthDataSource {
       const userCreated = await this.pool.query<UserDB>(
         `insert into
           core.core_user (
-            use_name,
-            use_last_name,
-            use_email,
-            use_password,
-            use_token,
-            use_created_date,
-            use_record_status
-          )
-        values
-          ($1, $2, $3, $4, $5, $6, $7) returning *;`,
+            use_name, use_last_name, use_email, use_password,
+            use_token, use_created_date, use_record_status
+          ) values ($1, $2, $3, $4, $5, $6, $7) returning *;`,
         [
           name,
           last_name,
@@ -147,14 +126,9 @@ export class AuthDataSourceImpl implements AuthDataSource {
 
     try {
       const user_found = await this.pool.query<UserDB>(
-        `select
-          use_id,
-          use_email,
-          use_record_status
-        from
-          core.core_user use
-        where
-          use.use_email = $1
+        `select use_id, use_email, use_record_status
+        from core.core_user use
+        where use.use_email = $1
           and use.use_record_status = $2;`,
         [email, RECORD_STATUS.AVAILABLE],
       );
@@ -166,10 +140,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
 
       const update_user = await this.pool.query<UserDB>(
         `update core.core_user
-        set
-          use_token = $1
-        where
-          use_id = $2
+        set use_token = $1
+        where use_id = $2
           and use_record_status = $3 returning *;`,
         [
           GeneratorValues.tokenGenerator(),
@@ -195,13 +167,9 @@ export class AuthDataSourceImpl implements AuthDataSource {
 
     try {
       const user_found = await this.pool.query<UserDB>(
-        `select
-          use_id,
-          use_record_status
-        from
-          core.core_user use
-        where
-          use.use_token = $1
+        `select use_id, use_record_status
+        from core.core_user use
+        where use.use_token = $1
           and use.use_record_status = $2;`,
         [token, RECORD_STATUS.AVAILABLE],
       );
@@ -214,11 +182,9 @@ export class AuthDataSourceImpl implements AuthDataSource {
 
       const updated_user = await this.pool.query<UserDB>(
         `update core.core_user
-        set
-          use_token = $1,
+        set use_token = $1,
           use_password = $2
-        where
-          use_token = $3
+        where use_token = $3
           and use_record_status = $4 returning *;`,
         [null, this.hashPassword(password), token, RECORD_STATUS.AVAILABLE],
       );
@@ -240,19 +206,10 @@ export class AuthDataSourceImpl implements AuthDataSource {
 
     try {
       const user_found = await this.pool.query<UserDB>(
-        `select
-          use_id,
-          use_name,
-          use_last_name,
-          use_email,
-          use_password,
-          use_token,
-          use_created_date,
-          use_record_status
-        from
-          core.core_user use
-        where
-          use.use_token = $1
+        `select use_id, use_name, use_last_name,use_email, use_password,
+          use_token, use_created_date, use_record_status
+        from core.core_user use
+        where use.use_token = $1
           and use.use_record_status = $2;`,
         [token, RECORD_STATUS.AVAILABLE],
       );
@@ -280,13 +237,9 @@ export class AuthDataSourceImpl implements AuthDataSource {
 
     try {
       const user_found = await this.pool.query<UserDB>(
-        `select
-          use.use_id,
-          use.use_record_status
-        from
-          core.core_user use
-        where
-          use.use_token = $1
+        `select use.use_id, use.use_record_status
+        from core.core_user use
+        where use.use_token = $1
           and use.use_record_status = $2;`,
         [token, RECORD_STATUS.AVAILABLE],
       );
@@ -299,10 +252,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
 
       const updated_user = await this.pool.query<UserDB>(
         `update core.core_user
-        set
-          use_token = $1
-        where
-          use_token = $2
+        set use_token = $1
+        where use_token = $2
           and use_record_status = $3 returning *;`,
         [null, token, RECORD_STATUS.AVAILABLE],
       );
@@ -325,18 +276,10 @@ export class AuthDataSourceImpl implements AuthDataSource {
     try {
       const userFound = await this.pool.query<UserDB>(
         `select
-          use.use_id,
-          use.use_name,
-          use.use_last_name,
-          use.use_email,
-          use.use_password,
-          use.use_token,
-          use.use_created_date,
-          use.use_record_status
-        from
-          core.core_user use
-        where
-          use.use_id = $1
+          use.use_id, use.use_name, use.use_last_name, use.use_email,
+          use.use_password, use.use_token, use.use_created_date, use.use_record_status
+        from core.core_user use
+        where use.use_id = $1
           and use.use_record_status = $2;`,
         [id, RECORD_STATUS.AVAILABLE],
       );
@@ -351,6 +294,56 @@ export class AuthDataSourceImpl implements AuthDataSource {
       }
 
       throw CustomError.internalServer('Error en el Data Source al obtener');
+    }
+  }
+  async googleAuth(googleAuthDto: GoogleAuthDto): Promise<User> {
+    const { email, name } = googleAuthDto;
+    try {
+      const response = await this.pool.query<UserDB>(
+        `select
+          use_id, use_name, use_last_name, use_email, use_password,
+          use_token, use_created_date, use_record_status
+        from core.core_user use
+        where use.use_email = $1
+          and use.use_record_status = $2;`,
+        [email, RECORD_STATUS.AVAILABLE],
+      );
+
+      if (response.rows.length === 0) {
+        // create user
+        const generatedPassword = GeneratorValues.passwordGenerator();
+
+        const userCreated = await this.pool.query<UserDB>(
+          `insert into
+          core.core_user (
+            use_name, use_last_name, use_email, use_password, use_token,
+            use_created_date,use_record_status
+          ) values
+          ($1, $2, $3, $4, $5, $6, $7) returning *;`,
+          [
+            name,
+            name,
+            email,
+            this.hashPassword(generatedPassword),
+            GeneratorValues.tokenGenerator(),
+            new Date(),
+            RECORD_STATUS.AVAILABLE,
+          ],
+        );
+
+        // TODO: create role
+        return UserMapper.entityFromObject(userCreated.rows[0]);
+      }
+
+      return UserMapper.entityFromObject(response.rows[0]);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer(
+        'Error en el Data Source al iniciar sesión',
+      );
     }
   }
 }

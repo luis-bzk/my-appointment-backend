@@ -15,16 +15,25 @@ import {
   CheckToken,
   ConfirmAccount,
   SignUpUser,
+  GoogleAuth,
+  GoogleAuthCallback,
 } from '../../domain/use_cases/auth';
 import { CustomError } from '../../domain/errors';
-import { AuthRepository } from '../../domain/repositories';
+import { AuthRepository, SessionRepository } from '../../domain/repositories';
 import { EmailGateway } from '../../infrastructure/gateways';
+import { OAuth2Client } from 'google-auth-library';
+import { EnvConfig } from '../../config';
 
 export class AuthController {
   private readonly authRepository: AuthRepository;
+  private readonly sessionRepository: SessionRepository;
 
-  constructor(authRepository: AuthRepository) {
+  constructor(
+    authRepository: AuthRepository,
+    sessionRepository: SessionRepository,
+  ) {
     this.authRepository = authRepository;
+    this.sessionRepository = sessionRepository;
   }
 
   private handleError = (error: unknown, res: Response) => {
@@ -36,11 +45,21 @@ export class AuthController {
   };
 
   loginUser = (req: Request, res: Response) => {
-    const [error, loginUserDto] = LoginUserDto.create(req.body);
+    // const userAgent = req.headers['user-agent'] || 'Desconocido';
+    // const ip =
+    //   (req.headers['x-forwarded-for'] as string)?.split(',')[0] ||
+    //   req.socket.remoteAddress || 'Desconocido';
 
+    const ip =
+      req.headers['x-forwarded-for']?.toString() ||
+      req.socket.remoteAddress ||
+      'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+
+    const [error, loginUserDto] = LoginUserDto.create(req.body, ip, userAgent);
     if (error) return res.status(400).json({ error: error });
 
-    new LoginUser(this.authRepository)
+    new LoginUser(this.authRepository, this.sessionRepository)
       .execute(loginUserDto!)
       .then((data) => res.status(200).json(data))
       .catch((err) => this.handleError(err, res));
@@ -113,6 +132,46 @@ export class AuthController {
     new ConfirmAccount(this.authRepository)
       .execute(confirmAccountDto!)
       .then((data) => res.status(200).json(data))
+      .catch((error) => this.handleError(error, res));
+  };
+
+  authGoogle = (_req: Request, res: Response) => {
+    const oAuth2Client = new OAuth2Client({
+      clientId: EnvConfig().GOOGLE_CLIENT_ID!,
+      clientSecret: EnvConfig().GOOGLE_CLIENT_SECRET!,
+      redirectUri: EnvConfig().GOOGLE_REDIRECT_URI!,
+    });
+
+    new GoogleAuth(oAuth2Client)
+      .execute()
+      .then((data) => res.status(200).json(data))
+      .catch((error) => this.handleError(error, res));
+  };
+
+  authGoogleCallback = (req: Request, res: Response) => {
+    const { code } = req.query;
+
+    if (!code || typeof code !== 'string') {
+      return res.status(400).send('Missing code');
+    }
+
+    const oAuth2Client = new OAuth2Client({
+      clientId: EnvConfig().GOOGLE_CLIENT_ID!,
+      clientSecret: EnvConfig().GOOGLE_CLIENT_SECRET!,
+      redirectUri: EnvConfig().GOOGLE_REDIRECT_URI!,
+    });
+
+    new GoogleAuthCallback(
+      this.authRepository,
+      this.sessionRepository,
+      oAuth2Client,
+    )
+      .execute(code)
+      .then((data) =>
+        res.redirect(
+          `${process.env.FRONTEND_URL}/auth/callback?token=${data.jwt}`,
+        ),
+      )
       .catch((error) => this.handleError(error, res));
   };
 }

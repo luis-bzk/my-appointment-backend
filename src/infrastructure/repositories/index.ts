@@ -11,3 +11,4 @@ export * from './identification_type.repository.impl';
 export * from './phone_type.repository.impl';
 export * from './payment_method.repository.impl';
 export * from './notification_type.repository.impl';
+export * from './session.repository.impl';

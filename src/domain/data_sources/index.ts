@@ -11,3 +11,4 @@ export * from './phone_type.data_source';
 export * from './payment_method.data_source';
 export * from './notification_type.data_source';
 export * from './notification.data_source';
+export * from './session.data_source';

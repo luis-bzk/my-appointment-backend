@@ -16,6 +16,9 @@ const envSchema = z.object({
   SMTP_PORT: z.string(),
   SMTP_USER: z.string(),
   SMTP_PASS: z.string(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  GOOGLE_REDIRECT_URI: z.string(),
 });
 
 const env = envSchema.safeParse(process.env);
@@ -40,4 +43,7 @@ export const EnvConfig = () => ({
   SMTP_PORT: env.data.SMTP_PORT,
   SMTP_USER: env.data.SMTP_USER,
   SMTP_PASS: env.data.SMTP_PASS,
+  GOOGLE_CLIENT_ID: env.data.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: env.data.GOOGLE_CLIENT_SECRET,
+  GOOGLE_REDIRECT_URI: env.data.GOOGLE_REDIRECT_URI,
 });
