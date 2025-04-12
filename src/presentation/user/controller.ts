@@ -34,62 +34,79 @@ export class UserController {
     return res.status(500).json({ error: 'Internal Server Error' });
   };
 
-  createUser = (req: Request, res: Response) => {
-    const [error, createUserDto] = CreateUserDto.create(req.body);
-    if (error) return res.status(400).json({ error });
+  createUser = async (req: Request, res: Response) => {
+    try {
+      const [error, createUserDto] = CreateUserDto.create(req.body);
+      if (error) return res.status(400).json({ error });
 
-    new CreateUser(this.userRepository)
-      .execute(createUserDto!)
-      .then(async (data) => {
-        await EmailGateway.sendLoginAccount({
-          email: data.email,
-          name: data.last_name,
-          last_name: data.last_name,
-          password: data.password,
-        });
+      const data = await new CreateUser(this.userRepository).execute(
+        createUserDto!,
+      );
 
-        return res.status(201).json(data);
-      })
-      .catch((error) => this.handleError(error, res));
+      await EmailGateway.sendLoginAccount({
+        email: data.email,
+        name: data.last_name,
+        last_name: data.last_name,
+        password: data.password,
+      });
+
+      return res.status(201).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 
-  updateUser = (req: Request, res: Response) => {
-    const [error, updateUserDto] = UpdateUserDto.create(req.params, req.body);
-    if (error) return res.status(400).json({ error });
+  updateUser = async (req: Request, res: Response) => {
+    try {
+      const [error, updateUserDto] = UpdateUserDto.create(req.params, req.body);
+      if (error) return res.status(400).json({ error });
 
-    new UpdateUser(this.userRepository)
-      .execute(updateUserDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new UpdateUser(this.userRepository).execute(
+        updateUserDto!,
+      );
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 
-  getUser = (req: Request, res: Response) => {
-    const [error, getUserDto] = GetUserDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+  getUser = async (req: Request, res: Response) => {
+    try {
+      const [error, getUserDto] = GetUserDto.create(req.params);
+      if (error) return res.status(400).json({ error });
 
-    new GetUser(this.userRepository)
-      .execute(getUserDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new GetUser(this.userRepository).execute(getUserDto!);
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 
-  getAllUsers = (req: Request, res: Response) => {
-    const [error, getAllUsersDto] = GetAllUsersDto.create(req.query);
-    if (error) return res.status(400).json({ error });
+  getAllUsers = async (req: Request, res: Response) => {
+    try {
+      const [error, getAllUsersDto] = GetAllUsersDto.create(req.query);
+      if (error) return res.status(400).json({ error });
 
-    new GetAllUsers(this.userRepository)
-      .execute(getAllUsersDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new GetAllUsers(this.userRepository).execute(
+        getAllUsersDto!,
+      );
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 
-  deleteUser = (req: Request, res: Response) => {
-    const [error, deleteUserDto] = DeleteUserDto.create(req.params);
-    if (error) return res.status(200).json({ error });
+  deleteUser = async (req: Request, res: Response) => {
+    try {
+      const [error, deleteUserDto] = DeleteUserDto.create(req.params);
+      if (error) return res.status(200).json({ error });
 
-    new DeleteUser(this.userRepository)
-      .execute(deleteUserDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new DeleteUser(this.userRepository).execute(
+        deleteUserDto!,
+      );
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 }

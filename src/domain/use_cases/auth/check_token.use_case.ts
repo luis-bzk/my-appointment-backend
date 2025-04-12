@@ -14,6 +14,12 @@ export class CheckToken implements CheckTokenUseCase {
   }
 
   async execute(checkTokenDto: CheckTokenDto): Promise<User> {
-    return await this.authRepository.checkToken(checkTokenDto);
+    const userToken = await this.authRepository.findUserByToken(
+      checkTokenDto.token,
+    );
+    if (!userToken) {
+      throw new Error('No se ha encontrado un usuario asociado a este token');
+    }
+    return { ...userToken, password: '' };
   }
 }

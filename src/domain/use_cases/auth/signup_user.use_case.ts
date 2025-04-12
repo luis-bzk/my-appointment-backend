@@ -1,5 +1,6 @@
 import { SignupUserDto } from '../../dtos/auth';
 import { User } from '../../entities';
+import { CustomError } from '../../errors';
 import { AuthRepository } from '../../repositories';
 
 interface SignupUserUseCase {
@@ -14,6 +15,20 @@ export class SignUpUser implements SignupUserUseCase {
   }
 
   async execute(signupUserDto: SignupUserDto): Promise<User> {
-    return await this.authRepository.signup(signupUserDto);
+    const userEmail = await this.authRepository.findUserByEmail(
+      signupUserDto.email,
+    );
+    if (userEmail) {
+      throw CustomError.badRequest(
+        'El email solicitado ya se encuentra registrado',
+      );
+    }
+
+    const userCreated = await this.authRepository.createUser(signupUserDto);
+    if (!userCreated) {
+      throw CustomError.internalServer('No se pudo crear el usuario');
+    }
+
+    return { ...userCreated, password: '' };
   }
 }

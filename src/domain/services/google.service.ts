@@ -22,12 +22,21 @@ export function getGoogleAuthURL() {
   return url;
 }
 
-export async function getGoogleUser(code: string) {
+export async function getGoogleUser(code: string): Promise<{
+  email: string;
+  name: string;
+  picture: string;
+  id: string;
+}> {
   const { tokens } = await oAuth2Client.getToken(code);
   oAuth2Client.setCredentials(tokens);
 
-  const res = await oAuth2Client.request({
+  const res: {
+    data: { email: string; name: string; picture: string; id: string };
+  } = await oAuth2Client.request({
     url: 'https://www.googleapis.com/oauth2/v2/userinfo',
   });
+  console.log({ res });
+  console.log(res);
   return res.data;
 }

@@ -1,47 +1,38 @@
-import { CustomError } from '../../errors';
-import { JwtAdapter } from '../../../config';
 import { LoginUserDto } from '../../dtos/auth';
-import { AuthRepository, SessionRepository } from '../../repositories';
-import { Session } from '../../entities';
-import { CreateSessionDto } from '../../dtos/session';
-
-type SignToken = (payload: Object, duration?: string) => Promise<string | null>;
+import { AuthRepository } from '../../repositories';
+import { User } from '../../entities';
+import { CustomError } from '../../errors';
+import { BcryptAdapter } from '../../../config';
 
 interface LoginUserUseCase {
-  execute(loginUserDto: LoginUserDto): Promise<Session>;
+  execute(loginUserDto: LoginUserDto): Promise<User>;
 }
+
+type CompareFunction = (password: string, hashed: string) => boolean;
 
 export class LoginUser implements LoginUserUseCase {
   private readonly authRepository: AuthRepository;
-  private readonly sessionRepository: SessionRepository;
-  private readonly signToken: SignToken;
+  private readonly comparePassword: CompareFunction;
 
-  constructor(
-    authRepository: AuthRepository,
-    sessionRepository: SessionRepository,
-  ) {
+  constructor(authRepository: AuthRepository) {
     this.authRepository = authRepository;
-    this.sessionRepository = sessionRepository;
-    this.signToken = JwtAdapter.generateToken;
+    this.comparePassword = BcryptAdapter.compare;
   }
 
-  async execute(loginUserDto: LoginUserDto): Promise<Session> {
-    const user = await this.authRepository.login(loginUserDto);
+  async execute(loginUserDto: LoginUserDto): Promise<User> {
+    const user = await this.authRepository.findUserByEmail(loginUserDto.email);
+    if (!user) {
+      throw CustomError.badRequest('El usuario o contraseña es incorrecto');
+    }
 
-    //   token
-    const token = await this.signToken({ id: user.id }, '24h');
-    if (!token) throw CustomError.internalServer('Error al generar el token');
+    const isMatching = this.comparePassword(
+      loginUserDto.password,
+      user.password,
+    );
+    if (!isMatching) {
+      throw CustomError.badRequest('El usuario o contraseña es incorrecto');
+    }
 
-    const [errorSession, sessionCreateDto] = CreateSessionDto.create({
-      jwt: token,
-      id_user: user.id,
-      expire_date: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-      ip: loginUserDto.ip,
-      user_agent: loginUserDto.user_agent,
-    });
-    if (errorSession) throw CustomError.badRequest(errorSession);
-    const session = await this.sessionRepository.create(sessionCreateDto!);
-
-    return session;
+    return { ...user, password: '' };
   }
 }

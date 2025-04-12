@@ -15,18 +15,20 @@ import {
   CheckToken,
   ConfirmAccount,
   SignUpUser,
-  GoogleAuth,
-  GoogleAuthCallback,
 } from '../../domain/use_cases/auth';
 import { CustomError } from '../../domain/errors';
 import { AuthRepository, SessionRepository } from '../../domain/repositories';
 import { EmailGateway } from '../../infrastructure/gateways';
-import { OAuth2Client } from 'google-auth-library';
-import { EnvConfig } from '../../config';
+import { CreateSession } from '../../domain/use_cases/session';
+import { CreateSessionDto } from '../../domain/dtos/session';
+import { JwtAdapter } from '../../config';
+
+type SignToken = (payload: Object, duration?: string) => Promise<string | null>;
 
 export class AuthController {
   private readonly authRepository: AuthRepository;
   private readonly sessionRepository: SessionRepository;
+  private readonly signToken: SignToken;
 
   constructor(
     authRepository: AuthRepository,
@@ -34,6 +36,7 @@ export class AuthController {
   ) {
     this.authRepository = authRepository;
     this.sessionRepository = sessionRepository;
+    this.signToken = JwtAdapter.generateToken;
   }
 
   private handleError = (error: unknown, res: Response) => {
@@ -44,134 +47,123 @@ export class AuthController {
     return res.status(500).json({ error: 'Internal Server Error' });
   };
 
-  loginUser = (req: Request, res: Response) => {
-    // const userAgent = req.headers['user-agent'] || 'Desconocido';
-    // const ip =
-    //   (req.headers['x-forwarded-for'] as string)?.split(',')[0] ||
-    //   req.socket.remoteAddress || 'Desconocido';
+  loginUser = async (req: Request, res: Response) => {
+    try {
+      const ip =
+        req.headers['x-forwarded-for']?.toString() ||
+        req.socket.remoteAddress ||
+        'unknown';
+      const userAgent = req.headers['user-agent'] || 'unknown';
 
-    const ip =
-      req.headers['x-forwarded-for']?.toString() ||
-      req.socket.remoteAddress ||
-      'unknown';
-    const userAgent = req.headers['user-agent'] || 'unknown';
+      const [error, loginUserDto] = LoginUserDto.create(req.body);
+      if (error) return res.status(400).json({ error: error });
 
-    const [error, loginUserDto] = LoginUserDto.create(req.body, ip, userAgent);
-    if (error) return res.status(400).json({ error: error });
+      const user = await new LoginUser(this.authRepository).execute(
+        loginUserDto!,
+      );
 
-    new LoginUser(this.authRepository, this.sessionRepository)
-      .execute(loginUserDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((err) => this.handleError(err, res));
-  };
+      const token = await this.signToken({ id: user.id }, '24h');
+      if (!token) throw CustomError.internalServer('Error al generar el token');
+      const [errorSession, sessionCreateDto] = CreateSessionDto.create({
+        jwt: token,
+        id_user: user.id,
+        expire_date: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+        ip: ip,
+        user_agent: userAgent,
+      });
+      if (errorSession) return res.status(400).json({ error: errorSession });
+      const session = await new CreateSession(this.sessionRepository).execute(
+        sessionCreateDto!,
+      );
 
-  signupUser = (req: Request, res: Response) => {
-    const [error, signupUserDto] = SignupUserDto.create(req.body);
-
-    if (error) return res.status(400).json({ error: error });
-
-    new SignUpUser(this.authRepository)
-      .execute(signupUserDto!)
-      .then(async (data) => {
-        await EmailGateway.sendEmailVerifyAccount({
-          email: data.email,
-          name: data.name,
-          last_name: data.last_name,
-          token: data.token,
-        });
-
-        return res.status(201).json(data);
-      })
-      .catch((err) => this.handleError(err, res));
-  };
-
-  recoverPassword = (req: Request, res: Response) => {
-    const [error, recoverPasswordDto] = RecoverPasswordDto.create(req.body);
-    if (error) return res.status(400).json({ error: error });
-
-    new RecoverPassword(this.authRepository)
-      .execute(recoverPasswordDto!)
-      .then(async (data) => {
-        await EmailGateway.sendEmailRecoverPassword({
-          email: data.email,
-          name: data.last_name,
-          last_name: data.last_name,
-          token: data.token,
-        });
-
-        return res.status(200).json(data);
-      })
-      .catch((err) => this.handleError(err, res));
-  };
-
-  changePassword = (req: Request, res: Response) => {
-    const [error, changePasswordDto] = ChangePasswordDto.create(req.body);
-
-    if (error) return res.status(400).json({ error });
-
-    new ChangePassword(this.authRepository)
-      .execute(changePasswordDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((err) => this.handleError(err, res));
-  };
-
-  checkToken = (req: Request, res: Response) => {
-    const [error, checkTokenDto] = CheckTokenDto.create(req.params.token);
-    if (error) return res.status(400).json({ error });
-
-    new CheckToken(this.authRepository)
-      .execute(checkTokenDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
-  };
-
-  confirmAccount = (req: Request, res: Response) => {
-    const [error, confirmAccountDto] = ConfirmAccountDto.create(req.body);
-    if (error) return res.status(400).json({ error });
-
-    new ConfirmAccount(this.authRepository)
-      .execute(confirmAccountDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
-  };
-
-  authGoogle = (_req: Request, res: Response) => {
-    const oAuth2Client = new OAuth2Client({
-      clientId: EnvConfig().GOOGLE_CLIENT_ID!,
-      clientSecret: EnvConfig().GOOGLE_CLIENT_SECRET!,
-      redirectUri: EnvConfig().GOOGLE_REDIRECT_URI!,
-    });
-
-    new GoogleAuth(oAuth2Client)
-      .execute()
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
-  };
-
-  authGoogleCallback = (req: Request, res: Response) => {
-    const { code } = req.query;
-
-    if (!code || typeof code !== 'string') {
-      return res.status(400).send('Missing code');
+      return res.status(200).json({ user, session });
+    } catch (err) {
+      this.handleError(err, res);
     }
+  };
 
-    const oAuth2Client = new OAuth2Client({
-      clientId: EnvConfig().GOOGLE_CLIENT_ID!,
-      clientSecret: EnvConfig().GOOGLE_CLIENT_SECRET!,
-      redirectUri: EnvConfig().GOOGLE_REDIRECT_URI!,
-    });
+  signupUser = async (req: Request, res: Response) => {
+    try {
+      const [error, signupUserDto] = SignupUserDto.create(req.body);
+      if (error) return res.status(400).json({ error: error });
 
-    new GoogleAuthCallback(
-      this.authRepository,
-      this.sessionRepository,
-      oAuth2Client,
-    )
-      .execute(code)
-      .then((data) =>
-        res.redirect(
-          `${process.env.FRONTEND_URL}/auth/callback?token=${data.jwt}`,
-        ),
-      )
-      .catch((error) => this.handleError(error, res));
+      const data = await new SignUpUser(this.authRepository).execute(
+        signupUserDto!,
+      );
+      await EmailGateway.sendEmailVerifyAccount({
+        email: data.email,
+        name: data.name,
+        last_name: data.last_name,
+        token: data.token,
+      });
+      return res.status(201).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
+  };
+
+  recoverPassword = async (req: Request, res: Response) => {
+    try {
+      const [error, recoverPasswordDto] = RecoverPasswordDto.create(req.body);
+      if (error) return res.status(400).json({ error: error });
+
+      const data = await new RecoverPassword(this.authRepository).execute(
+        recoverPasswordDto!,
+      );
+
+      await EmailGateway.sendEmailRecoverPassword({
+        email: data.email,
+        name: data.last_name,
+        last_name: data.last_name,
+        token: data.token,
+      });
+
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
+  };
+
+  changePassword = async (req: Request, res: Response) => {
+    try {
+      const [error, changePasswordDto] = ChangePasswordDto.create(req.body);
+      if (error) return res.status(400).json({ error });
+
+      const data = await new ChangePassword(this.authRepository).execute(
+        changePasswordDto!,
+      );
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
+  };
+
+  checkToken = async (req: Request, res: Response) => {
+    try {
+      const [error, checkTokenDto] = CheckTokenDto.create(req.params.token);
+      if (error) return res.status(400).json({ error });
+
+      const data = await new CheckToken(this.authRepository).execute(
+        checkTokenDto!,
+      );
+
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
+  };
+
+  confirmAccount = async (req: Request, res: Response) => {
+    try {
+      const [error, confirmAccountDto] = ConfirmAccountDto.create(req.body);
+      if (error) return res.status(400).json({ error });
+
+      const data = await new ConfirmAccount(this.authRepository).execute(
+        confirmAccountDto!,
+      );
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 }

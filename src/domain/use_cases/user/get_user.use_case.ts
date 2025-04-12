@@ -1,6 +1,7 @@
 import { User } from '../../entities';
 import { GetUserDto } from '../../dtos/user';
 import { UserRepository } from '../../repositories';
+import { CustomError } from '../../errors';
 
 interface GetUserUseCase {
   execute(getUserDto: GetUserDto): Promise<User>;
@@ -14,6 +15,11 @@ export class GetUser implements GetUserUseCase {
   }
 
   async execute(getUserDto: GetUserDto): Promise<User> {
-    return this.userRepository.get(getUserDto);
+    const user = await this.userRepository.findUserById(getUserDto.id);
+    if (!user) {
+      throw CustomError.notFound('No se ha encontrado el usuario solicitado');
+    }
+
+    return { ...user, password: '' };
   }
 }

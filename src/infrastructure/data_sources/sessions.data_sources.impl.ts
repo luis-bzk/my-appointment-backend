@@ -46,6 +46,7 @@ export class SessionDataSourceImpl implements SessionDataSource {
 
       return SessionMapper.entityFromObject(sessionCreated.rows[0]);
     } catch (error) {
+      console.log({ error });
       if (error instanceof CustomError) {
         throw error;
       }

@@ -1,16 +1,12 @@
 import {
   ChangePasswordDto,
-  CheckTokenDto,
-  ConfirmAccountDto,
-  LoginUserDto,
-  RecoverPasswordDto,
-  RequireAuthDto,
   SignupUserDto,
   GoogleAuthDto,
 } from '../../domain/dtos/auth';
 import { User } from '../../domain/entities';
 import { AuthRepository } from '../../domain/repositories';
 import { AuthDataSource } from '../../domain/data_sources';
+import { UserMapper } from '../mappers/user.mapper';
 
 export class AuthRepositoryImpl implements AuthRepository {
   private readonly authDataSource: AuthDataSource;
@@ -19,35 +15,40 @@ export class AuthRepositoryImpl implements AuthRepository {
     this.authDataSource = authDataSource;
   }
 
-  login(loginUserDto: LoginUserDto): Promise<User> {
-    return this.authDataSource.login(loginUserDto);
+  async findUserByEmail(email: string): Promise<User | null> {
+    const user = await this.authDataSource.findUserByEmail(email);
+    return UserMapper.entityFromObject(user);
   }
 
-  signup(signupUserDto: SignupUserDto): Promise<User> {
-    return this.authDataSource.signup(signupUserDto);
+  async createUser(signupUserDto: SignupUserDto): Promise<User | null> {
+    const user = await this.authDataSource.createUser(signupUserDto);
+    return UserMapper.entityFromObject(user);
   }
 
-  recoverPassword(recoverPasswordDto: RecoverPasswordDto): Promise<User> {
-    return this.authDataSource.recoverPassword(recoverPasswordDto);
+  async generateToken(userId: number): Promise<User | null> {
+    const user = await this.authDataSource.generateToken(userId);
+    return UserMapper.entityFromObject(user);
   }
 
-  changePassword(changePasswordDto: ChangePasswordDto): Promise<User> {
-    return this.authDataSource.changePassword(changePasswordDto);
+  async findUserByToken(token: string): Promise<User | null> {
+    const user = await this.authDataSource.findUserByToken(token);
+    return UserMapper.entityFromObject(user);
   }
 
-  checkToken(checkTokenDto: CheckTokenDto): Promise<User> {
-    return this.authDataSource.checkToken(checkTokenDto);
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<User | null> {
+    const user = await this.authDataSource.changePassword(changePasswordDto);
+    return UserMapper.entityFromObject(user);
   }
 
-  confirmAccount(confirmAccountDto: ConfirmAccountDto): Promise<User> {
-    return this.authDataSource.confirmAccount(confirmAccountDto);
+  async cleanToken(token: string): Promise<User | null> {
+    const user = await this.authDataSource.cleanToken(token);
+    return UserMapper.entityFromObject(user);
   }
 
-  requireAuth(requireAuthDto: RequireAuthDto): Promise<User> {
-    return this.authDataSource.requireAuth(requireAuthDto);
-  }
-
-  googleAuth(googleAuthDto: GoogleAuthDto): Promise<User> {
-    return this.authDataSource.googleAuth(googleAuthDto);
+  async createGoogleUser(googleAuthDto: GoogleAuthDto): Promise<User | null> {
+    const user = await this.authDataSource.createGoogleUser(googleAuthDto);
+    return UserMapper.entityFromObject(user);
   }
 }

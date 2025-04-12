@@ -1,5 +1,6 @@
 import { UpdateUserDto } from '../../dtos/user';
 import { User } from '../../entities';
+import { CustomError } from '../../errors';
 import { UserRepository } from '../../repositories';
 
 interface UpdateUserUseCase {
@@ -14,6 +15,24 @@ export class UpdateUser implements UpdateUserUseCase {
   }
 
   async execute(updateUserDto: UpdateUserDto): Promise<User> {
-    return this.userRepository.update(updateUserDto);
+    const userId = await this.userRepository.findUserById(updateUserDto.id);
+    if (!userId) {
+      throw CustomError.notFound('No se ha encontrado el usuario a actualizar');
+    }
+
+    const userEmailId = await this.userRepository.findUserByEmailId(
+      updateUserDto.id,
+      updateUserDto.email,
+    );
+    if (userEmailId) {
+      throw CustomError.conflict('Ya existe un usuario con el email ingresado');
+    }
+
+    const updatedEmail = await this.userRepository.updateUser(updateUserDto);
+    if (!updatedEmail) {
+      throw CustomError.conflict('No se pudo actualizar el usuario');
+    }
+
+    return { ...updatedEmail, password: '' };
   }
 }

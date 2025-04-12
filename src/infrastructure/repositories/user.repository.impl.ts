@@ -1,13 +1,12 @@
 import {
   CreateUserDto,
-  DeleteUserDto,
   GetAllUsersDto,
-  GetUserDto,
   UpdateUserDto,
 } from '../../domain/dtos/user';
 import { User } from '../../domain/entities';
 import { UserRepository } from '../../domain/repositories';
 import { UserDataSource } from '../../domain/data_sources';
+import { UserMapper } from '../mappers';
 
 export class UserRepositoryImpl implements UserRepository {
   private readonly userDataSource: UserDataSource;
@@ -15,24 +14,32 @@ export class UserRepositoryImpl implements UserRepository {
   constructor(userDataSource: UserDataSource) {
     this.userDataSource = userDataSource;
   }
-
-  create(createUserDto: CreateUserDto): Promise<User> {
-    return this.userDataSource.create(createUserDto);
+  async findUserByEmail(email: string): Promise<User | null> {
+    const user = await this.userDataSource.findUserByEmail(email);
+    return UserMapper.entityFromObject(user);
   }
-
-  update(updateUserDto: UpdateUserDto): Promise<User> {
-    return this.userDataSource.update(updateUserDto);
+  async createNewUser(createUserDto: CreateUserDto): Promise<User | null> {
+    const user = await this.userDataSource.createNewUser(createUserDto);
+    return UserMapper.entityFromObject(user);
   }
-
-  get(getUserDto: GetUserDto): Promise<User> {
-    return this.userDataSource.get(getUserDto);
+  async findUserByEmailId(id: number, email: string): Promise<User | null> {
+    const user = await this.userDataSource.findUserByEmailId(id, email);
+    return UserMapper.entityFromObject(user);
   }
-
-  getAll(getAllUsersDto: GetAllUsersDto): Promise<User[]> {
-    return this.userDataSource.getAll(getAllUsersDto);
+  async updateUser(updateUserDto: UpdateUserDto): Promise<User | null> {
+    const user = await this.userDataSource.updateUser(updateUserDto);
+    return UserMapper.entityFromObject(user);
   }
-
-  delete(deleteUserDto: DeleteUserDto): Promise<User> {
-    return this.userDataSource.delete(deleteUserDto);
+  async findUserById(id: number): Promise<User | null> {
+    const user = await this.userDataSource.findUserById(id);
+    return UserMapper.entityFromObject(user);
+  }
+  async getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<User[]> {
+    const users = await this.userDataSource.getAllUsers(getAllUsersDto);
+    return UserMapper.entitiesFromArray(users);
+  }
+  async deleteUser(id: number): Promise<User | null> {
+    const user = await this.userDataSource.deleteUser(id);
+    return UserMapper.entityFromObject(user);
   }
 }

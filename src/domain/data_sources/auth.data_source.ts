@@ -1,31 +1,22 @@
-import { User } from '../entities';
-import {
-  ChangePasswordDto,
-  CheckTokenDto,
-  ConfirmAccountDto,
-  GoogleAuthDto,
-  LoginUserDto,
-  RecoverPasswordDto,
-  RequireAuthDto,
-  SignupUserDto,
-} from '../dtos/auth';
+import { ChangePasswordDto, GoogleAuthDto, SignupUserDto } from '../dtos/auth';
+import { UserDB } from '../../data/interfaces';
 
 export abstract class AuthDataSource {
-  abstract login(loginUserDto: LoginUserDto): Promise<User>;
+  abstract findUserByEmail(email: string): Promise<UserDB | null>;
 
-  abstract signup(signupUserDto: SignupUserDto): Promise<User>;
+  abstract createUser(signupUserDto: SignupUserDto): Promise<UserDB | null>;
 
-  abstract recoverPassword(
-    recoverPasswordDto: RecoverPasswordDto,
-  ): Promise<User>;
+  abstract generateToken(userId: number): Promise<UserDB | null>;
 
-  abstract changePassword(changePasswordDto: ChangePasswordDto): Promise<User>;
+  abstract findUserByToken(token: string): Promise<UserDB | null>;
 
-  abstract checkToken(checkTokenDto: CheckTokenDto): Promise<User>;
+  abstract changePassword(
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<UserDB | null>;
 
-  abstract confirmAccount(confirmAccountDto: ConfirmAccountDto): Promise<User>;
+  abstract cleanToken(token: string): Promise<UserDB | null>;
 
-  abstract requireAuth(requireAuthDto: RequireAuthDto): Promise<User>;
-
-  abstract googleAuth(googleAuthDto: GoogleAuthDto): Promise<User>;
+  abstract createGoogleUser(
+    googleAuthDto: GoogleAuthDto,
+  ): Promise<UserDB | null>;
 }

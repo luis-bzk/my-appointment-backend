@@ -14,6 +14,7 @@ export class GetAllUsers implements GetAllUsersUseCase {
   }
 
   async execute(getAllUsersDto: GetAllUsersDto): Promise<User[]> {
-    return this.userRepository.getAll(getAllUsersDto);
+    const users = await this.userRepository.getAllUsers(getAllUsersDto);
+    return users.map((u) => ({ ...u, password: '' }));
   }
 }

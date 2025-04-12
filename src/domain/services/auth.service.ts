@@ -1,33 +1,23 @@
-import { User } from '../entities';
-import { JwtAdapter } from '../../config';
-import { RequireAuthDto } from '../dtos/auth';
-import { RequireAuth } from '../use_cases/auth';
-import { AuthRepository } from '../repositories';
+import { Session } from '../entities';
 
-interface UserPayload {
-  id: number;
-}
+import { RequireSession } from '../use_cases/session';
+import { RequireSessionDto } from '../dtos/session';
+import { SessionRepository } from '../repositories';
 
 export class AuthService {
-  private readonly authRepository: AuthRepository;
+  private readonly sessionRepository: SessionRepository;
 
-  constructor(authRepository: AuthRepository) {
-    this.authRepository = authRepository;
+  constructor(sessionRepository: SessionRepository) {
+    this.sessionRepository = sessionRepository;
   }
 
-  authenticateUser = async (token: string): Promise<User | null> => {
-    const decoded = await JwtAdapter.validateToken<UserPayload>(token);
-
-    if (!decoded) {
-      return null;
-    }
-
-    const [error, requireAuthDto] = RequireAuthDto.create(decoded.id);
+  authenticateUser = async (token: string): Promise<Session | null> => {
+    const [error, requireSessionDto] = RequireSessionDto.create(token);
     if (error) return null;
 
     try {
-      const requireAuth = new RequireAuth(this.authRepository);
-      return await requireAuth.execute(requireAuthDto!);
+      const requireSession = new RequireSession(this.sessionRepository);
+      return await requireSession.execute(requireSessionDto!);
     } catch (error) {
       console.log(error);
       return null;

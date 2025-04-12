@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { AuthService } from '../services';
-import { AuthDataSourceImpl } from '../../infrastructure/data_sources';
-import { AuthRepositoryImpl } from '../../infrastructure/repositories';
+import { SessionDataSourceImpl } from '../../infrastructure/data_sources';
+import { SessionRepositoryImpl } from '../../infrastructure/repositories';
 
 export class AuthenticatorMiddleware {
   static authenticate = async (
@@ -10,9 +10,9 @@ export class AuthenticatorMiddleware {
     res: Response,
     next: NextFunction,
   ) => {
-    const dataSource = new AuthDataSourceImpl();
-    const authRepository = new AuthRepositoryImpl(dataSource);
-    const service = new AuthService(authRepository);
+    const dataSource = new SessionDataSourceImpl();
+    const sessionRepository = new SessionRepositoryImpl(dataSource);
+    const service = new AuthService(sessionRepository);
 
     if (
       !req.headers.authorization ||
@@ -25,15 +25,15 @@ export class AuthenticatorMiddleware {
 
     try {
       const JWToken = req.headers.authorization?.split(' ')[1];
-      const user = await service.authenticateUser(JWToken);
+      const session = await service.authenticateUser(JWToken);
 
-      if (!user) {
+      if (!session) {
         return res
           .status(401)
           .json({ error: 'No se ha podido verificar la sesión' });
       }
 
-      req.current_user = user;
+      // req.current_user = user;
 
       return next();
     } catch (error) {

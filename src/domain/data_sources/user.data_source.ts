@@ -1,20 +1,18 @@
-import {
-  CreateUserDto,
-  DeleteUserDto,
-  GetAllUsersDto,
-  GetUserDto,
-  UpdateUserDto,
-} from '../dtos/user';
-import { User } from '../entities';
+import { UserDB } from '../../data/interfaces';
+import { CreateUserDto, GetAllUsersDto, UpdateUserDto } from '../dtos/user';
 
 export abstract class UserDataSource {
-  abstract create(createUserDto: CreateUserDto): Promise<User>;
+  abstract findUserByEmail(email: string): Promise<UserDB | null>;
 
-  abstract update(updateUserDto: UpdateUserDto): Promise<User>;
+  abstract createNewUser(createUserDto: CreateUserDto): Promise<UserDB | null>;
 
-  abstract get(getUserDto: GetUserDto): Promise<User>;
+  abstract findUserByEmailId(id: number, email: string): Promise<UserDB | null>;
 
-  abstract getAll(getAllUsersDto: GetAllUsersDto): Promise<User[]>;
+  abstract updateUser(updateUserDto: UpdateUserDto): Promise<UserDB | null>;
 
-  abstract delete(deleteUserDto: DeleteUserDto): Promise<User>;
+  abstract findUserById(id: number): Promise<UserDB | null>;
+
+  abstract getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<UserDB[]>;
+
+  abstract deleteUser(id: number): Promise<UserDB | null>;
 }
