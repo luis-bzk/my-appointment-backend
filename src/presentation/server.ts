@@ -27,7 +27,7 @@ export class Server {
     this.app.use(express.json());
 
     //   cors
-    const whitelist = [EnvConfig().FRONTEND_URL];
+    const whitelist = [EnvConfig().FRONTEND_URL, undefined];
 
     const corsOptions = {
       origin: function (origin: any, callback: any) {

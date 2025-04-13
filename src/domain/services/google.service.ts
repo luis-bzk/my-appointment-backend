@@ -1,5 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
+
 import { EnvConfig } from '../../config';
+import { GoogleUserData } from '../interfaces';
 
 export const oAuth2Client = new OAuth2Client({
   clientId: EnvConfig().GOOGLE_CLIENT_ID!,
@@ -31,12 +33,10 @@ export async function getGoogleUser(code: string): Promise<{
   const { tokens } = await oAuth2Client.getToken(code);
   oAuth2Client.setCredentials(tokens);
 
-  const res: {
-    data: { email: string; name: string; picture: string; id: string };
-  } = await oAuth2Client.request({
+  const res = await oAuth2Client.request<GoogleUserData>({
     url: 'https://www.googleapis.com/oauth2/v2/userinfo',
   });
-  console.log({ res });
   console.log(res);
+
   return res.data;
 }

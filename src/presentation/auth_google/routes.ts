@@ -23,8 +23,8 @@ export class AuthGoogleRoutes {
     );
 
     //   routes
-    router.get('/google', controller.authGoogle);
-    router.get('/google/callback', controller.authGoogleCallback);
+    router.get('/login', controller.authGoogle);
+    router.get('/callback', controller.authGoogleCallback);
 
     return router;
   }

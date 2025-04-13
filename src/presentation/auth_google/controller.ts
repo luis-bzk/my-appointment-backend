@@ -82,7 +82,7 @@ export class AuthGoogleController {
       );
 
       return res.redirect(
-        `${process.env.FRONTEND_URL}/auth/callback?token=${session.jwt}`,
+        `${process.env.FRONTEND_URL}/auth/google-callback?token=${session.jwt}`,
       );
     } catch (err) {
       this.handleError(err, res);
