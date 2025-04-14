@@ -56,6 +56,7 @@ export class AuthGoogleController {
       const [error, googleAuthDto] = GoogleAuthDto.create(
         res_google.email,
         res_google.name,
+        res_google.given_name,
         res_google.picture,
         res_google.id,
       );

@@ -24,12 +24,7 @@ export function getGoogleAuthURL() {
   return url;
 }
 
-export async function getGoogleUser(code: string): Promise<{
-  email: string;
-  name: string;
-  picture: string;
-  id: string;
-}> {
+export async function getGoogleUser(code: string): Promise<GoogleUserData> {
   const { tokens } = await oAuth2Client.getToken(code);
   oAuth2Client.setCredentials(tokens);
 

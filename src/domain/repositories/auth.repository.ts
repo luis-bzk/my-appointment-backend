@@ -16,5 +16,8 @@ export abstract class AuthRepository {
 
   abstract cleanToken(token: string): Promise<User | null>;
 
-  abstract createGoogleUser(googleAuthDto: GoogleAuthDto): Promise<User | null>;
+  abstract createGoogleUser(
+    googleAuthDto: GoogleAuthDto,
+    password: string,
+  ): Promise<User | null>;
 }

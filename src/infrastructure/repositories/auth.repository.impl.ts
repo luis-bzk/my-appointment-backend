@@ -47,8 +47,14 @@ export class AuthRepositoryImpl implements AuthRepository {
     return UserMapper.entityFromObject(user);
   }
 
-  async createGoogleUser(googleAuthDto: GoogleAuthDto): Promise<User | null> {
-    const user = await this.authDataSource.createGoogleUser(googleAuthDto);
+  async createGoogleUser(
+    googleAuthDto: GoogleAuthDto,
+    password: string,
+  ): Promise<User | null> {
+    const user = await this.authDataSource.createGoogleUser(
+      googleAuthDto,
+      password,
+    );
     return UserMapper.entityFromObject(user);
   }
 }

@@ -18,5 +18,6 @@ export abstract class AuthDataSource {
 
   abstract createGoogleUser(
     googleAuthDto: GoogleAuthDto,
+    password: string,
   ): Promise<UserDB | null>;
 }

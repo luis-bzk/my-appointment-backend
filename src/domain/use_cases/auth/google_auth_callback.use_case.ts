@@ -2,6 +2,10 @@ import { AuthRepository } from '../../repositories';
 import { GoogleAuthDto } from '../../dtos/auth';
 import { CustomError } from '../../errors';
 import { User } from '../../entities';
+import { BcryptAdapter } from '../../../config';
+import { GeneratorValues } from '../../../utils';
+
+type HashFunction = (password: string) => string;
 
 interface GoogleAuthCallbackUseCase {
   execute(googleAuthDto: GoogleAuthDto): Promise<User>;
@@ -9,9 +13,11 @@ interface GoogleAuthCallbackUseCase {
 
 export class GoogleAuthCallback implements GoogleAuthCallbackUseCase {
   private readonly authRepository: AuthRepository;
+  private readonly hashPassword: HashFunction;
 
   constructor(authRepository: AuthRepository) {
     this.authRepository = authRepository;
+    this.hashPassword = BcryptAdapter.hash;
   }
 
   async execute(googleAuthDto: GoogleAuthDto) {
@@ -20,8 +26,14 @@ export class GoogleAuthCallback implements GoogleAuthCallbackUseCase {
       return { ...user, password: '' };
     }
 
-    const createdUser =
-      await this.authRepository.createGoogleUser(googleAuthDto);
+    const generatedPassword = this.hashPassword(
+      GeneratorValues.passwordGenerator(),
+    );
+
+    const createdUser = await this.authRepository.createGoogleUser(
+      googleAuthDto,
+      generatedPassword,
+    );
     if (!createdUser) {
       throw CustomError.internalServer('Error al crear el usuario con google');
     }
