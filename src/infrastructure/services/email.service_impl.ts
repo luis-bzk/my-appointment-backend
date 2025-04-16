@@ -16,7 +16,6 @@ export class EmailServiceImpl implements EmailService {
   async sendEmailVerifyAccount(
     verifyAccountDto: VerifyAccountDto,
   ): Promise<boolean> {
-    console.log({ verifyAccountDto });
     const { email, name, last_name, token } = verifyAccountDto;
 
     const {

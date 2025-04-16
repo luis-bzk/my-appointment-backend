@@ -16,7 +16,6 @@ import {
 } from '../../domain/use_cases/user';
 import { CustomError } from '../../domain/errors';
 import { UserRepository } from '../../domain/repositories';
-import { EmailServiceImpl } from '../../infrastructure/services';
 
 export class UserController {
   private readonly userRepository: UserRepository;
@@ -43,12 +42,13 @@ export class UserController {
         createUserDto!,
       );
 
-      await EmailServiceImpl.sendLoginAccount({
-        email: data.email,
-        name: data.last_name,
-        last_name: data.last_name,
-        password: data.password,
-      });
+      // TODO: send email notification
+      // await EmailServiceImpl.sendLoginAccount({
+      //   email: data.email,
+      //   name: data.last_name,
+      //   last_name: data.last_name,
+      //   password: data.password,
+      // });
 
       return res.status(201).json(data);
     } catch (err) {

@@ -137,7 +137,12 @@ export class AuthController {
         verifyAccountDto!,
       );
 
-      return res.status(200).json(data);
+      return res
+        .status(200)
+        .json({
+          message:
+            'Si el correo electrónico está registrado, te enviaremos un mensaje para recuperar tu cuenta',
+        });
     } catch (err) {
       this.handleError(err, res);
     }

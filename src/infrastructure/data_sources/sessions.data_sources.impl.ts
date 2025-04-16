@@ -28,7 +28,6 @@ export class SessionDataSourceImpl implements SessionDataSource {
 
       return sessions.rows;
     } catch (error) {
-      console.log({ error });
       if (error instanceof CustomError) {
         throw error;
       }
@@ -54,7 +53,6 @@ export class SessionDataSourceImpl implements SessionDataSource {
 
       return sessionCreated.rows[0];
     } catch (error) {
-      console.log({ error });
       if (error instanceof CustomError) {
         throw error;
       }

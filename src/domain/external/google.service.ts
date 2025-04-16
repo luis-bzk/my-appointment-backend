@@ -31,7 +31,6 @@ export async function getGoogleUser(code: string): Promise<GoogleUserData> {
   const res = await oAuth2Client.request<GoogleUserData>({
     url: 'https://www.googleapis.com/oauth2/v2/userinfo',
   });
-  console.log(res);
 
   return res.data;
 }

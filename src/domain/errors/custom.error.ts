@@ -22,6 +22,10 @@ export class CustomError extends Error {
     return new CustomError(404, message);
   }
 
+  static fakeSuccess(message: string): CustomError {
+    return new CustomError(200, message);
+  }
+
   static conflict(message: string): CustomError {
     return new CustomError(409, message);
   }

@@ -19,8 +19,8 @@ export class RecoverPassword implements RecoverPasswordUseCase {
       recoverPasswordDto.email,
     );
     if (!user) {
-      throw CustomError.notFound(
-        'No se ha encontrado un usuario asociado a este email',
+      throw CustomError.fakeSuccess(
+        'Si el correo electrónico está registrado, te enviaremos un mensaje para recuperar tu cuenta',
       );
     }
 
