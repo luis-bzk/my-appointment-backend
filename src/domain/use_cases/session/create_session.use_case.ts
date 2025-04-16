@@ -1,5 +1,6 @@
 import { CreateSessionDto } from '../../dtos/session';
 import { Session } from '../../entities';
+import { CustomError } from '../../errors';
 import { SessionRepository } from '../../repositories';
 
 interface CreateSessionUseCase {
@@ -14,10 +15,18 @@ export class CreateSession implements CreateSessionUseCase {
   }
 
   async execute(createSessionDto: CreateSessionDto): Promise<Session> {
-    //   token
+    const sessions = await this.sessionRepository.getUserSessions(
+      createSessionDto.id_user,
+    );
+    if (sessions.length > 10) {
+      throw CustomError.conflict(
+        'Ya tienes 6 sesiones activas en este momento, por tu seguridad, cierra alguna de ellas para continuar',
+      );
+    }
 
-    const session = await this.sessionRepository.create(createSessionDto!);
+    const sessionCreated =
+      await this.sessionRepository.create(createSessionDto);
 
-    return session;
+    return sessionCreated;
   }
 }

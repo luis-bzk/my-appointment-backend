@@ -1,9 +1,24 @@
-<!doctype html>
+interface Props {
+  SYSTEM_NAME: string;
+  USER_NAME: string;
+  USER_LAST_NAME: string;
+  PASSWORD: string;
+  VERIFICATION_URL: string;
+}
+
+export function getLoginAccountHTML({
+  SYSTEM_NAME,
+  USER_NAME,
+  USER_LAST_NAME,
+  PASSWORD,
+  VERIFICATION_URL,
+}: Props) {
+  return `<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{SYSTEM_NAME}} - Confirma tu cuenta</title>
+    <title>${SYSTEM_NAME} - Confirma tu cuenta</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
     </style>
@@ -30,9 +45,9 @@
         all: unset;
       }
       .wrapper {
-        height: 100vh;
         display: grid;
         place-items: center;
+        height: 100vh;
       }
       .container {
         max-width: 600px;
@@ -48,6 +63,22 @@
       }
       .content_mail {
         width: 100%;
+      }
+      .password_box {
+        position: relative;
+        padding: 2px 10px;
+        border-radius: 10px;
+        background-color: #f1f5f9;
+        display: inline-flex;
+        flex-direction: row;
+        gap: 5px;
+        align-items: center;
+        justify-content: center;
+      }
+      .password_content {
+        font-weight: 500;
+        font-size: 16px;
+        color: #047857;
       }
       .button {
         all: unset;
@@ -83,29 +114,34 @@
   <body>
     <div class="wrapper">
       <div class="container">
-        <h1>Cambiar mi contraseña 🙈</h1>
+        <h1>Te damos la bienvenida a ${SYSTEM_NAME} 👋</h1>
 
         <div class="content_mail">
-          <p>Hola {{USER_NAME}} {{USER_LAST_NAME}}</p>
-          <p>Vamos a recuperar el acceso a tu cuenta</p>
+          <p>Hola ${USER_NAME} ${USER_LAST_NAME}</p>
+          <p>
+            Te han agregado como colaborador en el sistema ${SYSTEM_NAME},
+            confirma tu cuenta y accede inmediatamente
+          </p>
           <br />
           <p>
-            Nos has solicitado recuperar el acceso a {{SYSTEM_NAME}}. No te
-            preocupes, es muy común. Para crear una nueva contraseña, haz clic
-            en el siguiente enlace:
+            Hemos generado una contraseña temporal para tu acceso. Te pedimos
+            que no la compartas con nadie y que la cambies lo antes posible.
           </p>
+
+          <div class="password_box">
+            <span class="password_content">${PASSWORD}</span>
+          </div>
         </div>
 
-        <a href="{{CHANGE_PWD_URL}}">
-          <button class="button">Cambiar mi contraseña</button>
+        <a href="${VERIFICATION_URL}">
+          <button class="button">Ir a mi cuenta</button>
         </a>
 
         <p class="mini_content">Mensaje de contenido</p>
 
         <div class="footer">
           <p class="alert_message">
-            Si no solicitaste este cambio de contraseña, por favor ignora este
-            correo electrónico.
+            Si no creaste esta cuenta, por favor ignora este correo electrónico.
           </p>
           <p class="alert_message">
             Este es un servicio de notificación por correo.
@@ -114,4 +150,5 @@
       </div>
     </div>
   </body>
-</html>
+</html>`;
+}

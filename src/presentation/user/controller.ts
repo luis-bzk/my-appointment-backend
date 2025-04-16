@@ -16,7 +16,7 @@ import {
 } from '../../domain/use_cases/user';
 import { CustomError } from '../../domain/errors';
 import { UserRepository } from '../../domain/repositories';
-import { EmailGateway } from '../../infrastructure/gateways';
+import { EmailServiceImpl } from '../../infrastructure/services';
 
 export class UserController {
   private readonly userRepository: UserRepository;
@@ -43,7 +43,7 @@ export class UserController {
         createUserDto!,
       );
 
-      await EmailGateway.sendLoginAccount({
+      await EmailServiceImpl.sendLoginAccount({
         email: data.email,
         name: data.last_name,
         last_name: data.last_name,

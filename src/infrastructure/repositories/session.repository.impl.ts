@@ -6,6 +6,7 @@ import {
 import { Session } from '../../domain/entities';
 import { SessionDataSource } from '../../domain/data_sources';
 import { SessionRepository } from '../../domain/repositories';
+import { SessionMapper } from '../mappers/session.mapper';
 
 export class SessionRepositoryImpl implements SessionRepository {
   private readonly sessionDataSource: SessionDataSource;
@@ -14,15 +15,25 @@ export class SessionRepositoryImpl implements SessionRepository {
     this.sessionDataSource = sessionDataSource;
   }
 
-  create(createSessionDto: CreateSessionDto): Promise<Session> {
-    return this.sessionDataSource.create(createSessionDto);
+  async getUserSessions(id_user: number): Promise<Session[]> {
+    const sessions = await this.sessionDataSource.getUserSessions(id_user);
+    return SessionMapper.entitiesFromArray(sessions);
   }
 
-  getByJwt(getSessionDto: GetSessionDto): Promise<Session> {
-    return this.sessionDataSource.getByJwt(getSessionDto);
+  async create(createSessionDto: CreateSessionDto): Promise<Session> {
+    const session = await this.sessionDataSource.create(createSessionDto);
+    return SessionMapper.entityFromObject(session)!;
   }
 
-  killSession(deleteSessionDto: DeleteSessionDto): Promise<Session> {
-    return this.sessionDataSource.killSession(deleteSessionDto);
+  async getByJwt(getSessionDto: GetSessionDto): Promise<Session | null> {
+    const session = await this.sessionDataSource.getByJwt(getSessionDto);
+    return SessionMapper.entityFromObject(session);
+  }
+
+  async killSession(
+    deleteSessionDto: DeleteSessionDto,
+  ): Promise<Session | null> {
+    const session = await this.sessionDataSource.killSession(deleteSessionDto);
+    return SessionMapper.entityFromObject(session);
   }
 }

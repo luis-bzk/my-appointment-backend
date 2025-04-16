@@ -17,25 +17,36 @@ import {
   SignUpUser,
 } from '../../domain/use_cases/auth';
 import { CustomError } from '../../domain/errors';
-import { AuthRepository, SessionRepository } from '../../domain/repositories';
-import { EmailGateway } from '../../infrastructure/gateways';
+import {
+  AuthRepository,
+  EmailRepository,
+  SessionRepository,
+} from '../../domain/repositories';
 import { CreateSession } from '../../domain/use_cases/session';
 import { CreateSessionDto } from '../../domain/dtos/session';
 import { JwtAdapter } from '../../config';
+import { VerifyAccountDto } from '../../domain/dtos/email';
+import {
+  RecoverPasswordEmail,
+  VerifyAccountEmail,
+} from '../../domain/use_cases/email';
 
 type SignToken = (payload: Object, duration?: string) => Promise<string | null>;
 
 export class AuthController {
   private readonly authRepository: AuthRepository;
   private readonly sessionRepository: SessionRepository;
+  private readonly emailRepository: EmailRepository;
   private readonly signToken: SignToken;
 
   constructor(
     authRepository: AuthRepository,
     sessionRepository: SessionRepository,
+    emailRepository: EmailRepository,
   ) {
     this.authRepository = authRepository;
     this.sessionRepository = sessionRepository;
+    this.emailRepository = emailRepository;
     this.signToken = JwtAdapter.generateToken;
   }
 
@@ -86,16 +97,21 @@ export class AuthController {
     try {
       const [error, signupUserDto] = SignupUserDto.create(req.body);
       if (error) return res.status(400).json({ error: error });
-
       const data = await new SignUpUser(this.authRepository).execute(
         signupUserDto!,
       );
-      await EmailGateway.sendEmailVerifyAccount({
+
+      const [errorEmail, verifyAccountDto] = VerifyAccountDto.create({
         email: data.email,
         name: data.name,
         last_name: data.last_name,
         token: data.token,
       });
+      if (errorEmail) return res.status(400).json({ error: errorEmail });
+      await new VerifyAccountEmail(this.emailRepository).execute(
+        verifyAccountDto!,
+      );
+
       return res.status(201).json(data);
     } catch (err) {
       this.handleError(err, res);
@@ -106,17 +122,20 @@ export class AuthController {
     try {
       const [error, recoverPasswordDto] = RecoverPasswordDto.create(req.body);
       if (error) return res.status(400).json({ error: error });
-
       const data = await new RecoverPassword(this.authRepository).execute(
         recoverPasswordDto!,
       );
 
-      await EmailGateway.sendEmailRecoverPassword({
+      const [errorEmail, verifyAccountDto] = VerifyAccountDto.create({
         email: data.email,
         name: data.last_name,
         last_name: data.last_name,
         token: data.token,
       });
+      if (errorEmail) return res.status(400).json({ error: errorEmail });
+      await new RecoverPasswordEmail(this.emailRepository).execute(
+        verifyAccountDto!,
+      );
 
       return res.status(200).json(data);
     } catch (err) {

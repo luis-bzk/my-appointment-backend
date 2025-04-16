@@ -7,7 +7,7 @@ import { JwtAdapter } from '../../config';
 import { GoogleAuthDto } from '../../domain/dtos/auth';
 import { CreateSessionDto } from '../../domain/dtos/session';
 import { CreateSession } from '../../domain/use_cases/session';
-import { getGoogleUser, oAuth2Client } from '../../domain/services';
+import { getGoogleUser, oAuth2Client } from '../../domain/external';
 
 type SignToken = (payload: Object, duration?: string) => Promise<string | null>;
 
@@ -61,7 +61,6 @@ export class AuthGoogleController {
         res_google.id,
       );
       if (error) throw CustomError.badRequest(error);
-
       const user = await new GoogleAuthCallback(this.authRepository).execute(
         googleAuthDto!,
       );

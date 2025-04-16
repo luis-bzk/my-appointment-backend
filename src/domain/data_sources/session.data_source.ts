@@ -1,14 +1,18 @@
+import { SessionDB } from '../../data/interfaces';
 import {
   CreateSessionDto,
   DeleteSessionDto,
   GetSessionDto,
 } from '../dtos/session';
-import { Session } from '../entities';
 
 export abstract class SessionDataSource {
-  abstract create(createSessionDto: CreateSessionDto): Promise<Session>;
+  abstract getUserSessions(id_user: number): Promise<SessionDB[]>;
 
-  abstract getByJwt(getSessionDto: GetSessionDto): Promise<Session>;
+  abstract create(createSessionDto: CreateSessionDto): Promise<SessionDB>;
 
-  abstract killSession(deleteSessionDto: DeleteSessionDto): Promise<Session>;
+  abstract getByJwt(getSessionDto: GetSessionDto): Promise<SessionDB | null>;
+
+  abstract killSession(
+    deleteSessionDto: DeleteSessionDto,
+  ): Promise<SessionDB | null>;
 }

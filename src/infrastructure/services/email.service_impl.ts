@@ -1,39 +1,24 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-
 import nodemailer from 'nodemailer';
 
-import { EnvConfig } from '../../../config';
-import { CustomError } from '../../../domain/errors';
+import { CustomError } from '../../domain/errors';
+import { EmailService } from '../../domain/services';
+import { EnvConfig } from '../../config';
+import { LoginAccountDto, VerifyAccountDto } from '../../domain/dtos/email';
+import {
+  getLoginAccountHTML,
+  getRecoverPasswordHTML,
+  getVerifyAccountHTML,
+} from '../../domain/external';
 
-export class EmailGateway {
+export class EmailServiceImpl implements EmailService {
   constructor() {}
 
-  private static async getTemplate(
-    name: string,
-    replacements: Record<string, string>,
-  ) {
-    const filePath = join(__dirname, 'templates', `${name}.html`);
-    let content = readFileSync(filePath, 'utf-8');
+  async sendEmailVerifyAccount(
+    verifyAccountDto: VerifyAccountDto,
+  ): Promise<boolean> {
+    console.log({ verifyAccountDto });
+    const { email, name, last_name, token } = verifyAccountDto;
 
-    for (const key in replacements) {
-      content = content.replaceAll(`{{${key}}}`, replacements[key]);
-    }
-
-    return content;
-  }
-
-  static async sendEmailVerifyAccount({
-    email,
-    name,
-    last_name,
-    token,
-  }: {
-    email: string;
-    name: string;
-    last_name: string;
-    token: string;
-  }): Promise<{}> {
     const {
       SMTP_HOST,
       SMTP_PORT,
@@ -53,11 +38,11 @@ export class EmailGateway {
         },
       });
 
-      const html = await this.getTemplate('verifyAccount', {
+      const html = getVerifyAccountHTML({
         SYSTEM_NAME: SYSTEM_NAME,
         USER_NAME: name,
         USER_LAST_NAME: last_name,
-        verification_url: `${FRONTEND_URL}/auth/verify/${token}`,
+        VERIFICATION_URL: `${FRONTEND_URL}/auth/verify/${token}`,
       });
 
       await transport.sendMail({
@@ -68,23 +53,16 @@ export class EmailGateway {
         html: html,
       });
 
-      return {};
+      return true;
     } catch (error) {
+      console.log(error);
       throw CustomError.internalServer('Error al enviar el correo');
     }
   }
 
-  static async sendLoginAccount({
-    email,
-    name,
-    last_name,
-    password,
-  }: {
-    email: string;
-    name: string;
-    last_name: string;
-    password: string;
-  }): Promise<{}> {
+  async sendLoginAccount(loginAccountDto: LoginAccountDto): Promise<boolean> {
+    const { email, name, last_name, password } = loginAccountDto;
+
     const {
       SMTP_HOST,
       SMTP_PORT,
@@ -104,7 +82,7 @@ export class EmailGateway {
         },
       });
 
-      const html = await this.getTemplate('loginAccount', {
+      const html = getLoginAccountHTML({
         SYSTEM_NAME: SYSTEM_NAME,
         USER_NAME: name,
         USER_LAST_NAME: last_name,
@@ -113,30 +91,24 @@ export class EmailGateway {
       });
 
       await transport.sendMail({
-        from: `${SYSTEM_NAME} <gsgrou p@gmail.com>`,
+        from: `${SYSTEM_NAME} <gsgroupp@gmail.com>`,
         to: email,
         subject: `${SYSTEM_NAME} - Confirma tu cuenta`,
         text: 'Valida tu dirección email para acceder a tu cuenta por completo',
         html: html,
       });
 
-      return {};
+      return true;
     } catch (error) {
       throw CustomError.internalServer('Error al enviar el correo');
     }
   }
 
-  static async sendEmailRecoverPassword({
-    email,
-    name,
-    last_name,
-    token,
-  }: {
-    email: string;
-    name: string;
-    last_name: string;
-    token: string;
-  }): Promise<{}> {
+  async sendEmailRecoverPassword(
+    verifyAccountDto: VerifyAccountDto,
+  ): Promise<boolean> {
+    const { email, name, last_name, token } = verifyAccountDto;
+
     const {
       SMTP_HOST,
       SMTP_PORT,
@@ -155,7 +127,7 @@ export class EmailGateway {
           pass: SMTP_PASS,
         },
       });
-      const html = await this.getTemplate('recoverPassword', {
+      const html = getRecoverPasswordHTML({
         SYSTEM_NAME: SYSTEM_NAME,
         USER_NAME: name,
         USER_LAST_NAME: last_name,
@@ -170,7 +142,7 @@ export class EmailGateway {
         html: html,
       });
 
-      return {};
+      return true;
     } catch (error) {
       throw CustomError.internalServer('Error al enviar el correo');
     }

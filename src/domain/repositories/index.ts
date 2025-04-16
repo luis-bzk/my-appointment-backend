@@ -11,3 +11,4 @@ export * from './phone_type.repository';
 export * from './payment_method.repository';
 export * from './notification_type.repository';
 export * from './session.repository';
+export * from './email.repository';

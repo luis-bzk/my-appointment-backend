@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { AuthService } from '../services';
+import { AuthService } from '../external';
 import { SessionDataSourceImpl } from '../../infrastructure/data_sources';
 import { SessionRepositoryImpl } from '../../infrastructure/repositories';
 

@@ -1,9 +1,22 @@
-<!doctype html>
+interface Props {
+  SYSTEM_NAME: string;
+  USER_NAME: string;
+  USER_LAST_NAME: string;
+  CHANGE_PWD_URL: string;
+}
+
+export function getRecoverPasswordHTML({
+  SYSTEM_NAME,
+  USER_NAME,
+  USER_LAST_NAME,
+  CHANGE_PWD_URL,
+}: Props) {
+  return `<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{SYSTEM_NAME}} - Confirma tu cuenta</title>
+    <title>${SYSTEM_NAME} - Confirma tu cuenta</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
     </style>
@@ -65,7 +78,6 @@
           background-color: #059669;
         }
       }
-
       .mini_content {
         font-size: 13px;
         color: #a1a1aa;
@@ -84,24 +96,29 @@
   <body>
     <div class="wrapper">
       <div class="container">
-        <h1>Te damos la bienvenida a {{SYSTEM_NAME}} 👋</h1>
+        <h1>Cambiar mi contraseña 🙈</h1>
 
         <div class="content_mail">
-          <p>Hola {{USER_NAME}} {{USER_LAST_NAME}}</p>
-          <p>Confirma tu dirección de correo para completar tu registro:</p>
+          <p>Hola ${USER_NAME} ${USER_LAST_NAME}</p>
+          <p>Vamos a recuperar el acceso a tu cuenta</p>
+          <br />
+          <p>
+            Nos has solicitado recuperar el acceso a ${SYSTEM_NAME}. No te
+            preocupes, es muy común. Para crear una nueva contraseña, haz clic
+            en el siguiente enlace:
+          </p>
         </div>
 
-        <a href="{{verification_url}}">
-          <button class="button">
-            Confirmar mi dirección de correo electrónico
-          </button>
+        <a href="${CHANGE_PWD_URL}">
+          <button class="button">Cambiar mi contraseña</button>
         </a>
 
         <p class="mini_content">Mensaje de contenido</p>
 
         <div class="footer">
           <p class="alert_message">
-            Si no creaste esta cuenta, por favor ignora este correo electrónico.
+            Si no solicitaste este cambio de contraseña, por favor ignora este
+            correo electrónico.
           </p>
           <p class="alert_message">
             Este es un servicio de notificación por correo.
@@ -111,3 +128,5 @@
     </div>
   </body>
 </html>
+`;
+}
