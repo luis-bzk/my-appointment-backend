@@ -6,8 +6,8 @@ import {
   UpdateCityDto,
 } from '../../domain/dtos/city';
 import { City } from '../../domain/entities';
-import { CityRepository } from '../../domain/repositories';
-import { CityDataSource } from '../../domain/data_sources';
+import { CityRepository } from '../../adapters/repositories';
+import { CityDataSource } from '../../adapters/data_sources';
 
 export class CityRepositoryImpl implements CityRepository {
   private readonly cityDataSource: CityDataSource;

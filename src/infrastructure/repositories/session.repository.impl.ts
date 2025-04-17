@@ -4,8 +4,8 @@ import {
   GetSessionDto,
 } from '../../domain/dtos/session';
 import { Session } from '../../domain/entities';
-import { SessionDataSource } from '../../domain/data_sources';
-import { SessionRepository } from '../../domain/repositories';
+import { SessionDataSource } from '../../adapters/data_sources';
+import { SessionRepository } from '../../adapters/repositories';
 import { SessionMapper } from '../mappers/session.mapper';
 
 export class SessionRepositoryImpl implements SessionRepository {

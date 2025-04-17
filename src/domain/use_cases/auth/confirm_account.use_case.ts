@@ -1,5 +1,5 @@
 import { User } from '../../entities';
-import { AuthRepository } from '../../repositories';
+import { AuthRepository } from '../../../adapters/repositories';
 import { ConfirmAccountDto } from '../../dtos/auth';
 import { CustomError } from '../../errors';
 

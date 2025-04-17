@@ -5,7 +5,7 @@ import {
   GoogleAuthDto,
   SignupUserDto,
 } from '../../domain/dtos/auth';
-import { AuthDataSource } from '../../domain/data_sources';
+import { AuthDataSource } from '../../adapters/data_sources';
 import { CustomError } from '../../domain/errors';
 import { GeneratorValues } from '../../utils';
 import { PostgresDatabase } from '../../data';

@@ -1,6 +1,6 @@
 import { GetPaymentMethodDto } from '../../dtos/payment_method';
 import { PaymentMethod } from '../../entities';
-import { PaymentMethodRepository } from '../../repositories';
+import { PaymentMethodRepository } from '../../../adapters/repositories';
 
 interface GetPaymentMethodUseCase {
   execute(getPaymentMethodDto: GetPaymentMethodDto): Promise<PaymentMethod>;

@@ -1,6 +1,6 @@
 import { City } from '../../entities';
 import { UpdateCityDto } from '../../dtos/city';
-import { CityRepository } from '../../repositories';
+import { CityRepository } from '../../../adapters/repositories';
 
 interface UpdateCityUseCase {
   execute(updateCityDto: UpdateCityDto): Promise<City>;

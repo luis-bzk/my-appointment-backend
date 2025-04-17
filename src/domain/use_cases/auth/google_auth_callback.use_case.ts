@@ -1,4 +1,4 @@
-import { AuthRepository } from '../../repositories';
+import { AuthRepository } from '../../../adapters/repositories';
 import { GoogleAuthDto } from '../../dtos/auth';
 import { CustomError } from '../../errors';
 import { User } from '../../entities';

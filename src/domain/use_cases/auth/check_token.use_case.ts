@@ -1,6 +1,6 @@
 import { User } from '../../entities';
 import { CheckTokenDto } from '../../dtos/auth';
-import { AuthRepository } from '../../repositories';
+import { AuthRepository } from '../../../adapters/repositories';
 
 interface CheckTokenUseCase {
   execute(checkTokenDto: CheckTokenDto): Promise<User>;

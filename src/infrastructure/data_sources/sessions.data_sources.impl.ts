@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { PostgresDatabase } from '../../data';
 import { SessionDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
-import { SessionDataSource } from '../../domain/data_sources';
+import { SessionDataSource } from '../../adapters/data_sources';
 import {
   CreateSessionDto,
   DeleteSessionDto,

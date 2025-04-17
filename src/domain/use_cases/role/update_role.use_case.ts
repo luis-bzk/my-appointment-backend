@@ -1,6 +1,6 @@
 import { Role } from '../../entities';
 import { UpdateRoleDto } from '../../dtos/role';
-import { RoleRepository } from '../../repositories';
+import { RoleRepository } from '../../../adapters/repositories';
 
 interface UpdateRoleUseCase {
   execute(updateRoleDto: UpdateRoleDto): Promise<Role>;

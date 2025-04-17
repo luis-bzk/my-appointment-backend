@@ -1,6 +1,6 @@
 import { UserRole } from '../../entities';
 import { GetUserRoleDto } from '../../dtos/user_role';
-import { UserRoleRepository } from '../../repositories';
+import { UserRoleRepository } from '../../../adapters/repositories';
 
 interface GetUserRoleUseCase {
   execute(getUserRoleDto: GetUserRoleDto): Promise<UserRole>;

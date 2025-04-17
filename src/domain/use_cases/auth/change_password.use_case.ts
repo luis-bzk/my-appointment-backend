@@ -1,6 +1,6 @@
 import { User } from '../../entities';
 import { ChangePasswordDto } from '../../dtos/auth';
-import { AuthRepository } from '../../repositories';
+import { AuthRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
 import { BcryptAdapter } from '../../../config';
 

@@ -1,6 +1,6 @@
 import { Genre } from '../../entities';
 import { DeleteGenreDto } from '../../dtos/genre';
-import { GenreRepository } from '../../repositories';
+import { GenreRepository } from '../../../adapters/repositories';
 
 interface DeleteGenreUseCase {
   execute(deleteGenreDto: DeleteGenreDto): Promise<Genre>;

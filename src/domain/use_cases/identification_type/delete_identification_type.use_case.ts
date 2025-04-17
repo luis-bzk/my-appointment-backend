@@ -1,6 +1,6 @@
 import { DeleteIdentTypeDto } from '../../dtos/identification_type';
 import { IdentificationType } from '../../entities';
-import { IdentificationTypeRepository } from '../../repositories';
+import { IdentificationTypeRepository } from '../../../adapters/repositories';
 
 interface DeleteIdentificationTypeUseCase {
   execute(deleteIdentTypeDto: DeleteIdentTypeDto): Promise<IdentificationType>;

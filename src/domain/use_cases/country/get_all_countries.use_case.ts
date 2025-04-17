@@ -1,5 +1,5 @@
 import { Country } from '../../entities';
-import { CountryRepository } from '../../repositories';
+import { CountryRepository } from '../../../adapters/repositories';
 import { GetAllCountriesDto } from '../../dtos/country';
 
 interface GetAllCountriesUseCase {

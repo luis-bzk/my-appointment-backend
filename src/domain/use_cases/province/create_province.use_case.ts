@@ -1,6 +1,6 @@
 import { Province } from '../../entities';
 import { CreateProvinceDto } from '../../dtos/province';
-import { ProvinceRepository } from '../../repositories';
+import { ProvinceRepository } from '../../../adapters/repositories';
 
 interface CreateProvinceUseCase {
   execute(createProvinceDto: CreateProvinceDto): Promise<Province>;

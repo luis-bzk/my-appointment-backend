@@ -1,5 +1,5 @@
 import { IdentificationType } from '../../entities';
-import { IdentificationTypeRepository } from '../../repositories';
+import { IdentificationTypeRepository } from '../../../adapters/repositories';
 import { GetAllIdentTypesDto } from '../../dtos/identification_type';
 
 interface GetAllIdentificationTypesUseCase {

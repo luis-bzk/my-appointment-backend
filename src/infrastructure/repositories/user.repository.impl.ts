@@ -4,8 +4,8 @@ import {
   UpdateUserDto,
 } from '../../domain/dtos/user';
 import { User } from '../../domain/entities';
-import { UserRepository } from '../../domain/repositories';
-import { UserDataSource } from '../../domain/data_sources';
+import { UserRepository } from '../../adapters/repositories';
+import { UserDataSource } from '../../adapters/data_sources';
 import { UserMapper } from '../mappers';
 
 export class UserRepositoryImpl implements UserRepository {

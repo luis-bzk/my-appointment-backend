@@ -1,7 +1,7 @@
 import { UpdateUserDto } from '../../dtos/user';
 import { User } from '../../entities';
 import { CustomError } from '../../errors';
-import { UserRepository } from '../../repositories';
+import { UserRepository } from '../../../adapters/repositories';
 
 interface UpdateUserUseCase {
   execute(updateUserDto: UpdateUserDto): Promise<User>;

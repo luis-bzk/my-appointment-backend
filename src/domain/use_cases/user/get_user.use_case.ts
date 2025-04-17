@@ -1,6 +1,6 @@
 import { User } from '../../entities';
 import { GetUserDto } from '../../dtos/user';
-import { UserRepository } from '../../repositories';
+import { UserRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
 
 interface GetUserUseCase {

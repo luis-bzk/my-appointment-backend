@@ -1,6 +1,6 @@
 import { Genre } from '../../entities';
 import { UpdateGenreDto } from '../../dtos/genre';
-import { GenreRepository } from '../../repositories';
+import { GenreRepository } from '../../../adapters/repositories';
 
 interface UpdateGenreUseCase {
   execute(updateGenreDto: UpdateGenreDto): Promise<Genre>;

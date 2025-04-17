@@ -14,7 +14,7 @@ import {
   GetPaymentMethod,
   UpdatePaymentMethod,
 } from '../../domain/use_cases/payment_method';
-import { PaymentMethodRepository } from '../../domain/repositories';
+import { PaymentMethodRepository } from '../../adapters/repositories';
 
 export class PaymentMethodController {
   private readonly paymentMethodRepository: PaymentMethodRepository;

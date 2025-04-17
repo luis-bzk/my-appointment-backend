@@ -1,6 +1,6 @@
 import { Province } from '../../entities';
 import { DeleteProvinceDto } from '../../dtos/province';
-import { ProvinceRepository } from '../../repositories';
+import { ProvinceRepository } from '../../../adapters/repositories';
 
 interface DeleteProvinceUseCase {
   execute(deleteProvinceDto: DeleteProvinceDto): Promise<Province>;

@@ -13,7 +13,7 @@ import { CustomError } from '../../domain/errors';
 import { PhoneTypeDB } from '../../data/interfaces';
 import { RECORD_STATUS } from '../../shared/constants';
 import { PhoneTypeMapper } from '../mappers/phone_type.mapper';
-import { PhoneTypeDataSource } from '../../domain/data_sources';
+import { PhoneTypeDataSource } from '../../adapters/data_sources';
 
 export class PhoneTypeDataSourceImpl implements PhoneTypeDataSource {
   private pool: Pool;

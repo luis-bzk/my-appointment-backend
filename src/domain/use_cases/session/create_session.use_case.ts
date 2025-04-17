@@ -1,7 +1,7 @@
 import { CreateSessionDto } from '../../dtos/session';
 import { Session } from '../../entities';
 import { CustomError } from '../../errors';
-import { SessionRepository } from '../../repositories';
+import { SessionRepository } from '../../../adapters/repositories';
 
 interface CreateSessionUseCase {
   execute(createSessionDto: CreateSessionDto): Promise<Session>;

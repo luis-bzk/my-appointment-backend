@@ -6,8 +6,8 @@ import {
   UpdateGenreDto,
 } from '../../domain/dtos/genre';
 import { Genre } from '../../domain/entities';
-import { GenreRepository } from '../../domain/repositories';
-import { GenreDataSource } from '../../domain/data_sources';
+import { GenreRepository } from '../../adapters/repositories';
+import { GenreDataSource } from '../../adapters/data_sources';
 
 export class GenreRepositoryImpl implements GenreRepository {
   private readonly genreDataSource: GenreDataSource;

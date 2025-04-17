@@ -4,7 +4,7 @@ import { RECORD_STATUS } from '../../shared';
 import { Notification } from '../../domain/entities';
 import { NotificationDB } from '../../data/interfaces';
 import { NotificationMapper } from '../mappers/notification.mapper';
-import { NotificationDataSource } from '../../domain/data_sources';
+import { NotificationDataSource } from '../../adapters/data_sources';
 import { CreateNotificationDto } from '../../domain/dtos/notification';
 import { CustomError } from '../../domain/errors';
 export class NotificationDataSourceImpl implements NotificationDataSource {

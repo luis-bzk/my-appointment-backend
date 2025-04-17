@@ -21,7 +21,7 @@ import {
   AuthRepository,
   EmailRepository,
   SessionRepository,
-} from '../../domain/repositories';
+} from '../../adapters/repositories';
 import { CreateSession } from '../../domain/use_cases/session';
 import { CreateSessionDto } from '../../domain/dtos/session';
 import { JwtAdapter } from '../../config';
@@ -137,12 +137,10 @@ export class AuthController {
         verifyAccountDto!,
       );
 
-      return res
-        .status(200)
-        .json({
-          message:
-            'Si el correo electrónico está registrado, te enviaremos un mensaje para recuperar tu cuenta',
-        });
+      return res.status(200).json({
+        message:
+          'Si el correo electrónico está registrado, te enviaremos un mensaje para recuperar tu cuenta',
+      });
     } catch (err) {
       this.handleError(err, res);
     }

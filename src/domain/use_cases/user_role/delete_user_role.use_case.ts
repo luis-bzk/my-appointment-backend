@@ -1,6 +1,6 @@
 import { UserRole } from '../../entities';
 import { DeleteUserRoleDto } from '../../dtos/user_role';
-import { UserRoleRepository } from '../../repositories';
+import { UserRoleRepository } from '../../../adapters/repositories';
 
 interface DeleteUserRoleUseCase {
   execute(deleteUserRoleDto: DeleteUserRoleDto): Promise<UserRole>;

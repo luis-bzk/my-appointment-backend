@@ -1,6 +1,6 @@
 import { Genre } from '../../entities';
 import { GetAllGenresDto } from '../../dtos/genre';
-import { GenreRepository } from '../../repositories';
+import { GenreRepository } from '../../../adapters/repositories';
 
 interface GetAllGenresUseCase {
   execute(getAllGenresDto: GetAllGenresDto): Promise<Genre[]>;

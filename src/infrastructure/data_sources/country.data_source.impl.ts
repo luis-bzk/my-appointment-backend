@@ -13,7 +13,7 @@ import { CountryDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
 import { CountryMapper } from '../mappers/country.mapper';
-import { CountryDataSource } from '../../domain/data_sources';
+import { CountryDataSource } from '../../adapters/data_sources';
 
 export class CountryDataSourceImpl implements CountryDataSource {
   private pool: Pool;

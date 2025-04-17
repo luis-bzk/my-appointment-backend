@@ -13,7 +13,7 @@ import { RoleDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { RoleMapper } from '../mappers/role.mapper';
 import { RECORD_STATUS } from '../../shared/constants';
-import { RoleDataSource } from '../../domain/data_sources';
+import { RoleDataSource } from '../../adapters/data_sources';
 
 export class RoleDataSourceImpl implements RoleDataSource {
   private pool: Pool;

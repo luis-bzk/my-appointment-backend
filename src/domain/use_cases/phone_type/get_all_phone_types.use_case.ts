@@ -1,5 +1,5 @@
 import { PhoneType } from '../../entities';
-import { PhoneTypeRepository } from '../../repositories';
+import { PhoneTypeRepository } from '../../../adapters/repositories';
 import { GetAllPhoneTypesDto } from '../../dtos/phone_type';
 
 interface GetAllPhoneTypesUseCase {

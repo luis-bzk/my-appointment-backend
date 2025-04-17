@@ -1,6 +1,6 @@
 import { UpdatePhoneTypeDto } from '../../dtos/phone_type';
 import { PhoneType } from '../../entities';
-import { PhoneTypeRepository } from '../../repositories';
+import { PhoneTypeRepository } from '../../../adapters/repositories';
 
 interface UpdatePhoneTypeUseCase {
   execute(updatePhoneTypeDto: UpdatePhoneTypeDto): Promise<PhoneType>;

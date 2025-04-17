@@ -11,7 +11,7 @@ import { PostgresDatabase } from '../../data';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
 import { UserRoleMapper } from '../mappers/user_role.mapper';
-import { UserRoleDataSource } from '../../domain/data_sources';
+import { UserRoleDataSource } from '../../adapters/data_sources';
 import { UserRole, UserRoleDetail } from '../../domain/entities';
 import { UserRoleDB, UserRoleDetailDB } from '../../data/interfaces';
 

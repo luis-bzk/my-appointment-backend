@@ -1,6 +1,6 @@
 import { DeletePhoneTypeDto } from '../../dtos/phone_type';
 import { PhoneType } from '../../entities';
-import { PhoneTypeRepository } from '../../repositories';
+import { PhoneTypeRepository } from '../../../adapters/repositories';
 
 interface DeletePhoneTypeUseCase {
   execute(deletePhoneTypeDto: DeletePhoneTypeDto): Promise<PhoneType>;

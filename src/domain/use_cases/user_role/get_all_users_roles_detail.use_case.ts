@@ -1,5 +1,5 @@
 import { UserRole } from '../../entities';
-import { UserRoleRepository } from '../../repositories';
+import { UserRoleRepository } from '../../../adapters/repositories';
 import { GetAllUsersRolesDto } from '../../dtos/user_role';
 
 interface GetAllUsersRolesDetailUseCase {

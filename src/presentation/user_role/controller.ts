@@ -16,7 +16,7 @@ import {
   UpdateUserRole,
 } from '../../domain/use_cases/user_role';
 import { CustomError } from '../../domain/errors';
-import { UserRoleRepository } from '../../domain/repositories';
+import { UserRoleRepository } from '../../adapters/repositories';
 
 export class UserRoleController {
   private readonly userRoleRepository: UserRoleRepository;

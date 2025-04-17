@@ -1,6 +1,6 @@
 import { VerifyAccountDto } from '../../dtos/email';
 import { CustomError } from '../../errors';
-import { EmailRepository } from '../../repositories';
+import { EmailRepository } from '../../../adapters/repositories';
 
 interface RecoverPasswordUseCase {
   execute(verifyAccountDto: VerifyAccountDto): Promise<void>;

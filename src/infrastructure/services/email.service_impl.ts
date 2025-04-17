@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 import { CustomError } from '../../domain/errors';
-import { EmailService } from '../../domain/services';
+import { EmailService } from '../../adapters/services';
 import { EnvConfig } from '../../config';
 import { LoginAccountDto, VerifyAccountDto } from '../../domain/dtos/email';
 import {

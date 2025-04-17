@@ -11,7 +11,7 @@ import { UserDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { BcryptAdapter } from '../../config/bcrypt';
 import { RECORD_STATUS } from '../../shared/constants';
-import { UserDataSource } from '../../domain/data_sources';
+import { UserDataSource } from '../../adapters/data_sources';
 
 type HashFunction = (password: string) => string;
 

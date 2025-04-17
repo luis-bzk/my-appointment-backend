@@ -6,8 +6,8 @@ import {
   UpdatePhoneTypeDto,
 } from '../../domain/dtos/phone_type';
 import { PhoneType } from '../../domain/entities';
-import { PhoneTypeRepository } from '../../domain/repositories';
-import { PhoneTypeDataSource } from '../../domain/data_sources';
+import { PhoneTypeRepository } from '../../adapters/repositories';
+import { PhoneTypeDataSource } from '../../adapters/data_sources';
 
 export class PhoneTypeRepositoryImpl implements PhoneTypeRepository {
   private readonly phoneTypeDataSource: PhoneTypeDataSource;

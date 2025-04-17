@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { GoogleAuth, GoogleAuthCallback } from '../../domain/use_cases/auth';
 import { CustomError } from '../../domain/errors';
-import { AuthRepository, SessionRepository } from '../../domain/repositories';
+import { AuthRepository, SessionRepository } from '../../adapters/repositories';
 import { JwtAdapter } from '../../config';
 import { GoogleAuthDto } from '../../domain/dtos/auth';
 import { CreateSessionDto } from '../../domain/dtos/session';

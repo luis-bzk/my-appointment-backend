@@ -2,7 +2,7 @@ import { Session } from '../entities';
 
 import { RequireSession } from '../use_cases/session';
 import { RequireSessionDto } from '../dtos/session';
-import { SessionRepository } from '../repositories';
+import { SessionRepository } from '../../adapters/repositories';
 
 export class AuthService {
   private readonly sessionRepository: SessionRepository;

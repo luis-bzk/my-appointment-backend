@@ -1,6 +1,6 @@
 import { Country } from '../../entities';
 import { UpdateCountryDto } from '../../dtos/country';
-import { CountryRepository } from '../../repositories';
+import { CountryRepository } from '../../../adapters/repositories';
 
 interface UpdateCountryUseCase {
   execute(updateCountryDto: UpdateCountryDto): Promise<Country>;

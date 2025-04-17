@@ -1,6 +1,6 @@
 import { User } from '../../entities';
 import { GetAllUsersDto } from '../../dtos/user';
-import { UserRepository } from '../../repositories';
+import { UserRepository } from '../../../adapters/repositories';
 
 interface GetAllUsersUseCase {
   execute(getAllUsersDto: GetAllUsersDto): Promise<User[]>;

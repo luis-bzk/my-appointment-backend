@@ -15,7 +15,7 @@ import {
   UpdateUser,
 } from '../../domain/use_cases/user';
 import { CustomError } from '../../domain/errors';
-import { UserRepository } from '../../domain/repositories';
+import { UserRepository } from '../../adapters/repositories';
 
 export class UserController {
   private readonly userRepository: UserRepository;

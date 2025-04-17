@@ -6,8 +6,8 @@ import {
   UpdateUserRoleDto,
 } from '../../domain/dtos/user_role';
 import { UserRole, UserRoleDetail } from '../../domain/entities';
-import { UserRoleDataSource } from '../../domain/data_sources';
-import { UserRoleRepository } from '../../domain/repositories';
+import { UserRoleDataSource } from '../../adapters/data_sources';
+import { UserRoleRepository } from '../../adapters/repositories';
 
 export class UserRoleRepositoryImpl implements UserRoleRepository {
   private readonly userRoleDataSource: UserRoleDataSource;

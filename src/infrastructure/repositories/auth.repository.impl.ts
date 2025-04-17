@@ -4,8 +4,8 @@ import {
   GoogleAuthDto,
 } from '../../domain/dtos/auth';
 import { User } from '../../domain/entities';
-import { AuthRepository } from '../../domain/repositories';
-import { AuthDataSource } from '../../domain/data_sources';
+import { AuthRepository } from '../../adapters/repositories';
+import { AuthDataSource } from '../../adapters/data_sources';
 import { UserMapper } from '../mappers/user.mapper';
 
 export class AuthRepositoryImpl implements AuthRepository {

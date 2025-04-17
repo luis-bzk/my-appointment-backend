@@ -1,5 +1,5 @@
-import { EmailRepository } from '../../domain/repositories';
-import { EmailService } from '../../domain/services';
+import { EmailRepository } from '../../adapters/repositories';
+import { EmailService } from '../../adapters/services';
 import { LoginAccountDto, VerifyAccountDto } from '../../domain/dtos/email';
 
 export class EmailRepositoryImpl implements EmailRepository {

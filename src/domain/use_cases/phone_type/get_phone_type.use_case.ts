@@ -1,6 +1,6 @@
 import { GetPhoneTypeDto } from '../../dtos/phone_type';
 import { PhoneType } from '../../entities';
-import { PhoneTypeRepository } from '../../repositories';
+import { PhoneTypeRepository } from '../../../adapters/repositories';
 
 interface GetPhoneTypeUseCase {
   execute(getPhoneTypeDto: GetPhoneTypeDto): Promise<PhoneType>;

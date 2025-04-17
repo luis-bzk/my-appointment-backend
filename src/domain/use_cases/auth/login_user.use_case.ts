@@ -1,5 +1,5 @@
 import { LoginUserDto } from '../../dtos/auth';
-import { AuthRepository } from '../../repositories';
+import { AuthRepository } from '../../../adapters/repositories';
 import { User } from '../../entities';
 import { CustomError } from '../../errors';
 import { BcryptAdapter } from '../../../config';

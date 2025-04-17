@@ -1,5 +1,5 @@
 import { NotificationType } from '../../entities';
-import { NotificationTypeRepository } from '../../repositories';
+import { NotificationTypeRepository } from '../../../adapters/repositories';
 import { UpdateNotificationTypeDto } from '../../dtos/notification_type';
 
 interface UpdateNotificationTypeUseCase {
