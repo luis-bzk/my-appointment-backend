@@ -25,18 +25,18 @@ export class PaymentMethodController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   createPaymentMethod = (req: Request, res: Response) => {
     const [error, createPaymentMethodDto] = CreatePaymentMethodDto.create(
       req.body,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreatePaymentMethod(this.paymentMethodRepository)
       .execute(createPaymentMethodDto!)
@@ -49,7 +49,7 @@ export class PaymentMethodController {
       req.params,
       req.body,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdatePaymentMethod(this.paymentMethodRepository)
       .execute(updatePaymentMethodDto!)
@@ -59,7 +59,7 @@ export class PaymentMethodController {
 
   getPaymentMethod = (req: Request, res: Response) => {
     const [error, getPaymentMethodDto] = GetPaymentMethodDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetPaymentMethod(this.paymentMethodRepository)
       .execute(getPaymentMethodDto!)
@@ -71,7 +71,7 @@ export class PaymentMethodController {
     const [error, getAllPaymentMethodsDto] = GetAllPaymentMethodsDto.create(
       req.query,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllPaymentMethods(this.paymentMethodRepository)
       .execute(getAllPaymentMethodsDto!)

@@ -25,15 +25,15 @@ export class PhoneTypeController {
 
   private handleError(error: any, res: Response) {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
     console.log(error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 
   createPhoneType = (req: Request, res: Response) => {
     const [error, createPhoneTypeDto] = CreatePhoneTypeDto.create(req.body);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreatePhoneType(this.phoneTypeRepository)
       .execute(createPhoneTypeDto!)
@@ -46,7 +46,7 @@ export class PhoneTypeController {
       req.params,
       req.body,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdatePhoneType(this.phoneTypeRepository)
       .execute(updatePhoneTypeDto!)
@@ -56,7 +56,7 @@ export class PhoneTypeController {
 
   getPhoneType = (req: Request, res: Response) => {
     const [error, getPhoneTypeDto] = GetPhoneTypeDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetPhoneType(this.phoneTypeRepository)
       .execute(getPhoneTypeDto!)
@@ -66,7 +66,7 @@ export class PhoneTypeController {
 
   getAllPhoneTypes = (req: Request, res: Response) => {
     const [error, getAllPhoneTypeDtos] = GetAllPhoneTypesDto.create(req.query);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllPhoneTypes(this.phoneTypeRepository)
       .execute(getAllPhoneTypeDtos!)
@@ -76,7 +76,7 @@ export class PhoneTypeController {
 
   deletePhoneType = (req: Request, res: Response) => {
     const [error, deletePhoneTypeDto] = DeletePhoneTypeDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeletePhoneType(this.phoneTypeRepository)
       .execute(deletePhoneTypeDto!)

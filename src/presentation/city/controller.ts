@@ -26,17 +26,17 @@ export class CityController {
 
   private handleError(error: unknown, res: Response) {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
     // unknown error
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 
   createCity = (req: Request, res: Response) => {
     const [error, createCityDto] = CreateCityDto.create(req.body);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreateCity(this.cityRepository)
       .execute(createCityDto!)
@@ -46,7 +46,7 @@ export class CityController {
 
   updateCity = (req: Request, res: Response) => {
     const [error, updateCityDto] = UpdateCityDto.create(req.params, req.body);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdateCity(this.cityRepository)
       .execute(updateCityDto!)
@@ -56,7 +56,7 @@ export class CityController {
 
   getCity = (req: Request, res: Response) => {
     const [error, getCityDto] = GetCityDto.create(req.params);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetCity(this.cityRepository)
       .execute(getCityDto!)
@@ -66,7 +66,7 @@ export class CityController {
 
   getAllCities = (req: Request, res: Response) => {
     const [error, getAllCitiesDto] = GetAllCitiesDto.create(req.query);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllCities(this.cityRepository)
       .execute(getAllCitiesDto!)
@@ -76,7 +76,7 @@ export class CityController {
 
   deleteCity = (req: Request, res: Response) => {
     const [error, deleteCityDto] = DeleteCityDto.create(req.params);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeleteCity(this.cityRepository)
       .execute(deleteCityDto!)

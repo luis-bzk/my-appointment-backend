@@ -98,7 +98,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
   async findUserByToken(token: string): Promise<UserDB | null> {
     try {
       const user_found = await this.pool.query<UserDB>(
-        `select use_id, use_record_status
+        `select use_id, use_name, use_last_name, use_email,
+          use_password, use_token, use_created_date, use_record_status
         from core.core_user use
         where use.use_token = $1
           and use.use_record_status = $2;`,

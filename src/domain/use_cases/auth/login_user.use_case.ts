@@ -24,6 +24,9 @@ export class LoginUser implements LoginUserUseCase {
     if (!user) {
       throw CustomError.badRequest('El usuario o contraseña es incorrecto');
     }
+    if (user.token) {
+      throw CustomError.forbidden('El usuario no se encuentra verificado');
+    }
 
     const isMatching = this.comparePassword(
       loginUserDto.password,

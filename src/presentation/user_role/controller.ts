@@ -27,17 +27,17 @@ export class UserRoleController {
 
   private handleError(error: unknown, res: Response) {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
     // unknown error
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 
   createUserRole = (req: Request, res: Response) => {
     const [error, createUserRoleDto] = CreateUserRoleDto.create(req.body);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreateUserRole(this.userRoleRepository)
       .execute(createUserRoleDto!)
@@ -50,7 +50,7 @@ export class UserRoleController {
       req.body,
       req.params,
     );
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdateUserRole(this.userRoleRepository)
       .execute(updateUserRoleDto!)
@@ -60,7 +60,7 @@ export class UserRoleController {
 
   getUserRole = (req: Request, res: Response) => {
     const [error, getUserRoleDto] = GetUserRoleDto.create(req.params);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetUserRole(this.userRoleRepository)
       .execute(getUserRoleDto!)
@@ -70,7 +70,7 @@ export class UserRoleController {
 
   getAllUsersRoles = (req: Request, res: Response) => {
     const [error, getAllUsersRolesDto] = GetAllUsersRolesDto.create(req.query);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllUsersRoles(this.userRoleRepository)
       .execute(getAllUsersRolesDto!)
@@ -80,7 +80,7 @@ export class UserRoleController {
 
   getAllUsersRolesDetail = (req: Request, res: Response) => {
     const [error, getAllUsersRolesDto] = GetAllUsersRolesDto.create(req.query);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllUsersRolesDetail(this.userRoleRepository)
       .execute(getAllUsersRolesDto!)
@@ -90,7 +90,7 @@ export class UserRoleController {
 
   deleteUserRole = (req: Request, res: Response) => {
     const [error, deleteUserRoleDto] = DeleteUserRoleDto.create(req.params);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeleteUserRole(this.userRoleRepository)
       .execute(deleteUserRoleDto!)

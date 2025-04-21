@@ -26,17 +26,16 @@ export class UserController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
-    console.log({ error });
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   createUser = async (req: Request, res: Response) => {
     try {
       const [error, createUserDto] = CreateUserDto.create(req.body);
-      if (error) return res.status(400).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       const data = await new CreateUser(this.userRepository).execute(
         createUserDto!,
@@ -59,7 +58,7 @@ export class UserController {
   updateUser = async (req: Request, res: Response) => {
     try {
       const [error, updateUserDto] = UpdateUserDto.create(req.params, req.body);
-      if (error) return res.status(400).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       const data = await new UpdateUser(this.userRepository).execute(
         updateUserDto!,
@@ -73,7 +72,7 @@ export class UserController {
   getUser = async (req: Request, res: Response) => {
     try {
       const [error, getUserDto] = GetUserDto.create(req.params);
-      if (error) return res.status(400).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       const data = await new GetUser(this.userRepository).execute(getUserDto!);
       return res.status(200).json(data);
@@ -85,7 +84,7 @@ export class UserController {
   getAllUsers = async (req: Request, res: Response) => {
     try {
       const [error, getAllUsersDto] = GetAllUsersDto.create(req.query);
-      if (error) return res.status(400).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       const data = await new GetAllUsers(this.userRepository).execute(
         getAllUsersDto!,
@@ -99,7 +98,7 @@ export class UserController {
   deleteUser = async (req: Request, res: Response) => {
     try {
       const [error, deleteUserDto] = DeleteUserDto.create(req.params);
-      if (error) return res.status(200).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       const data = await new DeleteUser(this.userRepository).execute(
         deleteUserDto!,

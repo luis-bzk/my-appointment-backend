@@ -25,17 +25,17 @@ export class GenreController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
     // unknown error
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   createGenre = (req: Request, res: Response) => {
     const [error, createGenreDto] = CreateGenreDto.create(req.body);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreateGenre(this.genreRepository)
       .execute(createGenreDto!)
@@ -45,7 +45,7 @@ export class GenreController {
 
   updateGenre = (req: Request, res: Response) => {
     const [error, updateGenreDto] = UpdateGenreDto.create(req.params, req.body);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdateGenre(this.genreRepository)
       .execute(updateGenreDto!)
@@ -55,7 +55,7 @@ export class GenreController {
 
   getGenre = (req: Request, res: Response) => {
     const [error, getGenreDto] = GetGenreDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetGenre(this.genreRepository)
       .execute(getGenreDto!)
@@ -65,7 +65,7 @@ export class GenreController {
 
   getAllGenres = (req: Request, res: Response) => {
     const [error, getAllGenresDto] = GetAllGenresDto.create(req.query);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllGenres(this.genreRepository)
       .execute(getAllGenresDto!)
@@ -75,7 +75,7 @@ export class GenreController {
 
   deleteGenre = (req: Request, res: Response) => {
     const [error, deleteGenreDto] = DeleteGenreDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeleteGenre(this.genreRepository)
       .execute(deleteGenreDto!)

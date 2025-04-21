@@ -27,16 +27,16 @@ export class IdentificationTypeController {
 
   private handleError(error: unknown, res: Response) {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
     // unknown error
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 
   createIdentType = (req: Request, res: Response) => {
     const [error, createIdentTypeDto] = CreateIdentTypeDto.create(req.body);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreateIdentificationType(this.identificationTypeRepository)
       .execute(createIdentTypeDto!)
@@ -49,7 +49,7 @@ export class IdentificationTypeController {
       req.params,
       req.body,
     );
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdateIdentificationType(this.identificationTypeRepository)
       .execute(updateIdentTypeDto!)
@@ -59,7 +59,7 @@ export class IdentificationTypeController {
 
   getIdentType = (req: Request, res: Response) => {
     const [error, getIdentTypeDto] = GetIdentTypeDto.create(req.params);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetIdentificationType(this.identificationTypeRepository)
       .execute(getIdentTypeDto!)
@@ -69,7 +69,7 @@ export class IdentificationTypeController {
 
   getAllIdentTypes = (req: Request, res: Response) => {
     const [error, getAllIdentTypesDto] = GetAllIdentTypesDto.create(req.query);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllIdentificationTypes(this.identificationTypeRepository)
       .execute(getAllIdentTypesDto!)
@@ -79,7 +79,7 @@ export class IdentificationTypeController {
 
   getAllIdentTypesDetail = (req: Request, res: Response) => {
     const [error, getAllIdentTypesDto] = GetAllIdentTypesDto.create(req.query);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllIdentificationTypesDetail(this.identificationTypeRepository)
       .execute(getAllIdentTypesDto!)
@@ -89,7 +89,7 @@ export class IdentificationTypeController {
 
   deleteIdentType = (req: Request, res: Response) => {
     const [error, deleteIdentTypeDto] = DeleteIdentTypeDto.create(req.params);
-    if (error) return res.status(400).json({ error: error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeleteIdentificationType(this.identificationTypeRepository)
       .execute(deleteIdentTypeDto!)

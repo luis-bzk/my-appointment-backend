@@ -26,18 +26,18 @@ export class CountryController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
     // unknown error
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   createCountry = (req: Request, res: Response) => {
     const [error, createCountryDto] = CreateCountryDto.create(req.body);
 
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreateCountry(this.countryRepository)
       .execute(createCountryDto!)
@@ -51,7 +51,7 @@ export class CountryController {
       req.body,
     );
 
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdateCountry(this.countryRepository)
       .execute(updateCountryDto!)
@@ -62,7 +62,7 @@ export class CountryController {
   getCountry = (req: Request, res: Response) => {
     const [error, getCountryDto] = GetCountryDto.create(req.params);
 
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetCountry(this.countryRepository)
       .execute(getCountryDto!)
@@ -72,7 +72,7 @@ export class CountryController {
 
   getAllCountries = (req: Request, res: Response) => {
     const [error, getAllCountriesDto] = GetAllCountriesDto.create(req.query);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllCountries(this.countryRepository)
       .execute(getAllCountriesDto!)
@@ -82,7 +82,7 @@ export class CountryController {
 
   deleteCountry = (req: Request, res: Response) => {
     const [error, deleteCountryDto] = DeleteCountryDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeleteCountry(this.countryRepository)
       .execute(deleteCountryDto!)

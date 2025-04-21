@@ -26,16 +26,15 @@ export class RoleController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
-    console.log({ error });
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   createRole = (req: Request, res: Response) => {
     const [error, createRoleDto] = CreateRoleDto.create(req.body);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreateRole(this.roleRepository)
       .execute(createRoleDto!)
@@ -45,7 +44,7 @@ export class RoleController {
 
   updateRole = (req: Request, res: Response) => {
     const [error, updateRoleDto] = UpdateRoleDto.create(req.params, req.body);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdateRole(this.roleRepository)
       .execute(updateRoleDto!)
@@ -55,7 +54,7 @@ export class RoleController {
 
   getRole = (req: Request, res: Response) => {
     const [error, getRoleDto] = GetRoleDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetRole(this.roleRepository)
       .execute(getRoleDto!)
@@ -65,7 +64,7 @@ export class RoleController {
 
   getAllRoles = (req: Request, res: Response) => {
     const [error, getAllRolesDto] = GetAllRolesDto.create(req.query);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllRoles(this.roleRepository)
       .execute(getAllRolesDto!)
@@ -75,7 +74,7 @@ export class RoleController {
 
   deleteRole = (req: Request, res: Response) => {
     const [error, deleteToleDto] = DeleteRoleDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeleteRole(this.roleRepository)
       .execute(deleteToleDto!)

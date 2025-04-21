@@ -20,7 +20,7 @@ export class AuthenticatorMiddleware {
     ) {
       return res
         .status(401)
-        .json({ error: 'No se ha podido verificar la sesión' });
+        .json({ message: 'No se ha podido verificar la sesión' });
     }
 
     try {
@@ -30,7 +30,7 @@ export class AuthenticatorMiddleware {
       if (!session) {
         return res
           .status(401)
-          .json({ error: 'No se ha podido verificar la sesión' });
+          .json({ message: 'No se ha podido verificar la sesión' });
       }
 
       // req.current_user = user;
@@ -39,7 +39,7 @@ export class AuthenticatorMiddleware {
     } catch (error) {
       console.log(error);
       return res.status(401).json({
-        error:
+        message:
           'No se te ha autorizado el acceso, prueba a iniciar sesión otra vez',
       });
     }

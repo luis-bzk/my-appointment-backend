@@ -38,7 +38,7 @@ export class AppRoutes {
 
     // security not found route
     router.use((_req: Request, res: Response, _next: NextFunction) => {
-      res.status(404).json({ error: 'La ruta solicitada no existe' });
+      res.status(404).json({ message: 'La ruta solicitada no existe' });
     });
 
     return router;

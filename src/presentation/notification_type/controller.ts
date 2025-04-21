@@ -26,19 +26,19 @@ export class NotificationTypeController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
     // unknown error
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   createNotificationType = (req: Request, res: Response) => {
     const [error, createNotificationTypeDto] = CreateNotificationTypeDto.create(
       req.body,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreateNotificationType(this.notificationTypeRepository)
       .execute(createNotificationTypeDto!)
@@ -51,7 +51,7 @@ export class NotificationTypeController {
       req.params,
       req.body,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdateNotificationType(this.notificationTypeRepository)
       .execute(updateNotificationTypeDto!)
@@ -63,7 +63,7 @@ export class NotificationTypeController {
     const [error, getNotificationTypeDto] = GetNotificationTypeDto.create(
       req.params,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetNotificationType(this.notificationTypeRepository)
       .execute(getNotificationTypeDto!)
@@ -74,7 +74,7 @@ export class NotificationTypeController {
   getAllNotificationTypes = (req: Request, res: Response) => {
     const [error, getAllNotificationTypesDto] =
       GetAllNotificationTypesDto.create(req.query);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllNotificationTypes(this.notificationTypeRepository)
       .execute(getAllNotificationTypesDto!)
@@ -86,7 +86,7 @@ export class NotificationTypeController {
     const [error, deleteNotificationTypeDto] = DeleteNotificationTypeDto.create(
       req.params,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeleteNotificationType(this.notificationTypeRepository)
       .execute(deleteNotificationTypeDto!)

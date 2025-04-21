@@ -27,10 +27,10 @@ export class AuthGoogleController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   authGoogle = async (_req: Request, res: Response) => {
@@ -75,7 +75,7 @@ export class AuthGoogleController {
         ip: 'google sign in',
         user_agent: 'google sign in',
       });
-      if (errorSession) return res.status(400).json({ error: errorSession });
+      if (errorSession) return res.status(400).json({ message: errorSession });
 
       const session = await new CreateSession(this.sessionRepository).execute(
         sessionCreateDto!,

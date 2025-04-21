@@ -26,18 +26,18 @@ export class ProvinceController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
 
     // unknown error
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   createProvince = (req: Request, res: Response) => {
     const [error, createProvinceDto] = CreateProvinceDto.create(req.body);
 
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new CreateProvince(this.provinceRepository)
       .execute(createProvinceDto!)
@@ -50,7 +50,7 @@ export class ProvinceController {
       req.params,
       req.body,
     );
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new UpdateProvince(this.provinceRepository)
       .execute(updateProvinceDto!)
@@ -60,7 +60,7 @@ export class ProvinceController {
 
   getProvince = (req: Request, res: Response) => {
     const [error, getProvinceDto] = GetProvinceDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetProvince(this.provinceRepository)
       .execute(getProvinceDto!)
@@ -70,7 +70,7 @@ export class ProvinceController {
 
   getAllProvinces = (req: Request, res: Response) => {
     const [error, getAllProvinceDto] = GetAllProvincesDto.create(req.query);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new GetAllProvinces(this.provinceRepository)
       .execute(getAllProvinceDto!)
@@ -80,7 +80,7 @@ export class ProvinceController {
 
   deleteProvince = (req: Request, res: Response) => {
     const [error, deleteProvinceDto] = DeleteProvinceDto.create(req.params);
-    if (error) return res.status(400).json({ error });
+    if (error) return res.status(400).json({ message: error });
 
     new DeleteProvince(this.provinceRepository)
       .execute(deleteProvinceDto!)

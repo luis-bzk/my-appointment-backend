@@ -37,6 +37,7 @@ export class Server {
           callback(new Error('Not allowed origin by cors'));
         }
       },
+      credentials: true,
     };
 
     this.app.use(cors(corsOptions));

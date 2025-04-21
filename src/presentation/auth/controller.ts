@@ -52,10 +52,9 @@ export class AuthController {
 
   private handleError = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ message: error.message });
     }
-
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   };
 
   loginUser = async (req: Request, res: Response) => {
@@ -67,7 +66,7 @@ export class AuthController {
       const userAgent = req.headers['user-agent'] || 'unknown';
 
       const [error, loginUserDto] = LoginUserDto.create(req.body);
-      if (error) return res.status(400).json({ error: error });
+      if (error) return res.status(400).json({ message: error });
 
       const user = await new LoginUser(this.authRepository).execute(
         loginUserDto!,
@@ -82,7 +81,7 @@ export class AuthController {
         ip: ip,
         user_agent: userAgent,
       });
-      if (errorSession) return res.status(400).json({ error: errorSession });
+      if (errorSession) return res.status(400).json({ message: errorSession });
       const session = await new CreateSession(this.sessionRepository).execute(
         sessionCreateDto!,
       );
@@ -96,7 +95,7 @@ export class AuthController {
   signupUser = async (req: Request, res: Response) => {
     try {
       const [error, signupUserDto] = SignupUserDto.create(req.body);
-      if (error) return res.status(400).json({ error: error });
+      if (error) return res.status(400).json({ message: error });
       const data = await new SignUpUser(this.authRepository).execute(
         signupUserDto!,
       );
@@ -107,7 +106,7 @@ export class AuthController {
         last_name: data.last_name,
         token: data.token,
       });
-      if (errorEmail) return res.status(400).json({ error: errorEmail });
+      if (errorEmail) return res.status(400).json({ message: errorEmail });
       await new VerifyAccountEmail(this.emailRepository).execute(
         verifyAccountDto!,
       );
@@ -121,7 +120,7 @@ export class AuthController {
   recoverPassword = async (req: Request, res: Response) => {
     try {
       const [error, recoverPasswordDto] = RecoverPasswordDto.create(req.body);
-      if (error) return res.status(400).json({ error: error });
+      if (error) return res.status(400).json({ message: error });
       const data = await new RecoverPassword(this.authRepository).execute(
         recoverPasswordDto!,
       );
@@ -132,7 +131,7 @@ export class AuthController {
         last_name: data.last_name,
         token: data.token,
       });
-      if (errorEmail) return res.status(400).json({ error: errorEmail });
+      if (errorEmail) return res.status(400).json({ message: errorEmail });
       await new RecoverPasswordEmail(this.emailRepository).execute(
         verifyAccountDto!,
       );
@@ -149,7 +148,7 @@ export class AuthController {
   changePassword = async (req: Request, res: Response) => {
     try {
       const [error, changePasswordDto] = ChangePasswordDto.create(req.body);
-      if (error) return res.status(400).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       const data = await new ChangePassword(this.authRepository).execute(
         changePasswordDto!,
@@ -163,7 +162,7 @@ export class AuthController {
   checkToken = async (req: Request, res: Response) => {
     try {
       const [error, checkTokenDto] = CheckTokenDto.create(req.params.token);
-      if (error) return res.status(400).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       const data = await new CheckToken(this.authRepository).execute(
         checkTokenDto!,
@@ -178,7 +177,7 @@ export class AuthController {
   confirmAccount = async (req: Request, res: Response) => {
     try {
       const [error, confirmAccountDto] = ConfirmAccountDto.create(req.body);
-      if (error) return res.status(400).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       const data = await new ConfirmAccount(this.authRepository).execute(
         confirmAccountDto!,
