@@ -14,6 +14,6 @@ export class GetAllRoles implements GetAllRolesUseCase {
   }
 
   async execute(getAllRolesDto: GetAllRolesDto): Promise<Role[]> {
-    return this.roleRepository.getAll(getAllRolesDto);
+    return await this.roleRepository.getAllRoles(getAllRolesDto);
   }
 }

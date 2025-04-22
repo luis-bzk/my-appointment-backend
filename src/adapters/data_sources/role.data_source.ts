@@ -1,20 +1,22 @@
+import { RoleDB } from '../../data/interfaces';
 import {
   CreateRoleDto,
-  DeleteRoleDto,
   GetAllRolesDto,
-  GetRoleDto,
   UpdateRoleDto,
 } from '../../domain/dtos/role';
-import { Role } from '../../domain/entities';
 
 export abstract class RoleDataSource {
-  abstract create(createRoleDto: CreateRoleDto): Promise<Role>;
+  abstract findRoleByName(name: string): Promise<RoleDB>;
 
-  abstract update(updateRoleDto: UpdateRoleDto): Promise<Role>;
+  abstract createRole(createRoleDto: CreateRoleDto): Promise<RoleDB>;
 
-  abstract get(getRoleDto: GetRoleDto): Promise<Role>;
+  abstract findRoleById(id: number): Promise<RoleDB>;
 
-  abstract getAll(getAllRolesDto: GetAllRolesDto): Promise<Role[]>;
+  abstract findRoleByNameId(id: number, name: string): Promise<RoleDB>;
 
-  abstract delete(deleteRoleDto: DeleteRoleDto): Promise<Role>;
+  abstract updateRole(updateRoleDto: UpdateRoleDto): Promise<RoleDB>;
+
+  abstract getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<RoleDB[]>;
+
+  abstract deleteRole(id: number): Promise<RoleDB>;
 }

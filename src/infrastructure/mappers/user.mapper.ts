@@ -17,7 +17,7 @@ export class UserMapper {
     );
   }
 
-  static entitiesFromArray(objs: (UserDB | null)[]): User[] {
+  static entitiesFromArray(objs: UserDB[]): User[] {
     return objs
       .filter((obj): obj is UserDB => obj !== null)
       .map((user) => this.entityFromObject(user)!);

@@ -1,20 +1,22 @@
 import {
   CreateRoleDto,
-  DeleteRoleDto,
   GetAllRolesDto,
-  GetRoleDto,
   UpdateRoleDto,
 } from '../../domain/dtos/role';
 import { Role } from '../../domain/entities';
 
 export abstract class RoleRepository {
-  abstract create(createRoleDto: CreateRoleDto): Promise<Role>;
+  abstract findRoleByName(name: string): Promise<Role | null>;
 
-  abstract update(updateRoleDto: UpdateRoleDto): Promise<Role>;
+  abstract createRole(createRoleDto: CreateRoleDto): Promise<Role | null>;
 
-  abstract get(getRoleDto: GetRoleDto): Promise<Role>;
+  abstract findRoleById(id: number): Promise<Role | null>;
 
-  abstract getAll(getAllRolesDto: GetAllRolesDto): Promise<Role[]>;
+  abstract findRoleByNameId(id: number, name: string): Promise<Role | null>;
 
-  abstract delete(deleteRoleDto: DeleteRoleDto): Promise<Role>;
+  abstract updateRole(updateRoleDto: UpdateRoleDto): Promise<Role | null>;
+
+  abstract getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<Role[]>;
+
+  abstract deleteRole(id: number): Promise<Role | null>;
 }

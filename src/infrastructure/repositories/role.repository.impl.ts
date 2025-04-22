@@ -1,13 +1,12 @@
 import {
   CreateRoleDto,
-  DeleteRoleDto,
   GetAllRolesDto,
-  GetRoleDto,
   UpdateRoleDto,
 } from '../../domain/dtos/role';
 import { Role } from '../../domain/entities';
 import { RoleRepository } from '../../adapters/repositories';
 import { RoleDataSource } from '../../adapters/data_sources';
+import { RoleMapper } from '../mappers';
 
 export class RoleRepositoryImpl implements RoleRepository {
   private readonly roleDataSource: RoleDataSource;
@@ -16,23 +15,38 @@ export class RoleRepositoryImpl implements RoleRepository {
     this.roleDataSource = roleDataSource;
   }
 
-  create(createRoleDto: CreateRoleDto): Promise<Role> {
-    return this.roleDataSource.create(createRoleDto);
+  async findRoleByName(name: string): Promise<Role | null> {
+    const role = await this.roleDataSource.findRoleByName(name);
+    return RoleMapper.entityFromObject(role);
   }
 
-  update(updateRoleDto: UpdateRoleDto): Promise<Role> {
-    return this.roleDataSource.update(updateRoleDto);
+  async createRole(createRoleDto: CreateRoleDto): Promise<Role | null> {
+    const role = await this.roleDataSource.createRole(createRoleDto);
+    return RoleMapper.entityFromObject(role);
   }
 
-  get(getRoleDto: GetRoleDto): Promise<Role> {
-    return this.roleDataSource.get(getRoleDto);
+  async findRoleById(id: number): Promise<Role | null> {
+    const role = await this.roleDataSource.findRoleById(id);
+    return RoleMapper.entityFromObject(role);
   }
 
-  getAll(getAllRolesDto: GetAllRolesDto): Promise<Role[]> {
-    return this.roleDataSource.getAll(getAllRolesDto);
+  async findRoleByNameId(id: number, name: string): Promise<Role | null> {
+    const role = await this.roleDataSource.findRoleByNameId(id, name);
+    return RoleMapper.entityFromObject(role);
   }
 
-  delete(deleteRoleDto: DeleteRoleDto): Promise<Role> {
-    return this.roleDataSource.delete(deleteRoleDto);
+  async updateRole(updateRoleDto: UpdateRoleDto): Promise<Role | null> {
+    const role = await this.roleDataSource.updateRole(updateRoleDto);
+    return RoleMapper.entityFromObject(role);
+  }
+
+  async getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<Role[]> {
+    const roles = await this.roleDataSource.getAllRoles(getAllRolesDto);
+    return RoleMapper.entitiesFromArray(roles);
+  }
+
+  async deleteRole(id: number): Promise<Role | null> {
+    const role = await this.roleDataSource.deleteRole(id);
+    return RoleMapper.entityFromObject(role);
   }
 }

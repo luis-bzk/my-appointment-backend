@@ -32,53 +32,72 @@ export class RoleController {
     return res.status(500).json({ message: 'Internal Server Error' });
   };
 
-  createRole = (req: Request, res: Response) => {
-    const [error, createRoleDto] = CreateRoleDto.create(req.body);
-    if (error) return res.status(400).json({ message: error });
+  createRole = async (req: Request, res: Response) => {
+    try {
+      const [error, createRoleDto] = CreateRoleDto.create(req.body);
+      if (error) return res.status(400).json({ message: error });
 
-    new CreateRole(this.roleRepository)
-      .execute(createRoleDto!)
-      .then((data) => res.status(201).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new CreateRole(this.roleRepository).execute(
+        createRoleDto!,
+      );
+
+      return res.status(201).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 
-  updateRole = (req: Request, res: Response) => {
-    const [error, updateRoleDto] = UpdateRoleDto.create(req.params, req.body);
-    if (error) return res.status(400).json({ message: error });
+  updateRole = async (req: Request, res: Response) => {
+    try {
+      const [error, updateRoleDto] = UpdateRoleDto.create(req.params, req.body);
+      if (error) return res.status(400).json({ message: error });
 
-    new UpdateRole(this.roleRepository)
-      .execute(updateRoleDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new UpdateRole(this.roleRepository).execute(
+        updateRoleDto!,
+      );
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 
-  getRole = (req: Request, res: Response) => {
-    const [error, getRoleDto] = GetRoleDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
+  getRole = async (req: Request, res: Response) => {
+    try {
+      const [error, getRoleDto] = GetRoleDto.create(req.params);
+      if (error) return res.status(400).json({ message: error });
 
-    new GetRole(this.roleRepository)
-      .execute(getRoleDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new GetRole(this.roleRepository).execute(getRoleDto!);
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 
-  getAllRoles = (req: Request, res: Response) => {
-    const [error, getAllRolesDto] = GetAllRolesDto.create(req.query);
-    if (error) return res.status(400).json({ message: error });
+  getAllRoles = async (req: Request, res: Response) => {
+    try {
+      const [error, getAllRolesDto] = GetAllRolesDto.create(req.query);
+      if (error) return res.status(400).json({ message: error });
 
-    new GetAllRoles(this.roleRepository)
-      .execute(getAllRolesDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new GetAllRoles(this.roleRepository).execute(
+        getAllRolesDto!,
+      );
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 
-  deleteRole = (req: Request, res: Response) => {
-    const [error, deleteToleDto] = DeleteRoleDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
+  deleteRole = async (req: Request, res: Response) => {
+    try {
+      const [error, deleteToleDto] = DeleteRoleDto.create(req.params);
+      if (error) return res.status(400).json({ message: error });
 
-    new DeleteRole(this.roleRepository)
-      .execute(deleteToleDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new DeleteRole(this.roleRepository).execute(
+        deleteToleDto!,
+      );
+      return res.status(200).json(data);
+    } catch (err) {
+      this.handleError(err, res);
+    }
   };
 }
