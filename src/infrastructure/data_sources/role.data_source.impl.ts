@@ -157,4 +157,26 @@ export class RoleDataSourceImpl implements RoleDataSource {
       throw CustomError.internalServer('Error en el DataSource al obtener');
     }
   }
+
+  async getRolesById(ids: number[]): Promise<RoleDB[]> {
+    try {
+      const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
+
+      const roles = await this.pool.query<RoleDB>(
+        `select cr.rol_id, cr.rol_name, cr.rol_description, cr.rol_created_date, cr.rol_record_status
+        from core.core_role cr where rol_id in (${placeholders})`,
+        [ids],
+      );
+
+      return roles.rows;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener los roles',
+      );
+    }
+  }
 }

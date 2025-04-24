@@ -19,4 +19,6 @@ export abstract class RoleDataSource {
   abstract getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<RoleDB[]>;
 
   abstract deleteRole(id: number): Promise<RoleDB>;
+
+  abstract getRolesById(ids: number[]): Promise<RoleDB[]>;
 }

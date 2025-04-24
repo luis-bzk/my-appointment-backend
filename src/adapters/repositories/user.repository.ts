@@ -19,4 +19,6 @@ export abstract class UserRepository {
   abstract getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<User[]>;
 
   abstract deleteUser(id: number): Promise<User | null>;
+
+  abstract getUsersById(ids: number[]): Promise<User[]>;
 }

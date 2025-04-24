@@ -49,4 +49,9 @@ export class RoleRepositoryImpl implements RoleRepository {
     const role = await this.roleDataSource.deleteRole(id);
     return RoleMapper.entityFromObject(role);
   }
+
+  async getRolesById(ids: number[]): Promise<Role[]> {
+    const roles = await this.roleDataSource.getRolesById(ids);
+    return RoleMapper.entitiesFromArray(roles);
+  }
 }

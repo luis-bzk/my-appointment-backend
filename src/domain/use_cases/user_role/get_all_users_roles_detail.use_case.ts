@@ -14,6 +14,6 @@ export class GetAllUsersRolesDetail implements GetAllUsersRolesDetailUseCase {
   }
 
   async execute(getAllUsersRolesDto: GetAllUsersRolesDto): Promise<UserRole[]> {
-    return this.userRoleRepository.getAllDetail(getAllUsersRolesDto);
+    return this.userRoleRepository.getAll(getAllUsersRolesDto);
   }
 }

@@ -1,13 +1,12 @@
 import {
   CreateUserRoleDto,
-  DeleteUserRoleDto,
   GetAllUsersRolesDto,
-  GetUserRoleDto,
   UpdateUserRoleDto,
 } from '../../domain/dtos/user_role';
-import { UserRole, UserRoleDetail } from '../../domain/entities';
+import { UserRole } from '../../domain/entities';
 import { UserRoleDataSource } from '../../adapters/data_sources';
 import { UserRoleRepository } from '../../adapters/repositories';
+import { UserRoleMapper } from '../mappers';
 
 export class UserRoleRepositoryImpl implements UserRoleRepository {
   private readonly userRoleDataSource: UserRoleDataSource;
@@ -16,29 +15,51 @@ export class UserRoleRepositoryImpl implements UserRoleRepository {
     this.userRoleDataSource = userRoleDataSource;
   }
 
-  create(createUserRoleDto: CreateUserRoleDto): Promise<UserRole> {
-    return this.userRoleDataSource.create(createUserRoleDto);
+  async findUserRole(
+    createUserRoleDto: CreateUserRoleDto,
+  ): Promise<UserRole | null> {
+    const userRole =
+      await this.userRoleDataSource.findUserRole(createUserRoleDto);
+    return UserRoleMapper.entityFromObject(userRole);
   }
 
-  update(updateUserRoleDto: UpdateUserRoleDto): Promise<UserRole> {
-    return this.userRoleDataSource.update(updateUserRoleDto);
+  async createUserRole(
+    createUserRoleDto: CreateUserRoleDto,
+  ): Promise<UserRole | null> {
+    const userRole =
+      await this.userRoleDataSource.createUserRole(createUserRoleDto);
+    return UserRoleMapper.entityFromObject(userRole);
   }
 
-  get(getUserRoleDto: GetUserRoleDto): Promise<UserRole> {
-    return this.userRoleDataSource.get(getUserRoleDto);
+  async findUserRoleId(id: number): Promise<UserRole | null> {
+    const userRole = await this.userRoleDataSource.findUserRoleId(id);
+    return UserRoleMapper.entityFromObject(userRole);
   }
 
-  getAll(getAllUsersRolesDto: GetAllUsersRolesDto): Promise<UserRole[]> {
-    return this.userRoleDataSource.getAll(getAllUsersRolesDto);
+  async findUserRoleSameRegister(
+    updateUserRoleDto: UpdateUserRoleDto,
+  ): Promise<UserRole | null> {
+    const userRole =
+      await this.userRoleDataSource.findUserRoleSameRegister(updateUserRoleDto);
+    return UserRoleMapper.entityFromObject(userRole);
   }
 
-  getAllDetail(
-    getAllUsersRolesDto: GetAllUsersRolesDto,
-  ): Promise<UserRoleDetail[]> {
-    return this.userRoleDataSource.getAllDetail(getAllUsersRolesDto);
+  async updateUserRole(
+    updateUserRoleDto: UpdateUserRoleDto,
+  ): Promise<UserRole | null> {
+    const userRole =
+      await this.userRoleDataSource.updateUserRole(updateUserRoleDto);
+    return UserRoleMapper.entityFromObject(userRole);
   }
 
-  delete(deleteUserRoleDto: DeleteUserRoleDto): Promise<UserRole> {
-    return this.userRoleDataSource.delete(deleteUserRoleDto);
+  async getAll(getAllUsersRolesDto: GetAllUsersRolesDto): Promise<UserRole[]> {
+    const userRoles =
+      await this.userRoleDataSource.getAllUserRoles(getAllUsersRolesDto);
+    return UserRoleMapper.entitiesFromArray(userRoles);
+  }
+
+  async delete(id: number): Promise<UserRole | null> {
+    const userRole = await this.userRoleDataSource.deleteUserRole(id);
+    return UserRoleMapper.entityFromObject(userRole);
   }
 }

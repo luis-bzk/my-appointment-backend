@@ -1,26 +1,32 @@
-import { UserRole, UserRoleDetail } from '../../domain/entities';
 import {
   CreateUserRoleDto,
-  DeleteUserRoleDto,
   GetAllUsersRolesDto,
-  GetUserRoleDto,
   UpdateUserRoleDto,
 } from '../../domain/dtos/user_role';
+import { UserRoleDB } from '../../data/interfaces';
 
 export abstract class UserRoleDataSource {
-  abstract create(createUserRoleDto: CreateUserRoleDto): Promise<UserRole>;
+  abstract findUserRole(
+    createUserRoleDto: CreateUserRoleDto,
+  ): Promise<UserRoleDB>;
 
-  abstract update(updateUserRoleDto: UpdateUserRoleDto): Promise<UserRole>;
+  abstract createUserRole(
+    createUserRoleDto: CreateUserRoleDto,
+  ): Promise<UserRoleDB>;
 
-  abstract get(getUserRoleDto: GetUserRoleDto): Promise<UserRole>;
+  abstract findUserRoleId(id: number): Promise<UserRoleDB>;
 
-  abstract getAll(
+  abstract findUserRoleSameRegister(
+    updateUserRoleDto: UpdateUserRoleDto,
+  ): Promise<UserRoleDB>;
+
+  abstract updateUserRole(
+    updateUserRoleDto: UpdateUserRoleDto,
+  ): Promise<UserRoleDB>;
+
+  abstract getAllUserRoles(
     getAllUsersRolesDto: GetAllUsersRolesDto,
-  ): Promise<UserRole[]>;
+  ): Promise<UserRoleDB[]>;
 
-  abstract getAllDetail(
-    getAllUsersRolesDto: GetAllUsersRolesDto,
-  ): Promise<UserRoleDetail[]>;
-
-  abstract delete(deleteUserRoleDto: DeleteUserRoleDto): Promise<UserRole>;
+  abstract deleteUserRole(id: number): Promise<UserRoleDB>;
 }

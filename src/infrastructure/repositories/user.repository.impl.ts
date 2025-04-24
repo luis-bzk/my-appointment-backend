@@ -49,4 +49,9 @@ export class UserRepositoryImpl implements UserRepository {
     const user = await this.userDataSource.deleteUser(id);
     return UserMapper.entityFromObject(user);
   }
+
+  async getUsersById(ids: number[]): Promise<User[]> {
+    const users = await this.userDataSource.getUsersById(ids);
+    return UserMapper.entitiesFromArray(users);
+  }
 }

@@ -19,4 +19,6 @@ export abstract class RoleRepository {
   abstract getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<Role[]>;
 
   abstract deleteRole(id: number): Promise<Role | null>;
+
+  abstract getRolesById(ids: number[]): Promise<Role[]>;
 }

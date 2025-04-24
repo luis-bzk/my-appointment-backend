@@ -19,4 +19,6 @@ export abstract class UserDataSource {
   abstract getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<UserDB[]>;
 
   abstract deleteUser(id: number): Promise<UserDB | null>;
+
+  abstract getUsersById(ids: number[]): Promise<UserDB[]>;
 }

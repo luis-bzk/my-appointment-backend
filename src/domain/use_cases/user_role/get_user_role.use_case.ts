@@ -1,6 +1,7 @@
 import { UserRole } from '../../entities';
 import { GetUserRoleDto } from '../../dtos/user_role';
 import { UserRoleRepository } from '../../../adapters/repositories';
+import { CustomError } from '../../errors';
 
 interface GetUserRoleUseCase {
   execute(getUserRoleDto: GetUserRoleDto): Promise<UserRole>;
@@ -14,6 +15,15 @@ export class GetUserRole implements GetUserRoleUseCase {
   }
 
   async execute(getUserRoleDto: GetUserRoleDto): Promise<UserRole> {
-    return this.userRoleRepository.get(getUserRoleDto);
+    const userRole = await this.userRoleRepository.findUserRoleId(
+      getUserRoleDto.id,
+    );
+    if (!userRole) {
+      throw CustomError.badRequest(
+        'No se ha encontrado el Rol x Usuario solicitado',
+      );
+    }
+
+    return userRole;
   }
 }

@@ -183,4 +183,27 @@ export class UserDataSourceImpl implements UserDataSource {
       throw CustomError.internalServer(`Error en el Data Source al eliminar`);
     }
   }
+
+  async getUsersById(ids: number[]): Promise<UserDB[]> {
+    try {
+      const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
+
+      const users = await this.pool.query<UserDB>(
+        `select cu.use_id, cu.use_name, cu.use_last_name, cu.use_email, cu.use_password,
+        cu.use_token, cu.use_created_date, cu.use_record_status 
+        from core.core_user cu where cu.use_id in (${placeholders});`,
+        [ids],
+      );
+
+      return users.rows;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener los usuarios',
+      );
+    }
+  }
 }
