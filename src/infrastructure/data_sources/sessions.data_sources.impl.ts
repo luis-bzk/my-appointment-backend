@@ -5,10 +5,10 @@ import { SessionDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { SessionDataSource } from '../../adapters/data_sources';
 import {
-  CreateSessionDto,
+  CreateSessionJwtDto,
   DeleteSessionDto,
   GetSessionDto,
-} from '../../domain/dtos/session';
+} from '../../domain/schemas/session';
 
 export class SessionDataSourceImpl implements SessionDataSource {
   private pool: Pool;
@@ -38,7 +38,7 @@ export class SessionDataSourceImpl implements SessionDataSource {
     }
   }
 
-  async create(createSessionDto: CreateSessionDto): Promise<SessionDB> {
+  async create(createSessionDto: CreateSessionJwtDto): Promise<SessionDB> {
     const { id_user, jwt, expire_date, ip, user_agent } = createSessionDto;
 
     try {

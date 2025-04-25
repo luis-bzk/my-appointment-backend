@@ -1,22 +1,31 @@
 import { User } from '../../entities';
-import { CreateUserDto } from '../../dtos/user';
 import { UserRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
+import { CreateUserDto, CreateUserSchema } from '../../schemas/user';
 
-interface CreateUserUseCase {
-  execute(createUserDto: CreateUserDto): Promise<User>;
-}
-
-export class CreateUser implements CreateUserUseCase {
+export class CreateUserUseCase {
   private readonly userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
   }
 
-  async execute(createUserDto: CreateUserDto): Promise<User> {
+  async execute(object: CreateUserDto): Promise<User> {
+    const { success, error, data: schema } = CreateUserSchema.safeParse(object);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const schemaLower = {
+      schema,
+      name: schema.name.toLowerCase(),
+      last_name: schema.last_name.toLowerCase(),
+      email: schema.email.toLowerCase(),
+    };
+
     const userEmail = await this.userRepository.findUserByEmail(
-      createUserDto.email,
+      schemaLower.email,
     );
     if (userEmail) {
       throw CustomError.conflict(
@@ -24,7 +33,7 @@ export class CreateUser implements CreateUserUseCase {
       );
     }
 
-    const user = await this.userRepository.createNewUser(createUserDto);
+    const user = await this.userRepository.createNewUser(schemaLower);
     if (!user) {
       throw CustomError.internalServer('No se pudo crear el usuario');
     }

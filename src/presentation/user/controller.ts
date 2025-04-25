@@ -1,18 +1,11 @@
 import { Request, Response } from 'express';
 
 import {
-  CreateUserDto,
-  DeleteUserDto,
-  GetAllUsersDto,
-  GetUserDto,
-  UpdateUserDto,
-} from '../../domain/dtos/user';
-import {
-  CreateUser,
-  DeleteUser,
-  GetAllUsers,
-  GetUser,
-  UpdateUser,
+  CreateUserUseCase,
+  DeleteUserUseCase,
+  GetAllUsersUseCase,
+  GetUserUseCase,
+  UpdateUserUseCase,
 } from '../../domain/use_cases/user';
 import { CustomError } from '../../domain/errors';
 import { UserRepository } from '../../adapters/repositories';
@@ -34,20 +27,11 @@ export class UserController {
 
   createUser = async (req: Request, res: Response) => {
     try {
-      const [error, createUserDto] = CreateUserDto.create(req.body);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new CreateUser(this.userRepository).execute(
-        createUserDto!,
+      const data = await new CreateUserUseCase(this.userRepository).execute(
+        req.body,
       );
 
       // TODO: send email notification
-      // await EmailServiceImpl.sendLoginAccount({
-      //   email: data.email,
-      //   name: data.last_name,
-      //   last_name: data.last_name,
-      //   password: data.password,
-      // });
 
       return res.status(201).json(data);
     } catch (err) {
@@ -57,11 +41,9 @@ export class UserController {
 
   updateUser = async (req: Request, res: Response) => {
     try {
-      const [error, updateUserDto] = UpdateUserDto.create(req.params, req.body);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new UpdateUser(this.userRepository).execute(
-        updateUserDto!,
+      const data = await new UpdateUserUseCase(this.userRepository).execute(
+        req.params,
+        req.body,
       );
       return res.status(200).json(data);
     } catch (err) {
@@ -71,10 +53,9 @@ export class UserController {
 
   getUser = async (req: Request, res: Response) => {
     try {
-      const [error, getUserDto] = GetUserDto.create(req.params);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new GetUser(this.userRepository).execute(getUserDto!);
+      const data = await new GetUserUseCase(this.userRepository).execute({
+        id: req.params.id,
+      });
       return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);
@@ -83,12 +64,10 @@ export class UserController {
 
   getAllUsers = async (req: Request, res: Response) => {
     try {
-      const [error, getAllUsersDto] = GetAllUsersDto.create(req.query);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new GetAllUsers(this.userRepository).execute(
-        getAllUsersDto!,
+      const data = await new GetAllUsersUseCase(this.userRepository).execute(
+        req.query,
       );
+
       return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);
@@ -97,12 +76,9 @@ export class UserController {
 
   deleteUser = async (req: Request, res: Response) => {
     try {
-      const [error, deleteUserDto] = DeleteUserDto.create(req.params);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new DeleteUser(this.userRepository).execute(
-        deleteUserDto!,
-      );
+      const data = await new DeleteUserUseCase(this.userRepository).execute({
+        id: req.params.id,
+      });
       return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);

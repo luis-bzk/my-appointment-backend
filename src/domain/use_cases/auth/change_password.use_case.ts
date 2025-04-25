@@ -1,16 +1,12 @@
 import { User } from '../../entities';
-import { ChangePasswordDto } from '../../dtos/auth';
 import { AuthRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
 import { BcryptAdapter } from '../../../config';
+import { ChangePasswordDto, ChangePasswordSchema } from '../../schemas/auth';
 
 type HashFunction = (password: string) => string;
 
-interface ChangePasswordUseCase {
-  execute(changePasswordDto: ChangePasswordDto): Promise<User>;
-}
-
-export class ChangePassword implements ChangePasswordUseCase {
+export class ChangePasswordUseCase {
   private readonly authRepository: AuthRepository;
   private readonly hashPassword: HashFunction;
 
@@ -19,22 +15,29 @@ export class ChangePassword implements ChangePasswordUseCase {
     this.hashPassword = BcryptAdapter.hash;
   }
 
-  async execute(changePasswordDto: ChangePasswordDto): Promise<User> {
-    const userToken = await this.authRepository.findUserByToken(
-      changePasswordDto.token,
-    );
+  async execute(object: ChangePasswordDto): Promise<User> {
+    const {
+      success,
+      error,
+      data: schema,
+    } = ChangePasswordSchema.safeParse(object);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const userToken = await this.authRepository.findUserByToken(schema.token);
     if (!userToken) {
       throw CustomError.notFound(
         'No se ha encontrado un usuario asociado a este token',
       );
     }
-    const hashedPassword = this.hashPassword(changePasswordDto.password);
-    const updatedDto: ChangePasswordDto = new ChangePasswordDto(
-      hashedPassword,
-      changePasswordDto.token,
-    );
+    const hashedPassword = this.hashPassword(schema.password);
 
-    const userUpdated = await this.authRepository.changePassword(updatedDto);
+    const userUpdated = await this.authRepository.changePassword({
+      password: hashedPassword,
+      token: schema.token,
+    });
     if (!userUpdated) {
       throw CustomError.internalServer(
         'No se ha podido actualizar la contraseña del usuario',

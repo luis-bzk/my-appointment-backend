@@ -1,23 +1,23 @@
 import { User } from '../../entities';
-import { CheckTokenDto } from '../../dtos/auth';
 import { AuthRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
+import { CheckTokenDto, CheckTokenSchema } from '../../schemas/auth';
 
-interface CheckTokenUseCase {
-  execute(checkTokenDto: CheckTokenDto): Promise<User>;
-}
-
-export class CheckToken implements CheckTokenUseCase {
+export class CheckTokenUseCase {
   private readonly authRepository: AuthRepository;
 
   constructor(authRepository: AuthRepository) {
     this.authRepository = authRepository;
   }
 
-  async execute(checkTokenDto: CheckTokenDto): Promise<User> {
-    const userToken = await this.authRepository.findUserByToken(
-      checkTokenDto.token,
-    );
+  async execute(params: CheckTokenDto): Promise<User> {
+    const { success, error, data: schema } = CheckTokenSchema.safeParse(params);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const userToken = await this.authRepository.findUserByToken(schema.token);
     if (!userToken) {
       throw CustomError.notFound(
         'No se ha encontrado un usuario asociado a este token',

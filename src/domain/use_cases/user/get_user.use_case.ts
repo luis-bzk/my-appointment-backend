@@ -1,21 +1,32 @@
 import { User } from '../../entities';
-import { GetUserDto } from '../../dtos/user';
 import { UserRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
+import {
+  GetUserDto,
+  GetUserParamsDto,
+  GetUserSchema,
+} from '../../schemas/user';
 
-interface GetUserUseCase {
-  execute(getUserDto: GetUserDto): Promise<User>;
-}
-
-export class GetUser implements GetUserUseCase {
+export class GetUserUseCase {
   private readonly userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
   }
 
-  async execute(getUserDto: GetUserDto): Promise<User> {
-    const user = await this.userRepository.findUserById(getUserDto.id);
+  async execute(params: GetUserParamsDto): Promise<User> {
+    const { success, error, data: schema } = GetUserSchema.safeParse(params);
+
+    if (!success) {
+      const message = error.errors[0]?.message || 'Parámetros inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const parsedSchema: GetUserDto = {
+      id: parseInt(schema.id, 10),
+    };
+
+    const user = await this.userRepository.findUserById(parsedSchema.id);
     if (!user) {
       throw CustomError.notFound('No se ha encontrado el usuario solicitado');
     }

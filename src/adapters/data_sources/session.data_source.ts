@@ -1,14 +1,14 @@
 import { SessionDB } from '../../data/interfaces';
 import {
-  CreateSessionDto,
+  CreateSessionJwtDto,
   DeleteSessionDto,
   GetSessionDto,
-} from '../../domain/dtos/session';
+} from '../../domain/schemas/session';
 
 export abstract class SessionDataSource {
   abstract getUserSessions(id_user: number): Promise<SessionDB[]>;
 
-  abstract create(createSessionDto: CreateSessionDto): Promise<SessionDB>;
+  abstract create(createSessionDto: CreateSessionJwtDto): Promise<SessionDB>;
 
   abstract getByJwt(getSessionDto: GetSessionDto): Promise<SessionDB | null>;
 

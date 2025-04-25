@@ -1,4 +1,5 @@
-import { LoginAccountDto, VerifyAccountDto } from '../../domain/dtos/email';
+import { LoginAccountDto } from '../../domain/dtos/email';
+import { VerifyAccountDto } from '../../domain/schemas/email';
 
 export abstract class EmailRepository {
   abstract sendEmailVerifyAccount(

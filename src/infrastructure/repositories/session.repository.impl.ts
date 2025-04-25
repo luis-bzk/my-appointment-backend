@@ -1,12 +1,12 @@
-import {
-  CreateSessionDto,
-  DeleteSessionDto,
-  GetSessionDto,
-} from '../../domain/dtos/session';
 import { Session } from '../../domain/entities';
 import { SessionDataSource } from '../../adapters/data_sources';
 import { SessionRepository } from '../../adapters/repositories';
 import { SessionMapper } from '../mappers/session.mapper';
+import {
+  CreateSessionJwtDto,
+  DeleteSessionDto,
+  GetSessionDto,
+} from '../../domain/schemas/session';
 
 export class SessionRepositoryImpl implements SessionRepository {
   private readonly sessionDataSource: SessionDataSource;
@@ -20,7 +20,7 @@ export class SessionRepositoryImpl implements SessionRepository {
     return SessionMapper.entitiesFromArray(sessions);
   }
 
-  async create(createSessionDto: CreateSessionDto): Promise<Session> {
+  async create(createSessionDto: CreateSessionJwtDto): Promise<Session> {
     const session = await this.sessionDataSource.create(createSessionDto);
     return SessionMapper.entityFromObject(session)!;
   }

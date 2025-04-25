@@ -1,20 +1,17 @@
 import { Request, Response } from 'express';
 
-import { GoogleAuth, GoogleAuthCallback } from '../../domain/use_cases/auth';
+import {
+  GoogleAuth,
+  GoogleAuthCallbackUseCase,
+} from '../../domain/use_cases/auth';
 import { CustomError } from '../../domain/errors';
 import { AuthRepository, SessionRepository } from '../../adapters/repositories';
-import { JwtAdapter } from '../../config';
-import { GoogleAuthDto } from '../../domain/dtos/auth';
-import { CreateSessionDto } from '../../domain/dtos/session';
-import { CreateSession } from '../../domain/use_cases/session';
 import { getGoogleUser, oAuth2Client } from '../../domain/external';
-
-type SignToken = (payload: Object, duration?: string) => Promise<string | null>;
+import { CreateSessionUseCase } from '../../domain/use_cases/session';
 
 export class AuthGoogleController {
   private readonly authRepository: AuthRepository;
   private readonly sessionRepository: SessionRepository;
-  private readonly signToken: SignToken;
 
   constructor(
     authRepository: AuthRepository,
@@ -22,7 +19,6 @@ export class AuthGoogleController {
   ) {
     this.authRepository = authRepository;
     this.sessionRepository = sessionRepository;
-    this.signToken = JwtAdapter.generateToken;
   }
 
   private handleError = (error: unknown, res: Response) => {
@@ -52,34 +48,20 @@ export class AuthGoogleController {
       }
 
       const res_google = await getGoogleUser(code);
+      const { email, name, given_name, picture, id } = res_google;
 
-      const [error, googleAuthDto] = GoogleAuthDto.create(
-        res_google.email,
-        res_google.name,
-        res_google.given_name,
-        res_google.picture,
-        res_google.id,
-      );
-      if (error) throw CustomError.badRequest(error);
-      const user = await new GoogleAuthCallback(this.authRepository).execute(
-        googleAuthDto!,
-      );
+      const user = await new GoogleAuthCallbackUseCase(
+        this.authRepository,
+      ).execute({ email, name, given_name, picture, id });
 
-      const token = await this.signToken({ id: user.id }, '24h');
-      if (!token) throw CustomError.internalServer('Error al generar el token');
-
-      const [errorSession, sessionCreateDto] = CreateSessionDto.create({
-        jwt: token,
+      const session = await new CreateSessionUseCase(
+        this.sessionRepository,
+      ).execute({
         id_user: user.id,
         expire_date: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
         ip: 'google sign in',
         user_agent: 'google sign in',
       });
-      if (errorSession) return res.status(400).json({ message: errorSession });
-
-      const session = await new CreateSession(this.sessionRepository).execute(
-        sessionCreateDto!,
-      );
 
       return res.redirect(
         `${process.env.FRONTEND_URL}/auth/google-callback?token=${session.jwt}`,

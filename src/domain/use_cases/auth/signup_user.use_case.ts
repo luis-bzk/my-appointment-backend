@@ -1,16 +1,12 @@
 import { BcryptAdapter } from '../../../config';
-import { SignupUserDto } from '../../dtos/auth';
 import { User } from '../../entities';
 import { CustomError } from '../../errors';
 import { AuthRepository } from '../../../adapters/repositories';
+import { SignupUserDto, SignupUserSchema } from '../../schemas/auth';
 
 type HashFunction = (password: string) => string;
 
-interface SignupUserUseCase {
-  execute(signupUserDto: SignupUserDto): Promise<User>;
-}
-
-export class SignUpUser implements SignupUserUseCase {
+export class SignUpUserUseCase {
   private readonly authRepository: AuthRepository;
   private readonly hashPassword: HashFunction;
 
@@ -19,25 +15,26 @@ export class SignUpUser implements SignupUserUseCase {
     this.hashPassword = BcryptAdapter.hash;
   }
 
-  async execute(signupUserDto: SignupUserDto): Promise<User> {
-    const userEmail = await this.authRepository.findUserByEmail(
-      signupUserDto.email,
-    );
+  async execute(object: SignupUserDto): Promise<User> {
+    const { success, error, data: schema } = SignupUserSchema.safeParse(object);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const userEmail = await this.authRepository.findUserByEmail(schema.email);
     if (userEmail) {
       throw CustomError.badRequest(
         'El email solicitado ya se encuentra registrado',
       );
     }
 
-    const hashedPassword = this.hashPassword(signupUserDto.password);
-    const updatedDto: SignupUserDto = new SignupUserDto(
-      signupUserDto.name,
-      signupUserDto.last_name,
-      signupUserDto.email,
-      hashedPassword,
-    );
+    const hashedPassword = this.hashPassword(schema.password);
 
-    const userCreated = await this.authRepository.createUser(updatedDto);
+    const userCreated = await this.authRepository.createUser({
+      ...schema,
+      password: hashedPassword,
+    });
     if (!userCreated) {
       throw CustomError.internalServer('No se pudo crear el usuario');
     }

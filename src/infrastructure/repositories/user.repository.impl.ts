@@ -1,12 +1,12 @@
-import {
-  CreateUserDto,
-  GetAllUsersDto,
-  UpdateUserDto,
-} from '../../domain/dtos/user';
 import { User } from '../../domain/entities';
 import { UserRepository } from '../../adapters/repositories';
 import { UserDataSource } from '../../adapters/data_sources';
 import { UserMapper } from '../mappers';
+import {
+  CreateUserDto,
+  GetAllUsersDto,
+  UpdateUserDto,
+} from '../../domain/schemas/user';
 
 export class UserRepositoryImpl implements UserRepository {
   private readonly userDataSource: UserDataSource;

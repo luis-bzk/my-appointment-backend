@@ -1,10 +1,5 @@
 import { Pool } from 'pg';
 
-import {
-  CreateUserDto,
-  GetAllUsersDto,
-  UpdateUserDto,
-} from '../../domain/dtos/user';
 import { PostgresDatabase } from '../../data';
 import { GeneratorValues } from '../../utils';
 import { UserDB } from '../../data/interfaces';
@@ -12,6 +7,11 @@ import { CustomError } from '../../domain/errors';
 import { BcryptAdapter } from '../../config/bcrypt';
 import { RECORD_STATUS } from '../../shared/constants';
 import { UserDataSource } from '../../adapters/data_sources';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  GetAllUsersDto,
+} from '../../domain/schemas/user';
 
 type HashFunction = (password: string) => string;
 

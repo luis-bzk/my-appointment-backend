@@ -20,7 +20,7 @@ import {
   UserRepository,
   UserRoleRepository,
 } from '../../adapters/repositories';
-import { GetUser, GetUsersById } from '../../domain/use_cases/user';
+import { GetUserUseCase, GetUsersById } from '../../domain/use_cases/user';
 import { GetUserDto } from '../../domain/dtos/user';
 import { GetRoleDto } from '../../domain/dtos/role';
 import { GetRole, GetRolesById } from '../../domain/use_cases/role';
@@ -94,7 +94,9 @@ export class UserRoleController {
         id: userRole.id_user.toString(),
       });
       if (errorUser) return res.status(400).json({ message: errorUser });
-      const user = await new GetUser(this.userRepository).execute(getUserDto!);
+      const user = await new GetUserUseCase(this.userRepository).execute(
+        getUserDto!,
+      );
 
       const [erroRole, getRoleDto] = GetRoleDto.create({
         id: userRole.id_role.toString(),

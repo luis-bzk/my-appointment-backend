@@ -1,20 +1,12 @@
 import { Request, Response } from 'express';
 
 import {
-  ChangePasswordDto,
-  CheckTokenDto,
-  ConfirmAccountDto,
-  LoginUserDto,
-  RecoverPasswordDto,
-  SignupUserDto,
-} from '../../domain/dtos/auth';
-import {
-  LoginUser,
-  RecoverPassword,
-  ChangePassword,
-  CheckToken,
+  LoginUserUseCase,
+  RecoverPasswordUseCase,
+  ChangePasswordUseCase,
+  CheckTokenUseCase,
   ConfirmAccount,
-  SignUpUser,
+  SignUpUserUseCase,
 } from '../../domain/use_cases/auth';
 import { CustomError } from '../../domain/errors';
 import {
@@ -22,22 +14,16 @@ import {
   EmailRepository,
   SessionRepository,
 } from '../../adapters/repositories';
-import { CreateSession } from '../../domain/use_cases/session';
-import { CreateSessionDto } from '../../domain/dtos/session';
-import { JwtAdapter } from '../../config';
-import { VerifyAccountDto } from '../../domain/dtos/email';
+import { CreateSessionUseCase } from '../../domain/use_cases/session';
 import {
-  RecoverPasswordEmail,
-  VerifyAccountEmail,
+  RecoverPasswordEmailUseCase,
+  VerifyAccountEmailUseCase,
 } from '../../domain/use_cases/email';
-
-type SignToken = (payload: Object, duration?: string) => Promise<string | null>;
 
 export class AuthController {
   private readonly authRepository: AuthRepository;
   private readonly sessionRepository: SessionRepository;
   private readonly emailRepository: EmailRepository;
-  private readonly signToken: SignToken;
 
   constructor(
     authRepository: AuthRepository,
@@ -47,7 +33,6 @@ export class AuthController {
     this.authRepository = authRepository;
     this.sessionRepository = sessionRepository;
     this.emailRepository = emailRepository;
-    this.signToken = JwtAdapter.generateToken;
   }
 
   private handleError = (error: unknown, res: Response) => {
@@ -65,26 +50,18 @@ export class AuthController {
         'unknown';
       const userAgent = req.headers['user-agent'] || 'unknown';
 
-      const [error, loginUserDto] = LoginUserDto.create(req.body);
-      if (error) return res.status(400).json({ message: error });
-
-      const user = await new LoginUser(this.authRepository).execute(
-        loginUserDto!,
+      const user = await new LoginUserUseCase(this.authRepository).execute(
+        req.body,
       );
 
-      const token = await this.signToken({ id: user.id }, '24h');
-      if (!token) throw CustomError.internalServer('Error al generar el token');
-      const [errorSession, sessionCreateDto] = CreateSessionDto.create({
-        jwt: token,
+      const session = await new CreateSessionUseCase(
+        this.sessionRepository,
+      ).execute({
         id_user: user.id,
         expire_date: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
         ip: ip,
         user_agent: userAgent,
       });
-      if (errorSession) return res.status(400).json({ message: errorSession });
-      const session = await new CreateSession(this.sessionRepository).execute(
-        sessionCreateDto!,
-      );
 
       return res.status(200).json({ user, session });
     } catch (err) {
@@ -94,22 +71,17 @@ export class AuthController {
 
   signupUser = async (req: Request, res: Response) => {
     try {
-      const [error, signupUserDto] = SignupUserDto.create(req.body);
-      if (error) return res.status(400).json({ message: error });
-      const data = await new SignUpUser(this.authRepository).execute(
-        signupUserDto!,
+      const data = await new SignUpUserUseCase(this.authRepository).execute(
+        req.body,
       );
+      const { email, name, last_name, token } = data;
 
-      const [errorEmail, verifyAccountDto] = VerifyAccountDto.create({
-        email: data.email,
-        name: data.name,
-        last_name: data.last_name,
-        token: data.token,
+      await new VerifyAccountEmailUseCase(this.emailRepository).execute({
+        email,
+        name,
+        last_name,
+        token,
       });
-      if (errorEmail) return res.status(400).json({ message: errorEmail });
-      await new VerifyAccountEmail(this.emailRepository).execute(
-        verifyAccountDto!,
-      );
 
       return res.status(201).json(data);
     } catch (err) {
@@ -119,22 +91,17 @@ export class AuthController {
 
   recoverPassword = async (req: Request, res: Response) => {
     try {
-      const [error, recoverPasswordDto] = RecoverPasswordDto.create(req.body);
-      if (error) return res.status(400).json({ message: error });
-      const data = await new RecoverPassword(this.authRepository).execute(
-        recoverPasswordDto!,
-      );
+      const data = await new RecoverPasswordUseCase(
+        this.authRepository,
+      ).execute(req.body);
+      const { email, name, last_name, token } = data;
 
-      const [errorEmail, verifyAccountDto] = VerifyAccountDto.create({
-        email: data.email,
-        name: data.last_name,
-        last_name: data.last_name,
-        token: data.token,
+      await new RecoverPasswordEmailUseCase(this.emailRepository).execute({
+        email,
+        name,
+        last_name,
+        token,
       });
-      if (errorEmail) return res.status(400).json({ message: errorEmail });
-      await new RecoverPasswordEmail(this.emailRepository).execute(
-        verifyAccountDto!,
-      );
 
       return res.status(200).json({
         message:
@@ -147,11 +114,8 @@ export class AuthController {
 
   changePassword = async (req: Request, res: Response) => {
     try {
-      const [error, changePasswordDto] = ChangePasswordDto.create(req.body);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new ChangePassword(this.authRepository).execute(
-        changePasswordDto!,
+      const data = await new ChangePasswordUseCase(this.authRepository).execute(
+        req.body,
       );
       return res.status(200).json(data);
     } catch (err) {
@@ -161,12 +125,9 @@ export class AuthController {
 
   checkToken = async (req: Request, res: Response) => {
     try {
-      const [error, checkTokenDto] = CheckTokenDto.create(req.params.token);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new CheckToken(this.authRepository).execute(
-        checkTokenDto!,
-      );
+      const data = await new CheckTokenUseCase(this.authRepository).execute({
+        token: req.params.token,
+      });
 
       return res.status(200).json(data);
     } catch (err) {
@@ -176,11 +137,8 @@ export class AuthController {
 
   confirmAccount = async (req: Request, res: Response) => {
     try {
-      const [error, confirmAccountDto] = ConfirmAccountDto.create(req.body);
-      if (error) return res.status(400).json({ message: error });
-
       const data = await new ConfirmAccount(this.authRepository).execute(
-        confirmAccountDto!,
+        req.body,
       );
       return res.status(200).json(data);
     } catch (err) {

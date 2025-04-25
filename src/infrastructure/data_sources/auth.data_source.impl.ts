@@ -1,16 +1,16 @@
 import { Pool } from 'pg';
 
-import {
-  ChangePasswordDto,
-  GoogleAuthDto,
-  SignupUserDto,
-} from '../../domain/dtos/auth';
 import { AuthDataSource } from '../../adapters/data_sources';
 import { CustomError } from '../../domain/errors';
 import { GeneratorValues } from '../../utils';
 import { PostgresDatabase } from '../../data';
 import { RECORD_STATUS } from '../../shared/constants';
 import { UserDB } from '../../data/interfaces';
+import {
+  ChangePasswordDto,
+  GoogleAuthDto,
+  SignupUserDto,
+} from '../../domain/schemas/auth';
 
 export class AuthDataSourceImpl implements AuthDataSource {
   private pool: Pool;

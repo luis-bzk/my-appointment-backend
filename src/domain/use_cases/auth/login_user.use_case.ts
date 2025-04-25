@@ -1,16 +1,12 @@
-import { LoginUserDto } from '../../dtos/auth';
 import { AuthRepository } from '../../../adapters/repositories';
 import { User } from '../../entities';
 import { CustomError } from '../../errors';
 import { BcryptAdapter } from '../../../config';
-
-interface LoginUserUseCase {
-  execute(loginUserDto: LoginUserDto): Promise<User>;
-}
+import { LoginUserDto, LoginUserSchema } from '../../schemas/auth';
 
 type CompareFunction = (password: string, hashed: string) => boolean;
 
-export class LoginUser implements LoginUserUseCase {
+export class LoginUserUseCase {
   private readonly authRepository: AuthRepository;
   private readonly comparePassword: CompareFunction;
 
@@ -19,8 +15,14 @@ export class LoginUser implements LoginUserUseCase {
     this.comparePassword = BcryptAdapter.compare;
   }
 
-  async execute(loginUserDto: LoginUserDto): Promise<User> {
-    const user = await this.authRepository.findUserByEmail(loginUserDto.email);
+  async execute(object: LoginUserDto): Promise<User> {
+    const { success, error, data: schema } = LoginUserSchema.safeParse(object);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const user = await this.authRepository.findUserByEmail(schema.email);
     if (!user) {
       throw CustomError.badRequest('El usuario o contraseña es incorrecto');
     }
@@ -28,10 +30,7 @@ export class LoginUser implements LoginUserUseCase {
       throw CustomError.forbidden('El usuario no se encuentra verificado');
     }
 
-    const isMatching = this.comparePassword(
-      loginUserDto.password,
-      user.password,
-    );
+    const isMatching = this.comparePassword(schema.password, user.password);
     if (!isMatching) {
       throw CustomError.badRequest('El usuario o contraseña es incorrecto');
     }

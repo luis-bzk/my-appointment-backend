@@ -1,22 +1,36 @@
-import { CreateSessionDto } from '../../dtos/session';
 import { Session } from '../../entities';
 import { CustomError } from '../../errors';
 import { SessionRepository } from '../../../adapters/repositories';
+import { CreateSessionDto, CreateSessionSchema } from '../../schemas/session';
+import { JwtAdapter } from '../../../config';
 
-interface CreateSessionUseCase {
-  execute(createSessionDto: CreateSessionDto): Promise<Session>;
-}
+type SignToken = (payload: Object, duration?: string) => Promise<string | null>;
 
-export class CreateSession implements CreateSessionUseCase {
+export class CreateSessionUseCase {
   private readonly sessionRepository: SessionRepository;
+  private readonly signToken: SignToken;
 
   constructor(sessionRepository: SessionRepository) {
     this.sessionRepository = sessionRepository;
+    this.signToken = JwtAdapter.generateToken;
   }
 
   async execute(createSessionDto: CreateSessionDto): Promise<Session> {
+    const {
+      success,
+      error,
+      data: schema,
+    } = CreateSessionSchema.safeParse(createSessionDto);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const token = await this.signToken({ id: schema.id_user }, '24h');
+    if (!token) throw CustomError.internalServer('Error al generar el token');
+
     const sessions = await this.sessionRepository.getUserSessions(
-      createSessionDto.id_user,
+      schema.id_user,
     );
     if (sessions.length > 10) {
       throw CustomError.conflict(
@@ -24,8 +38,10 @@ export class CreateSession implements CreateSessionUseCase {
       );
     }
 
-    const sessionCreated =
-      await this.sessionRepository.create(createSessionDto);
+    const sessionCreated = await this.sessionRepository.create({
+      ...schema,
+      jwt: token,
+    });
 
     return sessionCreated;
   }

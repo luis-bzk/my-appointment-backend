@@ -1,9 +1,9 @@
+import { UserDB } from '../../data/interfaces';
 import {
   ChangePasswordDto,
   GoogleAuthDto,
   SignupUserDto,
-} from '../../domain/dtos/auth';
-import { UserDB } from '../../data/interfaces';
+} from '../../domain/schemas/auth';
 
 export abstract class AuthDataSource {
   abstract findUserByEmail(email: string): Promise<UserDB | null>;

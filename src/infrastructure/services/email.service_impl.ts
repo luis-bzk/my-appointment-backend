@@ -3,12 +3,13 @@ import nodemailer from 'nodemailer';
 import { CustomError } from '../../domain/errors';
 import { EmailService } from '../../adapters/services';
 import { EnvConfig } from '../../config';
-import { LoginAccountDto, VerifyAccountDto } from '../../domain/dtos/email';
+import { LoginAccountDto } from '../../domain/dtos/email';
 import {
   getLoginAccountHTML,
   getRecoverPasswordHTML,
   getVerifyAccountHTML,
 } from '../../domain/external';
+import { VerifyAccountDto } from '../../domain/schemas/email';
 
 export class EmailServiceImpl implements EmailService {
   constructor() {}

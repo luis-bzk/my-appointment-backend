@@ -1,9 +1,9 @@
+import { User } from '../../domain/entities';
 import {
   CreateUserDto,
   GetAllUsersDto,
   UpdateUserDto,
-} from '../../domain/dtos/user';
-import { User } from '../../domain/entities';
+} from '../../domain/schemas/user';
 
 export abstract class UserRepository {
   abstract findUserByEmail(email: string): Promise<User | null>;

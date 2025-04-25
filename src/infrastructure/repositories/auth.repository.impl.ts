@@ -1,12 +1,12 @@
-import {
-  ChangePasswordDto,
-  SignupUserDto,
-  GoogleAuthDto,
-} from '../../domain/dtos/auth';
 import { User } from '../../domain/entities';
 import { AuthRepository } from '../../adapters/repositories';
 import { AuthDataSource } from '../../adapters/data_sources';
 import { UserMapper } from '../mappers/user.mapper';
+import {
+  ChangePasswordDto,
+  GoogleAuthDto,
+  SignupUserDto,
+} from '../../domain/schemas/auth';
 
 export class AuthRepositoryImpl implements AuthRepository {
   private readonly authDataSource: AuthDataSource;

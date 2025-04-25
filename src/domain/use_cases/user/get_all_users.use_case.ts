@@ -1,20 +1,24 @@
 import { User } from '../../entities';
-import { GetAllUsersDto } from '../../dtos/user';
 import { UserRepository } from '../../../adapters/repositories';
+import { GetAllUsersSchema, GetAllUsersDto } from '../../schemas/user';
+import { CustomError } from '../../errors';
 
-interface GetAllUsersUseCase {
-  execute(getAllUsersDto: GetAllUsersDto): Promise<User[]>;
-}
-
-export class GetAllUsers implements GetAllUsersUseCase {
+export class GetAllUsersUseCase {
   private readonly userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
   }
 
-  async execute(getAllUsersDto: GetAllUsersDto): Promise<User[]> {
-    const users = await this.userRepository.getAllUsers(getAllUsersDto);
+  async execute(query: GetAllUsersDto): Promise<User[]> {
+    const { success, error, data: schema } = GetAllUsersSchema.safeParse(query);
+
+    if (!success) {
+      const message = error.errors[0]?.message || 'Parámetros inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const users = await this.userRepository.getAllUsers(schema);
     return users.map((u) => ({ ...u, password: '' }));
   }
 }

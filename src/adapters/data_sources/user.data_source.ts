@@ -3,7 +3,7 @@ import {
   CreateUserDto,
   GetAllUsersDto,
   UpdateUserDto,
-} from '../../domain/dtos/user';
+} from '../../domain/schemas/user';
 
 export abstract class UserDataSource {
   abstract findUserByEmail(email: string): Promise<UserDB | null>;

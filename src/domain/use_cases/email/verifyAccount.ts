@@ -1,21 +1,26 @@
-import { VerifyAccountDto } from '../../dtos/email';
 import { CustomError } from '../../errors';
 import { EmailRepository } from '../../../adapters/repositories';
+import { VerifyAccountDto, VerifyAccountSchema } from '../../schemas/email';
 
-interface VerifyAccountUseCase {
-  execute(verifyAccountDto: VerifyAccountDto): Promise<void>;
-}
-
-export class VerifyAccountEmail implements VerifyAccountUseCase {
+export class VerifyAccountEmailUseCase {
   private readonly emailRepository: EmailRepository;
 
   constructor(emailRepository: EmailRepository) {
     this.emailRepository = emailRepository;
   }
 
-  async execute(verifyAccountDto: VerifyAccountDto): Promise<void> {
-    const emailSend =
-      await this.emailRepository.sendEmailVerifyAccount(verifyAccountDto);
+  async execute(object: VerifyAccountDto): Promise<void> {
+    const {
+      success,
+      error,
+      data: schema,
+    } = VerifyAccountSchema.safeParse(object);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const emailSend = await this.emailRepository.sendEmailVerifyAccount(schema);
 
     if (!emailSend) {
       throw CustomError.internalServer(

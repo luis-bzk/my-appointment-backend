@@ -3,7 +3,7 @@ import {
   ChangePasswordDto,
   GoogleAuthDto,
   SignupUserDto,
-} from '../../domain/dtos/auth';
+} from '../../domain/schemas/auth';
 
 export abstract class AuthRepository {
   abstract findUserByEmail(email: string): Promise<User | null>;
