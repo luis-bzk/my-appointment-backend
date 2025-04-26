@@ -10,8 +10,8 @@ export class CheckTokenUseCase {
     this.authRepository = authRepository;
   }
 
-  async execute(params: CheckTokenDto): Promise<User> {
-    const { success, error, data: schema } = CheckTokenSchema.safeParse(params);
+  async execute(dto: CheckTokenDto): Promise<User> {
+    const { success, error, data: schema } = CheckTokenSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);

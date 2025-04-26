@@ -10,12 +10,12 @@ export class RecoverPasswordUseCase {
     this.authRepository = authRepository;
   }
 
-  async execute(object: RecoverPasswordDto): Promise<User> {
+  async execute(dto: RecoverPasswordDto): Promise<User> {
     const {
       success,
       error,
       data: schema,
-    } = RecoverPasswordSchema.safeParse(object);
+    } = RecoverPasswordSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);

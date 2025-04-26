@@ -15,12 +15,12 @@ export class ChangePasswordUseCase {
     this.hashPassword = BcryptAdapter.hash;
   }
 
-  async execute(object: ChangePasswordDto): Promise<User> {
+  async execute(dto: ChangePasswordDto): Promise<User> {
     const {
       success,
       error,
       data: schema,
-    } = ChangePasswordSchema.safeParse(object);
+    } = ChangePasswordSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);

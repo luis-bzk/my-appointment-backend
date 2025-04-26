@@ -41,10 +41,10 @@ export class UserController {
 
   updateUser = async (req: Request, res: Response) => {
     try {
-      const data = await new UpdateUserUseCase(this.userRepository).execute(
-        req.params,
-        req.body,
-      );
+      const data = await new UpdateUserUseCase(this.userRepository).execute({
+        ...req.params,
+        ...req.body,
+      });
       return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);

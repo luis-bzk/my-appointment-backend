@@ -4,8 +4,7 @@ import { SessionRepository } from '../../adapters/repositories';
 import { SessionMapper } from '../mappers/session.mapper';
 import {
   CreateSessionJwtDto,
-  DeleteSessionDto,
-  GetSessionDto,
+  SessionJwtDto,
 } from '../../domain/schemas/session';
 
 export class SessionRepositoryImpl implements SessionRepository {
@@ -25,14 +24,12 @@ export class SessionRepositoryImpl implements SessionRepository {
     return SessionMapper.entityFromObject(session)!;
   }
 
-  async getByJwt(getSessionDto: GetSessionDto): Promise<Session | null> {
+  async getByJwt(getSessionDto: SessionJwtDto): Promise<Session | null> {
     const session = await this.sessionDataSource.getByJwt(getSessionDto);
     return SessionMapper.entityFromObject(session);
   }
 
-  async killSession(
-    deleteSessionDto: DeleteSessionDto,
-  ): Promise<Session | null> {
+  async killSession(deleteSessionDto: SessionJwtDto): Promise<Session | null> {
     const session = await this.sessionDataSource.killSession(deleteSessionDto);
     return SessionMapper.entityFromObject(session);
   }

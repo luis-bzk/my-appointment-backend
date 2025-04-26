@@ -1,9 +1,9 @@
+import { UserRole } from '../../domain/entities';
 import {
   CreateUserRoleDto,
   GetAllUsersRolesDto,
   UpdateUserRoleDto,
-} from '../../domain/dtos/user_role';
-import { UserRole } from '../../domain/entities';
+} from '../../domain/schemas/user_role';
 
 export abstract class UserRoleRepository {
   abstract findUserRole(

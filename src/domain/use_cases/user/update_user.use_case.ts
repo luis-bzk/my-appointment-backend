@@ -1,7 +1,11 @@
 import { User } from '../../entities';
 import { CustomError } from '../../errors';
 import { UserRepository } from '../../../adapters/repositories';
-import { UpdateUserSchema } from '../../schemas/user';
+import {
+  UpdateUserDto,
+  UpdateUserParamsDto,
+  UpdateUserSchema,
+} from '../../schemas/user';
 
 export class UpdateUserUseCase {
   private readonly userRepository: UserRepository;
@@ -10,26 +14,17 @@ export class UpdateUserUseCase {
     this.userRepository = userRepository;
   }
 
-  async execute(
-    params: { [key: string]: string },
-    object: { [key: string]: any },
-  ): Promise<User> {
-    const {
-      success,
-      error,
-      data: schema,
-    } = UpdateUserSchema.safeParse({ ...object, id: params.id });
+  async execute(dto: UpdateUserParamsDto): Promise<User> {
+    const { success, error, data: schema } = UpdateUserSchema.safeParse(dto);
 
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);
     }
 
-    const schemaParsed = {
+    const schemaParsed: UpdateUserDto = {
+      ...schema,
       id: parseInt(schema.id, 10),
-      name: schema.name.toLowerCase(),
-      last_name: schema.last_name.toLowerCase(),
-      email: schema.email.toLowerCase(),
     };
 
     const userId = await this.userRepository.findUserById(schemaParsed.id);

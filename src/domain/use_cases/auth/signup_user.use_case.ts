@@ -15,8 +15,8 @@ export class SignUpUserUseCase {
     this.hashPassword = BcryptAdapter.hash;
   }
 
-  async execute(object: SignupUserDto): Promise<User> {
-    const { success, error, data: schema } = SignupUserSchema.safeParse(object);
+  async execute(dto: SignupUserDto): Promise<User> {
+    const { success, error, data: schema } = SignupUserSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);

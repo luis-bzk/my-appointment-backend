@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const CreateSessionSchema = z.object({
-  // jwt: z.string().min(1, 'El JWT es necesario'),
   id_user: z.number({
     invalid_type_error: 'El ID del usuario debe ser numérico',
   }),

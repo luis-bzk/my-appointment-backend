@@ -1,8 +1,7 @@
 import { Session } from '../../domain/entities';
 import {
   CreateSessionJwtDto,
-  DeleteSessionDto,
-  GetSessionDto,
+  SessionJwtDto,
 } from '../../domain/schemas/session';
 
 export abstract class SessionRepository {
@@ -10,9 +9,9 @@ export abstract class SessionRepository {
 
   abstract create(createSessionDto: CreateSessionJwtDto): Promise<Session>;
 
-  abstract getByJwt(getSessionDto: GetSessionDto): Promise<Session | null>;
+  abstract getByJwt(getSessionDto: SessionJwtDto): Promise<Session | null>;
 
   abstract killSession(
-    deleteSessionDto: DeleteSessionDto,
+    deleteSessionDto: SessionJwtDto,
   ): Promise<Session | null>;
 }

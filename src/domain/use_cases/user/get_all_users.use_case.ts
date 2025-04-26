@@ -1,6 +1,10 @@
 import { User } from '../../entities';
 import { UserRepository } from '../../../adapters/repositories';
-import { GetAllUsersSchema, GetAllUsersDto } from '../../schemas/user';
+import {
+  GetAllUsersSchema,
+  GetAllUsersPortDto,
+  GetAllUsersDto,
+} from '../../schemas/user';
 import { CustomError } from '../../errors';
 
 export class GetAllUsersUseCase {
@@ -10,15 +14,20 @@ export class GetAllUsersUseCase {
     this.userRepository = userRepository;
   }
 
-  async execute(query: GetAllUsersDto): Promise<User[]> {
-    const { success, error, data: schema } = GetAllUsersSchema.safeParse(query);
+  async execute(dto: GetAllUsersPortDto): Promise<User[]> {
+    const { success, error, data: schema } = GetAllUsersSchema.safeParse(dto);
 
     if (!success) {
       const message = error.errors[0]?.message || 'Parámetros inválidos';
       throw CustomError.badRequest(message);
     }
 
-    const users = await this.userRepository.getAllUsers(schema);
+    const parsedSchema: GetAllUsersDto = {
+      limit: parseInt(schema.limit ?? '', 10),
+      offset: parseInt(schema.offset ?? '', 10),
+    };
+
+    const users = await this.userRepository.getAllUsers(parsedSchema);
     return users.map((u) => ({ ...u, password: '' }));
   }
 }

@@ -1,12 +1,12 @@
-import {
-  CreateRoleDto,
-  GetAllRolesDto,
-  UpdateRoleDto,
-} from '../../domain/dtos/role';
 import { Role } from '../../domain/entities';
 import { RoleRepository } from '../../adapters/repositories';
 import { RoleDataSource } from '../../adapters/data_sources';
 import { RoleMapper } from '../mappers';
+import {
+  CreateRoleDto,
+  GetAllRolesDto,
+  UpdateRoleDto,
+} from '../../domain/schemas/role';
 
 export class RoleRepositoryImpl implements RoleRepository {
   private readonly roleDataSource: RoleDataSource;

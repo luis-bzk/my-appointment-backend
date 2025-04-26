@@ -1,7 +1,7 @@
 import { User } from '../../entities';
 import { UserRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
-import { DeleteUserParamsDto, DeleteUserSchema } from '../../schemas/user';
+import { UserIdDto, UserIdPortDto, UserIdSchema } from '../../schemas/user';
 
 export class DeleteUserUseCase {
   private readonly userRepository: UserRepository;
@@ -10,20 +10,24 @@ export class DeleteUserUseCase {
     this.userRepository = userRepository;
   }
 
-  async execute(params: DeleteUserParamsDto): Promise<User> {
-    const { success, error, data: schema } = DeleteUserSchema.safeParse(params);
-
+  async execute(dto: UserIdPortDto): Promise<User> {
+    const { success, error, data: schema } = UserIdSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Parámetros inválidos';
       throw CustomError.badRequest(message);
     }
 
-    const user = await this.userRepository.findUserById(schema.id);
+    const parsedSchema: UserIdDto = {
+      ...schema,
+      id: parseInt(schema.id, 10),
+    };
+
+    const user = await this.userRepository.findUserById(parsedSchema.id);
     if (!user) {
       throw CustomError.notFound('No se ha encontrado el usuario a eliminar');
     }
 
-    const deletedUser = await this.userRepository.deleteUser(schema.id);
+    const deletedUser = await this.userRepository.deleteUser(parsedSchema.id);
     if (!deletedUser) {
       throw CustomError.internalServer('No se ha podido eliminar el usuario');
     }

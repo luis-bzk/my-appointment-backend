@@ -16,8 +16,8 @@ export class GoogleAuthCallbackUseCase {
     this.hashPassword = BcryptAdapter.hash;
   }
 
-  async execute(object: GoogleAuthDto) {
-    const { success, error, data: schema } = GoogleAuthSchema.safeParse(object);
+  async execute(dto: GoogleAuthDto) {
+    const { success, error, data: schema } = GoogleAuthSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);

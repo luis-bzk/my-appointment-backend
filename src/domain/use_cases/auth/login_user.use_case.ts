@@ -15,8 +15,8 @@ export class LoginUserUseCase {
     this.comparePassword = BcryptAdapter.compare;
   }
 
-  async execute(object: LoginUserDto): Promise<User> {
-    const { success, error, data: schema } = LoginUserSchema.safeParse(object);
+  async execute(dto: LoginUserDto): Promise<User> {
+    const { success, error, data: schema } = LoginUserSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);

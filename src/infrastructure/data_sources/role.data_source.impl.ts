@@ -1,15 +1,15 @@
 import { Pool } from 'pg';
 
-import {
-  CreateRoleDto,
-  GetAllRolesDto,
-  UpdateRoleDto,
-} from '../../domain/dtos/role';
 import { PostgresDatabase } from '../../data';
 import { RoleDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
 import { RoleDataSource } from '../../adapters/data_sources';
+import {
+  CreateRoleDto,
+  GetAllRolesDto,
+  UpdateRoleDto,
+} from '../../domain/schemas/role';
 
 export class RoleDataSourceImpl implements RoleDataSource {
   private pool: Pool;

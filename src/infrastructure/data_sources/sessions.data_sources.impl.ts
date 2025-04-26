@@ -6,8 +6,7 @@ import { CustomError } from '../../domain/errors';
 import { SessionDataSource } from '../../adapters/data_sources';
 import {
   CreateSessionJwtDto,
-  DeleteSessionDto,
-  GetSessionDto,
+  SessionJwtDto,
 } from '../../domain/schemas/session';
 
 export class SessionDataSourceImpl implements SessionDataSource {
@@ -63,8 +62,8 @@ export class SessionDataSourceImpl implements SessionDataSource {
     }
   }
 
-  async getByJwt(getSessionDto: GetSessionDto): Promise<SessionDB | null> {
-    const { jwt } = getSessionDto;
+  async getByJwt(dto: SessionJwtDto): Promise<SessionDB | null> {
+    const { jwt } = dto;
 
     try {
       const session = await this.pool.query<SessionDB>(
@@ -85,7 +84,7 @@ export class SessionDataSourceImpl implements SessionDataSource {
   }
 
   async killSession(
-    deleteSessionDto: DeleteSessionDto,
+    deleteSessionDto: SessionJwtDto,
   ): Promise<SessionDB | null> {
     const { jwt } = deleteSessionDto;
 

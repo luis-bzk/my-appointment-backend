@@ -1,26 +1,32 @@
 import { Role } from '../../entities';
-import { DeleteRoleDto } from '../../dtos/role';
 import { RoleRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
+import { RoleIdDto, RoleIdPortDto, RoleIdSchema } from '../../schemas/role';
 
-interface DeleteRoleUseCase {
-  execute(deleteRoleDto: DeleteRoleDto): Promise<Role>;
-}
-
-export class DeleteRole implements DeleteRoleUseCase {
+export class DeleteRoleUseCase {
   private readonly roleRepository: RoleRepository;
 
   constructor(roleRepository: RoleRepository) {
     this.roleRepository = roleRepository;
   }
 
-  async execute(deleteRoleDto: DeleteRoleDto): Promise<Role> {
-    const roleId = await this.roleRepository.findRoleById(deleteRoleDto.id);
+  async execute(dto: RoleIdPortDto): Promise<Role> {
+    const { success, error, data: schema } = RoleIdSchema.safeParse(dto);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const parsedSchema: RoleIdDto = {
+      id: parseInt(schema.id, 10),
+    };
+
+    const roleId = await this.roleRepository.findRoleById(parsedSchema.id);
     if (!roleId) {
       throw CustomError.notFound('No se ha encontrado el rol a eliminar');
     }
 
-    const deletedRole = await this.roleRepository.deleteRole(deleteRoleDto.id);
+    const deletedRole = await this.roleRepository.deleteRole(parsedSchema.id);
     if (!deletedRole) {
       throw CustomError.internalServer('No se pudo eliminar el rol');
     }

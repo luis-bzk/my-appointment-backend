@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const GetUserSchema = z.object({
+export const UserIdSchema = z.object({
   id: z
     .string({ required_error: 'El ID del usuario es requerido' })
     .refine((val) => !isNaN(parseInt(val)), {
@@ -8,8 +8,8 @@ export const GetUserSchema = z.object({
     }),
 });
 
-export type GetUserParamsDto = z.infer<typeof GetUserSchema>;
+export type UserIdPortDto = z.infer<typeof UserIdSchema>;
 
-export type GetUserDto = Omit<GetUserParamsDto, 'id'> & {
+export type UserIdDto = Omit<UserIdPortDto, 'id'> & {
   id: number;
 };

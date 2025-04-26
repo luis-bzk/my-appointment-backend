@@ -1,15 +1,15 @@
 import { Pool } from 'pg';
 
-import {
-  CreateUserRoleDto,
-  GetAllUsersRolesDto,
-  UpdateUserRoleDto,
-} from '../../domain/dtos/user_role';
 import { PostgresDatabase } from '../../data';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
 import { UserRoleDataSource } from '../../adapters/data_sources';
 import { UserRoleDB } from '../../data/interfaces';
+import {
+  CreateUserRoleDto,
+  GetAllUsersRolesDto,
+  UpdateUserRoleDto,
+} from '../../domain/schemas/user_role';
 
 export class UserRoleDataSourceImpl implements UserRoleDataSource {
   private pool: Pool;

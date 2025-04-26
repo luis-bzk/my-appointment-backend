@@ -1,22 +1,34 @@
 import { UserRole } from '../../entities';
-import { DeleteUserRoleDto } from '../../dtos/user_role';
 import { UserRoleRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
+import {
+  UserRoleIdDto,
+  UserRoleIdPortDto,
+  UserRoleIdSchema,
+} from '../../schemas/user_role';
 
-interface DeleteUserRoleUseCase {
-  execute(deleteUserRoleDto: DeleteUserRoleDto): Promise<UserRole>;
-}
-
-export class DeleteUserRole implements DeleteUserRoleUseCase {
+export class DeleteUserRoleUseCase {
   private readonly userRoleRepository: UserRoleRepository;
 
   constructor(userRoleRepository: UserRoleRepository) {
     this.userRoleRepository = userRoleRepository;
   }
 
-  async execute(deleteUserRoleDto: DeleteUserRoleDto): Promise<UserRole> {
+  async execute(dto: UserRoleIdPortDto): Promise<UserRole> {
+    const { success, error, data: schema } = UserRoleIdSchema.safeParse(dto);
+
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const parsedUserRole: UserRoleIdDto = {
+      ...schema,
+      id: parseInt(schema.id, 10),
+    };
+
     const userRole = await this.userRoleRepository.findUserRoleId(
-      deleteUserRoleDto.id,
+      parsedUserRole.id,
     );
     if (!userRole) {
       throw CustomError.notFound(
@@ -25,7 +37,7 @@ export class DeleteUserRole implements DeleteUserRoleUseCase {
     }
 
     const deletedUserRole = await this.userRoleRepository.delete(
-      deleteUserRoleDto.id,
+      parsedUserRole.id,
     );
     if (!deletedUserRole) {
       throw CustomError.internalServer(

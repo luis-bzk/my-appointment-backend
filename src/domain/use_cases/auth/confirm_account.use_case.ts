@@ -10,12 +10,12 @@ export class ConfirmAccount {
     this.authRepository = authRepository;
   }
 
-  async execute(object: ConfirmAccountDto): Promise<User> {
+  async execute(dto: ConfirmAccountDto): Promise<User> {
     const {
       success,
       error,
       data: schema,
-    } = ConfirmAccountSchema.safeParse(object);
+    } = ConfirmAccountSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);

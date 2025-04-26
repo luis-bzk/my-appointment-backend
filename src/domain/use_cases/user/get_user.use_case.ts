@@ -1,11 +1,7 @@
 import { User } from '../../entities';
 import { UserRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
-import {
-  GetUserDto,
-  GetUserParamsDto,
-  GetUserSchema,
-} from '../../schemas/user';
+import { UserIdDto, UserIdPortDto, UserIdSchema } from '../../schemas/user';
 
 export class GetUserUseCase {
   private readonly userRepository: UserRepository;
@@ -14,15 +10,15 @@ export class GetUserUseCase {
     this.userRepository = userRepository;
   }
 
-  async execute(params: GetUserParamsDto): Promise<User> {
-    const { success, error, data: schema } = GetUserSchema.safeParse(params);
+  async execute(dto: UserIdPortDto): Promise<User> {
+    const { success, error, data: schema } = UserIdSchema.safeParse(dto);
 
     if (!success) {
       const message = error.errors[0]?.message || 'Parámetros inválidos';
       throw CustomError.badRequest(message);
     }
 
-    const parsedSchema: GetUserDto = {
+    const parsedSchema: UserIdDto = {
       id: parseInt(schema.id, 10),
     };
 

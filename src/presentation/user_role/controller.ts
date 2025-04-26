@@ -1,18 +1,11 @@
 import { Request, Response } from 'express';
 
 import {
-  CreateUserRoleDto,
-  DeleteUserRoleDto,
-  GetAllUsersRolesDto,
-  GetUserRoleDto,
-  UpdateUserRoleDto,
-} from '../../domain/dtos/user_role';
-import {
-  CreateUserRole,
-  DeleteUserRole,
-  GetAllUsersRolesDetail,
-  GetUserRole,
-  UpdateUserRole,
+  CreateUserRoleUseCase,
+  DeleteUserRoleUseCase,
+  GetAllUsersRolesDetailUseCase,
+  GetUserRoleUseCase,
+  UpdateUserRoleUseCase,
 } from '../../domain/use_cases/user_role';
 import { CustomError } from '../../domain/errors';
 import {
@@ -20,10 +13,14 @@ import {
   UserRepository,
   UserRoleRepository,
 } from '../../adapters/repositories';
-import { GetUserUseCase, GetUsersById } from '../../domain/use_cases/user';
-import { GetUserDto } from '../../domain/dtos/user';
-import { GetRoleDto } from '../../domain/dtos/role';
-import { GetRole, GetRolesById } from '../../domain/use_cases/role';
+import {
+  GetUserUseCase,
+  GetUsersByIdUseCase,
+} from '../../domain/use_cases/user';
+import {
+  GetRoleUseCase,
+  GetRolesByIdUseCase,
+} from '../../domain/use_cases/role';
 
 export class UserRoleController {
   private readonly userRoleRepository: UserRoleRepository;
@@ -52,12 +49,9 @@ export class UserRoleController {
 
   createUserRole = async (req: Request, res: Response) => {
     try {
-      const [error, createUserRoleDto] = CreateUserRoleDto.create(req.body);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new CreateUserRole(this.userRoleRepository).execute(
-        createUserRoleDto!,
-      );
+      const data = await new CreateUserRoleUseCase(
+        this.userRoleRepository,
+      ).execute(req.body);
       return res.status(201).json(data);
     } catch (err) {
       this.handleError(err, res);
@@ -66,15 +60,12 @@ export class UserRoleController {
 
   updateUserRole = async (req: Request, res: Response) => {
     try {
-      const [error, updateUserRoleDto] = UpdateUserRoleDto.create(
-        req.body,
-        req.params,
-      );
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new UpdateUserRole(this.userRoleRepository).execute(
-        updateUserRoleDto!,
-      );
+      const data = await new UpdateUserRoleUseCase(
+        this.userRoleRepository,
+      ).execute({
+        ...req.params,
+        ...req.body,
+      });
       return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);
@@ -83,26 +74,19 @@ export class UserRoleController {
 
   getUserRole = async (req: Request, res: Response) => {
     try {
-      const [error, getUserRoleDto] = GetUserRoleDto.create(req.params);
-      if (error) return res.status(400).json({ message: error });
+      const userRole = await new GetUserRoleUseCase(
+        this.userRoleRepository,
+      ).execute({
+        id: req.params.id,
+      });
 
-      const userRole = await new GetUserRole(this.userRoleRepository).execute(
-        getUserRoleDto!,
-      );
-
-      const [errorUser, getUserDto] = GetUserDto.create({
+      const user = await new GetUserUseCase(this.userRepository).execute({
         id: userRole.id_user.toString(),
       });
-      if (errorUser) return res.status(400).json({ message: errorUser });
-      const user = await new GetUserUseCase(this.userRepository).execute(
-        getUserDto!,
-      );
 
-      const [erroRole, getRoleDto] = GetRoleDto.create({
+      const role = await new GetRoleUseCase(this.roleRepository).execute({
         id: userRole.id_role.toString(),
       });
-      if (erroRole) return res.status(400).json({ message: erroRole });
-      const role = await new GetRole(this.roleRepository).execute(getRoleDto!);
 
       return res.status(200).json({ user, role });
     } catch (err) {
@@ -112,20 +96,16 @@ export class UserRoleController {
 
   getAllUsersRoles = async (req: Request, res: Response) => {
     try {
-      const [error, getAllUsersRolesDto] = GetAllUsersRolesDto.create(
-        req.query,
-      );
-      if (error) return res.status(400).json({ message: error });
-      const userRoles = await new GetAllUsersRolesDetail(
+      const userRoles = await new GetAllUsersRolesDetailUseCase(
         this.userRoleRepository,
-      ).execute(getAllUsersRolesDto!);
+      ).execute(req.query);
 
       const usersIds = userRoles.map((userRole) => userRole.id_user);
       const rolesIds = userRoles.map((userRole) => userRole.id_role);
 
       const [users, roles] = await Promise.all([
-        new GetUsersById(this.userRepository).execute(usersIds),
-        new GetRolesById(this.roleRepository).execute(rolesIds),
+        new GetUsersByIdUseCase(this.userRepository).execute({ ids: usersIds }),
+        new GetRolesByIdUseCase(this.roleRepository).execute(rolesIds),
       ]);
 
       const usersMap = new Map(users.map((u) => [u.id, u]));
@@ -144,12 +124,9 @@ export class UserRoleController {
 
   deleteUserRole = async (req: Request, res: Response) => {
     try {
-      const [error, deleteUserRoleDto] = DeleteUserRoleDto.create(req.params);
-      if (error) return res.status(400).json({ message: error });
-
-      const data = await new DeleteUserRole(this.userRoleRepository).execute(
-        deleteUserRoleDto!,
-      );
+      const data = await new DeleteUserRoleUseCase(
+        this.userRoleRepository,
+      ).execute({ id: req.params.id });
       return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);

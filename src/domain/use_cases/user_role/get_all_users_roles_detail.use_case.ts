@@ -1,19 +1,36 @@
 import { UserRole } from '../../entities';
 import { UserRoleRepository } from '../../../adapters/repositories';
-import { GetAllUsersRolesDto } from '../../dtos/user_role';
+import {
+  GetAllUserRolesSchema,
+  GetAllUsersRolesDto,
+  GetAllUsersRolesPortDto,
+} from '../../schemas/user_role';
+import { CustomError } from '../../errors';
 
-interface GetAllUsersRolesDetailUseCase {
-  execute(getAllUsersRolesDto: GetAllUsersRolesDto): Promise<UserRole[]>;
-}
-
-export class GetAllUsersRolesDetail implements GetAllUsersRolesDetailUseCase {
+export class GetAllUsersRolesDetailUseCase {
   private readonly userRoleRepository: UserRoleRepository;
 
   constructor(userRoleRepository: UserRoleRepository) {
     this.userRoleRepository = userRoleRepository;
   }
 
-  async execute(getAllUsersRolesDto: GetAllUsersRolesDto): Promise<UserRole[]> {
-    return this.userRoleRepository.getAll(getAllUsersRolesDto);
+  async execute(dto: GetAllUsersRolesPortDto): Promise<UserRole[]> {
+    const {
+      success,
+      error,
+      data: schema,
+    } = GetAllUserRolesSchema.safeParse(dto);
+
+    if (!success) {
+      const message = error.errors[0]?.message || 'Parámetros inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const parsedSchema: GetAllUsersRolesDto = {
+      limit: parseInt(schema.limit ?? '', 10),
+      offset: parseInt(schema.offset ?? '', 10),
+    };
+
+    return this.userRoleRepository.getAll(parsedSchema);
   }
 }

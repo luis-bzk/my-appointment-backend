@@ -1,11 +1,7 @@
 import { Role } from '../../entities';
 import { RoleRepository } from '../../../adapters/repositories';
 
-interface GetRolesByIdUseCase {
-  execute(ids: number[]): Promise<Role[]>;
-}
-
-export class GetRolesById implements GetRolesByIdUseCase {
+export class GetRolesByIdUseCase {
   private readonly roleRepository: RoleRepository;
 
   constructor(roleRepository: RoleRepository) {

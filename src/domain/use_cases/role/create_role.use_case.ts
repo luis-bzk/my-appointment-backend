@@ -1,28 +1,31 @@
 import { Role } from '../../entities';
-import { CreateRoleDto } from '../../dtos/role';
 import { RoleRepository } from '../../../adapters/repositories';
 import { CustomError } from '../../errors';
+import { CreateRoleDto, CreateRoleSchema } from '../../schemas/role';
 
-interface CreateRoleUseCase {
-  execute(createRoleDto: CreateRoleDto): Promise<Role>;
-}
-
-export class CreateRole implements CreateRoleUseCase {
+export class CreateRoleUseCase {
   private readonly roleRepository: RoleRepository;
 
   constructor(roleRepository: RoleRepository) {
     this.roleRepository = roleRepository;
   }
 
-  async execute(createRoleDto: CreateRoleDto): Promise<Role> {
+  async execute(body: CreateRoleDto): Promise<Role> {
+    const { success, error, data: schema } = CreateRoleSchema.safeParse(body);
+
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
     const roleName = await this.roleRepository.findRoleByName(
-      createRoleDto.name.toLocaleLowerCase(),
+      schema.name.toLocaleLowerCase(),
     );
     if (!roleName) {
       throw CustomError.conflict('Ya existe un rol con el nombre ingresado');
     }
 
-    const roleCreated = await this.roleRepository.createRole(createRoleDto);
+    const roleCreated = await this.roleRepository.createRole(schema);
     if (!roleCreated) {
       throw CustomError.internalServer('No se pudo crear el rol');
     }

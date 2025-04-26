@@ -1,10 +1,10 @@
 import { Session } from '../../entities';
 import { CustomError } from '../../errors';
 import { SessionRepository } from '../../../adapters/repositories';
-import { RequireSessionDto, RequireSessionSchema } from '../../schemas/session';
+import { SessionJwtDto, SessionJwtSchema } from '../../schemas/session';
 
 interface RequireSessionUseCase {
-  execute(requireSessionDto: RequireSessionDto): Promise<Session>;
+  execute(requireSessionDto: SessionJwtDto): Promise<Session>;
 }
 
 export class RequireSession implements RequireSessionUseCase {
@@ -14,12 +14,8 @@ export class RequireSession implements RequireSessionUseCase {
     this.sessionRepository = sessionRepository;
   }
 
-  async execute(params: RequireSessionDto): Promise<Session> {
-    const {
-      success,
-      error,
-      data: schema,
-    } = RequireSessionSchema.safeParse(params);
+  async execute(params: SessionJwtDto): Promise<Session> {
+    const { success, error, data: schema } = SessionJwtSchema.safeParse(params);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);

@@ -1,28 +1,40 @@
 import { CustomError } from '../../errors';
 import { Role } from '../../entities';
 import { RoleRepository } from '../../../adapters/repositories';
-import { UpdateRoleDto } from '../../dtos/role';
+import {
+  UpdateRoleDto,
+  UpdateRolePortDto,
+  UpdateRoleSchema,
+} from '../../schemas/role';
 
-interface UpdateRoleUseCase {
-  execute(updateRoleDto: UpdateRoleDto): Promise<Role>;
-}
-
-export class UpdateRole implements UpdateRoleUseCase {
+export class UpdateRoleUseCase {
   private readonly roleRepository: RoleRepository;
 
   constructor(roleRepository: RoleRepository) {
     this.roleRepository = roleRepository;
   }
 
-  async execute(updateRoleDto: UpdateRoleDto): Promise<Role> {
-    const roleId = await this.roleRepository.findRoleById(updateRoleDto.id);
+  async execute(dto: UpdateRolePortDto): Promise<Role> {
+    const { success, error, data: schema } = UpdateRoleSchema.safeParse(dto);
+
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const schemaParsed: UpdateRoleDto = {
+      ...schema,
+      id: parseInt(schema.id, 10),
+    };
+
+    const roleId = await this.roleRepository.findRoleById(schemaParsed.id);
     if (!roleId) {
       throw CustomError.notFound('No se ha encontrado el rol a actualizar');
     }
 
     const roleNameId = await this.roleRepository.findRoleByNameId(
-      updateRoleDto.id,
-      updateRoleDto.name,
+      schemaParsed.id,
+      schema.name,
     );
     if (roleNameId) {
       throw CustomError.conflict(
@@ -30,7 +42,7 @@ export class UpdateRole implements UpdateRoleUseCase {
       );
     }
 
-    const updatedRole = await this.roleRepository.updateRole(updateRoleDto);
+    const updatedRole = await this.roleRepository.updateRole(schemaParsed);
     if (!updatedRole) {
       throw CustomError.internalServer('No se pudo actualizar el rol');
     }

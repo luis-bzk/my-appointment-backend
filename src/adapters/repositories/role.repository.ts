@@ -1,9 +1,9 @@
+import { Role } from '../../domain/entities';
 import {
   CreateRoleDto,
   GetAllRolesDto,
   UpdateRoleDto,
-} from '../../domain/dtos/role';
-import { Role } from '../../domain/entities';
+} from '../../domain/schemas/role';
 
 export abstract class RoleRepository {
   abstract findRoleByName(name: string): Promise<Role | null>;

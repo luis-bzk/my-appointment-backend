@@ -3,7 +3,7 @@ import {
   CreateRoleDto,
   GetAllRolesDto,
   UpdateRoleDto,
-} from '../../domain/dtos/role';
+} from '../../domain/schemas/role';
 
 export abstract class RoleDataSource {
   abstract findRoleByName(name: string): Promise<RoleDB>;

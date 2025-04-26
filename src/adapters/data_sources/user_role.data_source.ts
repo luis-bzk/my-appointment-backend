@@ -1,9 +1,9 @@
+import { UserRoleDB } from '../../data/interfaces';
 import {
   CreateUserRoleDto,
   GetAllUsersRolesDto,
   UpdateUserRoleDto,
-} from '../../domain/dtos/user_role';
-import { UserRoleDB } from '../../data/interfaces';
+} from '../../domain/schemas/user_role';
 
 export abstract class UserRoleDataSource {
   abstract findUserRole(
