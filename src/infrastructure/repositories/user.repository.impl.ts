@@ -22,7 +22,7 @@ export class UserRepositoryImpl implements UserRepository {
 
   async createNewUser(createUserDto: CreateUserDto): Promise<User | null> {
     const user = await this.userDataSource.createNewUser(createUserDto);
-    return UserMapper.entityFromObject(user);
+    return UserMapper.entityFromObject(user, { includePassword: true });
   }
 
   async findUserByEmailId(id: number, email: string): Promise<User | null> {

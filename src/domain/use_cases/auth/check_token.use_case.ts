@@ -23,6 +23,6 @@ export class CheckTokenUseCase {
         'No se ha encontrado un usuario asociado a este token',
       );
     }
-    return { ...userToken, password: '' };
+    return userToken;
   }
 }

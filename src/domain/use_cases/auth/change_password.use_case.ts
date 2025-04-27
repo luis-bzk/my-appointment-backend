@@ -43,6 +43,6 @@ export class ChangePasswordUseCase {
         'No se ha podido actualizar la contraseña del usuario',
       );
     }
-    return { ...userUpdated, password: '' };
+    return userUpdated;
   }
 }

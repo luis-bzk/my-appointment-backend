@@ -45,6 +45,6 @@ export class UpdateUserUseCase {
       throw CustomError.conflict('No se pudo actualizar el usuario');
     }
 
-    return { ...updatedEmail, password: '' };
+    return updatedEmail;
   }
 }

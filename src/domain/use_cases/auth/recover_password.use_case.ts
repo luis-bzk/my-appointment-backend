@@ -32,6 +32,6 @@ export class RecoverPasswordUseCase {
     if (!userWithToken) {
       throw CustomError.internalServer('Error al generar el token');
     }
-    return { ...userWithToken, password: '' };
+    return user;
   }
 }

@@ -25,7 +25,7 @@ export class GoogleAuthCallbackUseCase {
 
     const user = await this.authRepository.findUserByEmail(schema.email);
     if (user) {
-      return { ...user, password: '' };
+      return user;
     }
 
     const generatedPassword = this.hashPassword(
@@ -39,6 +39,6 @@ export class GoogleAuthCallbackUseCase {
     if (!createdUser) {
       throw CustomError.internalServer('Error al crear el usuario con google');
     }
-    return { ...createdUser, password: '' };
+    return createdUser;
   }
 }

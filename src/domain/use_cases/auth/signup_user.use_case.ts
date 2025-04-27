@@ -39,6 +39,6 @@ export class SignUpUserUseCase {
       throw CustomError.internalServer('No se pudo crear el usuario');
     }
 
-    return { ...userCreated, password: '' };
+    return userCreated;
   }
 }

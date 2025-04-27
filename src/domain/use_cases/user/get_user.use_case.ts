@@ -27,6 +27,6 @@ export class GetUserUseCase {
       throw CustomError.notFound('No se ha encontrado el usuario solicitado');
     }
 
-    return { ...user, password: '' };
+    return user;
   }
 }

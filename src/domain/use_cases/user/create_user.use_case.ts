@@ -29,6 +29,6 @@ export class CreateUserUseCase {
       throw CustomError.internalServer('No se pudo crear el usuario');
     }
 
-    return { ...user, password: '' };
+    return user;
   }
 }

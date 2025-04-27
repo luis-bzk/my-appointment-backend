@@ -32,6 +32,6 @@ export class ConfirmAccount {
     if (!userCleanToken) {
       throw CustomError.internalServer('Error al confirmar la cuenta');
     }
-    return { ...userCleanToken, password: '' };
+    return userCleanToken;
   }
 }

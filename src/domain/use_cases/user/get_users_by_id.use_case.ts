@@ -19,6 +19,6 @@ export class GetUsersByIdUseCase {
     }
 
     const users = await this.userRepository.getUsersById(schema.ids);
-    return users.map((u) => ({ ...u, password: '' }));
+    return users;
   }
 }

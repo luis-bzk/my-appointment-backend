@@ -35,6 +35,6 @@ export class LoginUserUseCase {
       throw CustomError.badRequest('El usuario o contraseña es incorrecto');
     }
 
-    return { ...user, password: '' };
+    return user;
   }
 }

@@ -28,6 +28,6 @@ export class GetAllUsersUseCase {
     };
 
     const users = await this.userRepository.getAllUsers(parsedSchema);
-    return users.map((u) => ({ ...u, password: '' }));
+    return users;
   }
 }

@@ -32,6 +32,6 @@ export class DeleteUserUseCase {
       throw CustomError.internalServer('No se ha podido eliminar el usuario');
     }
 
-    return { ...deletedUser, password: '' };
+    return deletedUser;
   }
 }
