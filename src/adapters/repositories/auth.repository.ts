@@ -8,6 +8,8 @@ import {
 export abstract class AuthRepository {
   abstract findUserByEmail(email: string): Promise<User | null>;
 
+  abstract findUserByEmailComplete(email: string): Promise<User | null>;
+
   abstract createUser(signupUserDto: SignupUserDto): Promise<User | null>;
 
   abstract generateToken(userId: number): Promise<User | null>;

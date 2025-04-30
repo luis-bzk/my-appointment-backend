@@ -1,4 +1,4 @@
-import { UserDB } from '../../data/interfaces';
+import { TotalQueryDB, UserDB } from '../../data/interfaces';
 import {
   CreateUserDto,
   GetAllUsersDto,
@@ -17,6 +17,8 @@ export abstract class UserDataSource {
   abstract findUserById(id: number): Promise<UserDB | null>;
 
   abstract getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<UserDB[]>;
+
+  abstract countAvailableUsers(): Promise<TotalQueryDB | null>;
 
   abstract deleteUser(id: number): Promise<UserDB | null>;
 

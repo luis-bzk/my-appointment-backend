@@ -20,6 +20,11 @@ export class AuthRepositoryImpl implements AuthRepository {
     return UserMapper.entityFromObject(user);
   }
 
+  async findUserByEmailComplete(email: string): Promise<User | null> {
+    const user = await this.authDataSource.findUserByEmail(email);
+    return UserMapper.entityFromObject(user, { includePassword: true });
+  }
+
   async createUser(signupUserDto: SignupUserDto): Promise<User | null> {
     const user = await this.authDataSource.createUser(signupUserDto);
     return UserMapper.entityFromObject(user);

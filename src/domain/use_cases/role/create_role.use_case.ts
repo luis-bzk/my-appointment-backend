@@ -21,7 +21,7 @@ export class CreateRoleUseCase {
     const roleName = await this.roleRepository.findRoleByName(
       schema.name.toLocaleLowerCase(),
     );
-    if (!roleName) {
+    if (roleName) {
       throw CustomError.conflict('Ya existe un rol con el nombre ingresado');
     }
 

@@ -4,14 +4,14 @@ export const GetAllRolesSchema = z.object({
   limit: z
     .string()
     .optional()
-    .refine((val) => val && !isNaN(parseInt(val)), {
+    .refine((val) => val === undefined || !isNaN(parseInt(val)), {
       message: 'El parámetro "limit" debe ser un número válido',
     }),
 
   offset: z
     .string()
     .optional()
-    .refine((val) => val && !isNaN(parseInt(val)), {
+    .refine((val) => val === undefined || !isNaN(parseInt(val)), {
       message: 'El parámetro "offset" debe ser un número válido',
     }),
 });

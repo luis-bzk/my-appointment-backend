@@ -7,4 +7,5 @@ export interface UserDB {
   use_token: string;
   use_created_date: Date;
   use_record_status: string;
+  use_google_id: string;
 }

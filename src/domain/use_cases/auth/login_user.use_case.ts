@@ -22,14 +22,19 @@ export class LoginUserUseCase {
       throw CustomError.badRequest(message);
     }
 
-    const user = await this.authRepository.findUserByEmail(schema.email);
+    const user = await this.authRepository.findUserByEmailComplete(
+      schema.email,
+    );
     if (!user) {
       throw CustomError.badRequest('El usuario o contraseña es incorrecto');
     }
     if (user.token) {
       throw CustomError.forbidden('El usuario no se encuentra verificado');
     }
-
+    console.log({
+      password: schema.password,
+      hashed: user.password,
+    });
     const isMatching = this.comparePassword(schema.password, user.password);
     if (!isMatching) {
       throw CustomError.badRequest('El usuario o contraseña es incorrecto');

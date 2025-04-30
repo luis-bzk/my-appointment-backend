@@ -14,7 +14,9 @@ export class GetAllUsersUseCase {
     this.userRepository = userRepository;
   }
 
-  async execute(dto: GetAllUsersPortDto): Promise<User[]> {
+  async execute(
+    dto: GetAllUsersPortDto,
+  ): Promise<{ totalUsers: number; users: User[] }> {
     const { success, error, data: schema } = GetAllUsersSchema.safeParse(dto);
 
     if (!success) {
@@ -23,11 +25,17 @@ export class GetAllUsersUseCase {
     }
 
     const parsedSchema: GetAllUsersDto = {
+      ...schema,
       limit: parseInt(schema.limit ?? '', 10),
       offset: parseInt(schema.offset ?? '', 10),
     };
 
     const users = await this.userRepository.getAllUsers(parsedSchema);
-    return users;
+
+    const totalUsers = await this.userRepository.countAvailableUsers();
+    if (!totalUsers) {
+      throw CustomError.notFound('No se ha encontrado el total de usuarios');
+    }
+    return { totalUsers: totalUsers.total, users };
   }
 }

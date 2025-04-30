@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 
 import { PostgresDatabase } from '../../data';
 import { GeneratorValues } from '../../utils';
-import { UserDB } from '../../data/interfaces';
+import { TotalQueryDB, UserDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { BcryptAdapter } from '../../config/bcrypt';
 import { RECORD_STATUS } from '../../shared/constants';
@@ -143,38 +143,84 @@ export class UserDataSourceImpl implements UserDataSource {
   }
 
   async getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<UserDB[]> {
-    const { limit, offset } = getAllUsersDto;
-
+    const { limit, offset, filter } = getAllUsersDto;
+    console.log({ limit, offset, filter });
     try {
-      const users = await this.pool.query<UserDB>(
-        `select use.use_id, use.use_name, use.use_last_name, use.use_email,
-          use.use_password, use.use_token, use.use_created_date, use.use_record_status
-        from core.core_user use
-        where use.use_record_status = $1
-        order by use.use_id desc limit $2 offset $3;`,
-        [RECORD_STATUS.AVAILABLE, limit, offset],
-      );
+      let query = `
+        SELECT use.use_id, use.use_name, use.use_last_name, use.use_email,
+               use.use_password, use.use_token, use.use_created_date, use.use_record_status
+        FROM core.core_user use
+        WHERE use.use_record_status = $1
+      `;
+      const params: any[] = [RECORD_STATUS.AVAILABLE];
+      let paramIndex = 2;
+
+      if (filter) {
+        query += `
+          AND (
+            use.use_name ILIKE $${paramIndex} OR
+            use.use_last_name ILIKE $${paramIndex} OR
+            use.use_email ILIKE $${paramIndex}
+          )
+        `;
+        params.push(`%${filter}%`);
+        paramIndex++;
+      }
+
+      query += ` ORDER BY use.use_id DESC`;
+
+      if (limit) {
+        query += ` LIMIT $${paramIndex++}`;
+        params.push(limit);
+      }
+
+      if (offset) {
+        query += ` OFFSET $${paramIndex++}`;
+        params.push(offset);
+      }
+
+      const users = await this.pool.query<UserDB>(query, params);
 
       return users.rows;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
+      console.log(error);
+      throw CustomError.internalServer(
+        `Error en el Data Source al obtener usuarios`,
+      );
+    }
+  }
 
-      throw CustomError.internalServer(`Error en el Data Source al obtener`);
+  async countAvailableUsers(): Promise<TotalQueryDB | null> {
+    try {
+      const userFound = await this.pool.query<TotalQueryDB>(
+        `select count(cu.use_id) as total from core.core_user cu where cu.use_record_status = $1;`,
+        [RECORD_STATUS.AVAILABLE],
+      );
+
+      return userFound.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer('Error en el Data Source al obtener');
     }
   }
 
   async deleteUser(id: number): Promise<UserDB | null> {
     try {
-      // delete user
-      const deleted = await this.pool.query<UserDB>(
-        `delete from core.core_user
-        where use_id = $1 returning *;`,
-        [id],
+      const updatedUser = await this.pool.query<UserDB>(
+        `update core.core_user
+        set use_record_status = $1
+        where use_id = $2 and use_record_status = $3
+        returning *;`,
+        [RECORD_STATUS.UNAVAILABLE, id, RECORD_STATUS.AVAILABLE],
       );
 
-      return deleted.rows[0];
+      return updatedUser.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -192,7 +238,7 @@ export class UserDataSourceImpl implements UserDataSource {
         `select cu.use_id, cu.use_name, cu.use_last_name, cu.use_email, cu.use_password,
         cu.use_token, cu.use_created_date, cu.use_record_status 
         from core.core_user cu where cu.use_id in (${placeholders});`,
-        [ids],
+        [...ids],
       );
 
       return users.rows;

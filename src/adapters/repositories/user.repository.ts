@@ -1,4 +1,4 @@
-import { User } from '../../domain/entities';
+import { TotalQuery, User } from '../../domain/entities';
 import {
   CreateUserDto,
   GetAllUsersDto,
@@ -17,6 +17,8 @@ export abstract class UserRepository {
   abstract findUserById(id: number): Promise<User | null>;
 
   abstract getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<User[]>;
+
+  abstract countAvailableUsers(): Promise<TotalQuery | null>;
 
   abstract deleteUser(id: number): Promise<User | null>;
 

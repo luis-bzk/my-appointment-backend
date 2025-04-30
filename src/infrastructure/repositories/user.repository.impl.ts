@@ -1,7 +1,7 @@
-import { User } from '../../domain/entities';
+import { TotalQuery, User } from '../../domain/entities';
 import { UserRepository } from '../../adapters/repositories';
 import { UserDataSource } from '../../adapters/data_sources';
-import { UserMapper } from '../mappers';
+import { TotalQueryMapper, UserMapper } from '../mappers';
 import {
   CreateUserDto,
   GetAllUsersDto,
@@ -43,6 +43,11 @@ export class UserRepositoryImpl implements UserRepository {
   async getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<User[]> {
     const users = await this.userDataSource.getAllUsers(getAllUsersDto);
     return UserMapper.entitiesFromArray(users);
+  }
+
+  async countAvailableUsers(): Promise<TotalQuery | null> {
+    const row = await this.userDataSource.countAvailableUsers();
+    return TotalQueryMapper.mapTotalQuery(row);
   }
 
   async deleteUser(id: number): Promise<User | null> {

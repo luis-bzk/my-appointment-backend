@@ -35,7 +35,6 @@ export class UserRoleRoutes {
     router.put('/update/:id', controller.updateUserRole);
     router.get('/get/:id', controller.getUserRole);
     router.get('/get-all', controller.getAllUsersRoles);
-    router.get('/get-all/detail', controller.getAllUsersRoles);
     router.delete('/delete/:id', controller.deleteUserRole);
 
     return router;

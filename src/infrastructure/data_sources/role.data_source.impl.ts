@@ -103,8 +103,8 @@ export class RoleDataSourceImpl implements RoleDataSource {
       const updated = await this.pool.query<RoleDB>(
         `update core.core_role
         set rol_name = $1, rol_description = $2
-        where rol_id = $3 returning *;`,
-        [name, description, id],
+        where rol_id = $3 and rol_record_status = $4 returning *;`,
+        [name, description, id, RECORD_STATUS.AVAILABLE],
       );
 
       return updated.rows[0];
@@ -119,14 +119,26 @@ export class RoleDataSourceImpl implements RoleDataSource {
 
   async getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<RoleDB[]> {
     const { limit, offset } = getAllRolesDto;
+
     try {
-      const roles = await this.pool.query<RoleDB>(
-        `select cr.rol_id, cr.rol_name, cr.rol_description,
-          cr.rol_created_date, cr.rol_record_status
+      let query = `select cr.rol_id, cr.rol_name, cr.rol_description,
+        cr.rol_created_date, cr.rol_record_status
         from core.core_role cr
-        where cr.rol_record_status = $1 order by cr.rol_name limit $2 offset $3;`,
-        [RECORD_STATUS.AVAILABLE, limit, offset],
-      );
+        where cr.rol_record_status = $1 order by cr.rol_name`;
+      const params: any[] = [RECORD_STATUS.AVAILABLE];
+      let paramIndex = 2;
+
+      if (limit) {
+        query += ` limit $${paramIndex++}`;
+        params.push(limit);
+      }
+
+      if (offset) {
+        query += ` offset $${paramIndex++}`;
+        params.push(offset);
+      }
+
+      const roles = await this.pool.query<RoleDB>(query, params);
 
       return roles.rows;
     } catch (error) {
@@ -142,13 +154,14 @@ export class RoleDataSourceImpl implements RoleDataSource {
 
   async deleteRole(id: number): Promise<RoleDB> {
     try {
-      const deletedRole = await this.pool.query(
-        `delete from core.core_role
-        where rol_id = $1 returning *;`,
-        [id],
+      const updated = await this.pool.query<RoleDB>(
+        `update core.core_role
+        set rol_record_status = $1
+        where rol_id = $2 and rol_record_status = $3 returning *;`,
+        [RECORD_STATUS.UNAVAILABLE, id, RECORD_STATUS.AVAILABLE],
       );
 
-      return deletedRole.rows[0];
+      return updated.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -165,7 +178,7 @@ export class RoleDataSourceImpl implements RoleDataSource {
       const roles = await this.pool.query<RoleDB>(
         `select cr.rol_id, cr.rol_name, cr.rol_description, cr.rol_created_date, cr.rol_record_status
         from core.core_role cr where rol_id in (${placeholders})`,
-        [ids],
+        [...ids],
       );
 
       return roles.rows;

@@ -12,3 +12,4 @@ export * from './payment_method.db';
 export * from './notification_type.db';
 export * from './notification.db';
 export * from './session.db';
+export * from './common.db';

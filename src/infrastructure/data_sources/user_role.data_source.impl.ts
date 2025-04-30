@@ -118,8 +118,8 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
       const updated = await this.pool.query<UserRoleDB>(
         `update core.core_user_role
         set id_user = $1, id_role = $2
-        where uro_id = $3 returning *;`,
-        [id_user, id_role, id],
+        where uro_id = $3 and uro_record_status = $4 returning *;`,
+        [id_user, id_role, id, RECORD_STATUS.AVAILABLE],
       );
       return updated.rows[0];
     } catch (error) {
@@ -135,15 +135,26 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
     getAllUsersRolesDto: GetAllUsersRolesDto,
   ): Promise<UserRoleDB[]> {
     const { limit, offset } = getAllUsersRolesDto;
+
     try {
-      const registers = await this.pool.query<UserRoleDB>(
-        `select cur.uro_id, cur.uro_created_date, cur.uro_record_status,
-        cur.id_user, cur.id_role
+      let query = `select cur.uro_id, cur.uro_created_date, cur.uro_record_status,
+               cur.id_user, cur.id_role
         from core.core_user_role cur
-        where cur.uro_record_status = $1
-        order by cur.uro_id desc limit $2 offset $3;`,
-        [RECORD_STATUS.AVAILABLE, limit, offset],
-      );
+        where cur.uro_record_status = $1 order by cur.uro_id desc`;
+      const params: any[] = [RECORD_STATUS.AVAILABLE];
+      let paramIndex = 2;
+
+      if (limit) {
+        query += ` limit $${paramIndex++}`;
+        params.push(limit);
+      }
+
+      if (offset) {
+        query += ` offset $${paramIndex++}`;
+        params.push(offset);
+      }
+
+      const registers = await this.pool.query<UserRoleDB>(query, params);
 
       return registers.rows;
     } catch (error) {
@@ -159,17 +170,13 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
 
   async deleteUserRole(id: number): Promise<UserRoleDB> {
     try {
-      // delete
-      const deleted = await this.pool.query(
-        `delete from core.core_user_role
-        where
-          uro_id = $1
-        returning
-          *;`,
-        [id],
+      const updated = await this.pool.query<UserRoleDB>(
+        `update core.core_user_role
+        set uro_record_status = $1
+        where uro_id = $2 and uro_record_status = $3 returning *;`,
+        [RECORD_STATUS.UNAVAILABLE, id, RECORD_STATUS.AVAILABLE],
       );
-
-      return deleted.rows[0];
+      return updated.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

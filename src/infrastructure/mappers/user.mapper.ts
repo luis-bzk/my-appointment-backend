@@ -19,6 +19,7 @@ export class UserMapper {
       obj.use_token,
       obj.use_created_date,
       obj.use_record_status,
+      obj.use_google_id,
     );
   }
 
