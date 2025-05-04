@@ -18,7 +18,7 @@ import {
   IdentificationTypeDetailDB,
 } from '../../data/interfaces';
 import { RECORD_STATUS } from '../../shared/constants';
-import { IdentificationTypeDataSource } from '../../adapters/data_sources';
+import { IdentificationTypeDataSource } from '../../ports/data_sources';
 import { IdentificationTypeMapper } from '../mappers/identification_type.mapper';
 
 export class IdentificationTypeDataSourceImpl

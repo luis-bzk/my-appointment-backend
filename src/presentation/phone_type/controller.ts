@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PhoneTypeRepository } from '../../adapters/repositories';
+import { PhoneTypeRepository } from '../../ports/repositories';
 import { CustomError } from '../../domain/errors';
 import {
   CreatePhoneTypeDto,

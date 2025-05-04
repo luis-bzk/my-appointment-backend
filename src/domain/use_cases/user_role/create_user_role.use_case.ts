@@ -1,5 +1,5 @@
 import { UserRole } from '../../entities';
-import { UserRoleRepository } from '../../../adapters/repositories';
+import { UserRoleRepository } from '../../../ports/repositories';
 import { CustomError } from '../../errors';
 import {
   CreateUserRoleDto,

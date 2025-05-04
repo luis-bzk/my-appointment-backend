@@ -1,6 +1,6 @@
 import { User } from '../../entities';
 import { CustomError } from '../../errors';
-import { UserRepository } from '../../../adapters/repositories';
+import { UserRepository } from '../../../ports/repositories';
 import {
   UpdateUserDto,
   UpdateUserParamsDto,

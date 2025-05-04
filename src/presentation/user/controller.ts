@@ -8,7 +8,7 @@ import {
   UpdateUserUseCase,
 } from '../../domain/use_cases/user';
 import { CustomError } from '../../domain/errors';
-import { UserRepository } from '../../adapters/repositories';
+import { UserRepository } from '../../ports/repositories';
 
 export class UserController {
   private readonly userRepository: UserRepository;

@@ -1,6 +1,6 @@
 import { GetAllPaymentMethodsDto } from '../../dtos/payment_method';
 import { PaymentMethod } from '../../entities';
-import { PaymentMethodRepository } from '../../../adapters/repositories';
+import { PaymentMethodRepository } from '../../../ports/repositories';
 
 interface GetAllPaymentMethodUseCase {
   execute(

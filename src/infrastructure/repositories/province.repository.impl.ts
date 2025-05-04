@@ -1,6 +1,6 @@
 import { Province } from '../../domain/entities';
-import { ProvinceRepository } from '../../adapters/repositories';
-import { ProvinceDataSource } from '../../adapters/data_sources';
+import { ProvinceRepository } from '../../ports/repositories';
+import { ProvinceDataSource } from '../../ports/data_sources';
 import {
   CreateProvinceDto,
   DeleteProvinceDto,

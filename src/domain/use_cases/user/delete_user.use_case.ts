@@ -1,5 +1,5 @@
 import { User } from '../../entities';
-import { UserRepository } from '../../../adapters/repositories';
+import { UserRepository } from '../../../ports/repositories';
 import { CustomError } from '../../errors';
 import { UserIdDto, UserIdPortDto, UserIdSchema } from '../../schemas/user';
 

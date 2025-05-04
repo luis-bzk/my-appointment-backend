@@ -1,5 +1,5 @@
 import { Role } from '../../entities';
-import { RoleRepository } from '../../../adapters/repositories';
+import { RoleRepository } from '../../../ports/repositories';
 import { CustomError } from '../../errors';
 import { RoleIdDto, RoleIdPortDto, RoleIdSchema } from '../../schemas/role';
 

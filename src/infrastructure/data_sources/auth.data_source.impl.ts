@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 
-import { AuthDataSource } from '../../adapters/data_sources';
+import { AuthDataSource } from '../../ports/data_sources';
 import { CustomError } from '../../domain/errors';
 import { GeneratorValues } from '../../utils';
 import { PostgresDatabase } from '../../data';

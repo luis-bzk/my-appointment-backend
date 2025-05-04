@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { PostgresDatabase } from '../../data';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
-import { UserRoleDataSource } from '../../adapters/data_sources';
+import { UserRoleDataSource } from '../../ports/data_sources';
 import { UserRoleDB } from '../../data/interfaces';
 import {
   CreateUserRoleDto,

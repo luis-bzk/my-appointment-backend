@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 
 import { PostgresDatabase } from '../../data';
 import { NotificationType } from '../../domain/entities';
-import { NotificationTypeDataSource } from '../../adapters/data_sources';
+import { NotificationTypeDataSource } from '../../ports/data_sources';
 import {
   CreateNotificationTypeDto,
   DeleteNotificationTypeDto,

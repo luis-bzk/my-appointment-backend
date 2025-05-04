@@ -1,6 +1,6 @@
 import { TotalQuery, User } from '../../domain/entities';
-import { UserRepository } from '../../adapters/repositories';
-import { UserDataSource } from '../../adapters/data_sources';
+import { UserRepository } from '../../ports/repositories';
+import { UserDataSource } from '../../ports/data_sources';
 import { TotalQueryMapper, UserMapper } from '../mappers';
 import {
   CreateUserDto,

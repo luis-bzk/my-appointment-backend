@@ -1,7 +1,7 @@
 import { BcryptAdapter } from '../../../config';
 import { User } from '../../entities';
 import { CustomError } from '../../errors';
-import { AuthRepository } from '../../../adapters/repositories';
+import { AuthRepository } from '../../../ports/repositories';
 import { SignupUserDto, SignupUserSchema } from '../../schemas/auth';
 
 type HashFunction = (password: string) => string;

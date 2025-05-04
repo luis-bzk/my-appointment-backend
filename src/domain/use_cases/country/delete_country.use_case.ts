@@ -1,6 +1,6 @@
 import { Country } from '../../entities';
 import { DeleteCountryDto } from '../../dtos/country';
-import { CountryRepository } from '../../../adapters/repositories';
+import { CountryRepository } from '../../../ports/repositories';
 
 interface DeleteCountryUseCase {
   execute(deleteCountryDto: DeleteCountryDto): Promise<Country>;

@@ -9,8 +9,8 @@ import {
   IdentificationType,
   IdentificationTypeDetail,
 } from '../../domain/entities';
-import { IdentificationTypeRepository } from '../../adapters/repositories';
-import { IdentificationTypeDataSource } from '../../adapters/data_sources';
+import { IdentificationTypeRepository } from '../../ports/repositories';
+import { IdentificationTypeDataSource } from '../../ports/data_sources';
 
 export class IdentificationTypeRepositoryImpl
   implements IdentificationTypeRepository

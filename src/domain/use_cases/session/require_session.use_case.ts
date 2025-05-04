@@ -1,6 +1,6 @@
 import { Session } from '../../entities';
 import { CustomError } from '../../errors';
-import { SessionRepository } from '../../../adapters/repositories';
+import { SessionRepository } from '../../../ports/repositories';
 import { SessionJwtDto, SessionJwtSchema } from '../../schemas/session';
 
 interface RequireSessionUseCase {

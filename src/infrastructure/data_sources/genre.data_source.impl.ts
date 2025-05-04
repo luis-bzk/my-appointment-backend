@@ -13,7 +13,7 @@ import { GenreDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { GenreMapper } from '../mappers/genre.mapper';
 import { RECORD_STATUS } from '../../shared/constants';
-import { GenreDataSource } from '../../adapters/data_sources';
+import { GenreDataSource } from '../../ports/data_sources';
 
 export class GenreDataSourceImpl implements GenreDataSource {
   private pool: Pool;

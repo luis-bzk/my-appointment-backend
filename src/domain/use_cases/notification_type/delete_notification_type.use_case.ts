@@ -1,5 +1,5 @@
 import { NotificationType } from '../../entities';
-import { NotificationTypeRepository } from '../../../adapters/repositories';
+import { NotificationTypeRepository } from '../../../ports/repositories';
 import { DeleteNotificationTypeDto } from '../../dtos/notification_type';
 
 interface DeleteNotificationTypeUseCase {

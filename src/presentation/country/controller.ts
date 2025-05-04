@@ -8,7 +8,7 @@ import {
   GetCountryDto,
   UpdateCountryDto,
 } from '../../domain/dtos/country';
-import { CountryRepository } from '../../adapters/repositories';
+import { CountryRepository } from '../../ports/repositories';
 import {
   CreateCountry,
   DeleteCountry,

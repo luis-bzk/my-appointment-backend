@@ -14,7 +14,7 @@ import {
   GetGenre,
   UpdateGenre,
 } from '../../domain/use_cases/genre';
-import { GenreRepository } from '../../adapters/repositories';
+import { GenreRepository } from '../../ports/repositories';
 
 export class GenreController {
   private readonly genreRepository: GenreRepository;

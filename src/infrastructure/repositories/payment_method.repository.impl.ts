@@ -6,8 +6,8 @@ import {
   UpdatePaymentMethodDto,
 } from '../../domain/dtos/payment_method';
 import { PaymentMethod } from '../../domain/entities';
-import { PaymentMethodDataSource } from '../../adapters/data_sources';
-import { PaymentMethodRepository } from '../../adapters/repositories';
+import { PaymentMethodDataSource } from '../../ports/data_sources';
+import { PaymentMethodRepository } from '../../ports/repositories';
 
 export class PaymentMethodRepositoryImpl implements PaymentMethodRepository {
   private readonly paymentMethodDataSource: PaymentMethodDataSource;

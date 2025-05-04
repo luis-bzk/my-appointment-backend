@@ -1,6 +1,6 @@
 import { User } from '../../domain/entities';
-import { AuthRepository } from '../../adapters/repositories';
-import { AuthDataSource } from '../../adapters/data_sources';
+import { AuthRepository } from '../../ports/repositories';
+import { AuthDataSource } from '../../ports/data_sources';
 import { UserMapper } from '../mappers/user.mapper';
 import {
   ChangePasswordDto,

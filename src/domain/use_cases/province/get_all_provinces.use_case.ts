@@ -1,5 +1,5 @@
 import { Province } from '../../entities';
-import { ProvinceRepository } from '../../../adapters/repositories';
+import { ProvinceRepository } from '../../../ports/repositories';
 import { GetAllProvincesDto } from '../../dtos/province';
 
 interface GetAllProvincesUseCase {

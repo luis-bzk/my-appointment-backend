@@ -12,7 +12,7 @@ import {
   RoleRepository,
   UserRepository,
   UserRoleRepository,
-} from '../../adapters/repositories';
+} from '../../ports/repositories';
 import {
   GetUserUseCase,
   GetUsersByIdUseCase,

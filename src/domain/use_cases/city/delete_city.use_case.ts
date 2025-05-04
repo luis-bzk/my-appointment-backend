@@ -1,6 +1,6 @@
 import { City } from '../../entities';
 import { DeleteCityDto } from '../../dtos/city';
-import { CityRepository } from '../../../adapters/repositories';
+import { CityRepository } from '../../../ports/repositories';
 
 interface DeleteCityUseCase {
   execute(deleteCityDto: DeleteCityDto): Promise<City>;

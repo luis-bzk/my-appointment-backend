@@ -1,6 +1,6 @@
 import { Session } from '../../entities';
 import { CustomError } from '../../errors';
-import { SessionRepository } from '../../../adapters/repositories';
+import { SessionRepository } from '../../../ports/repositories';
 import { CreateSessionDto, CreateSessionSchema } from '../../schemas/session';
 import { JwtAdapter } from '../../../config';
 

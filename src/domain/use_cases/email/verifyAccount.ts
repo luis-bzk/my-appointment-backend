@@ -1,5 +1,5 @@
 import { CustomError } from '../../errors';
-import { EmailRepository } from '../../../adapters/repositories';
+import { EmailRepository } from '../../../ports/repositories';
 import { VerifyAccountDto, VerifyAccountSchema } from '../../schemas/email';
 
 export class VerifyAccountEmailUseCase {

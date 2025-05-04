@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { CustomError } from '../../domain/errors';
-import { CityRepository } from '../../adapters/repositories';
+import { CityRepository } from '../../ports/repositories';
 import {
   CreateCityDto,
   DeleteCityDto,

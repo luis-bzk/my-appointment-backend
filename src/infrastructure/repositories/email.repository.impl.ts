@@ -1,5 +1,5 @@
-import { EmailRepository } from '../../adapters/repositories';
-import { EmailService } from '../../adapters/services';
+import { EmailRepository } from '../../ports/repositories';
+import { EmailService } from '../../ports/services';
 import { LoginAccountDto } from '../../domain/dtos/email';
 import { VerifyAccountDto } from '../../domain/schemas/email';
 

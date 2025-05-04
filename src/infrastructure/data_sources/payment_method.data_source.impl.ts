@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { PaymentMethodDataSource } from '../../adapters/data_sources';
+import { PaymentMethodDataSource } from '../../ports/data_sources';
 import { PostgresDatabase } from '../../data';
 import {
   CreatePaymentMethodDto,

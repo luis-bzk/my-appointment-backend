@@ -6,8 +6,8 @@ import {
   UpdateNotificationTypeDto,
 } from '../../domain/dtos/notification_type';
 import { NotificationType } from '../../domain/entities';
-import { NotificationTypeDataSource } from '../../adapters/data_sources';
-import { NotificationTypeRepository } from '../../adapters/repositories';
+import { NotificationTypeDataSource } from '../../ports/data_sources';
+import { NotificationTypeRepository } from '../../ports/repositories';
 
 export class NotificationTypeRepositoryImpl
   implements NotificationTypeRepository

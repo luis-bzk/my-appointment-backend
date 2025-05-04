@@ -1,6 +1,6 @@
 import { City } from '../../entities';
 import { GetCityDto } from '../../dtos/city';
-import { CityRepository } from '../../../adapters/repositories';
+import { CityRepository } from '../../../ports/repositories';
 
 interface GetCityUseCase {
   execute(getCityDto: GetCityDto): Promise<City>;

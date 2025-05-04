@@ -1,5 +1,5 @@
 import { User } from '../../entities';
-import { UserRepository } from '../../../adapters/repositories';
+import { UserRepository } from '../../../ports/repositories';
 import { GetUsersByIdsDto, GetUsersByIdsSchema } from '../../schemas/user';
 import { CustomError } from '../../errors';
 

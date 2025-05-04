@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { ProvinceRepository } from '../../adapters/repositories';
+import { ProvinceRepository } from '../../ports/repositories';
 import { CustomError } from '../../domain/errors';
 import {
   CreateProvinceDto,

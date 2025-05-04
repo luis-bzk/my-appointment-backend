@@ -5,7 +5,7 @@ import {
   GoogleAuthCallbackUseCase,
 } from '../../domain/use_cases/auth';
 import { CustomError } from '../../domain/errors';
-import { AuthRepository, SessionRepository } from '../../adapters/repositories';
+import { AuthRepository, SessionRepository } from '../../ports/repositories';
 import { getGoogleUser, oAuth2Client } from '../../domain/external';
 import { CreateSessionUseCase } from '../../domain/use_cases/session';
 

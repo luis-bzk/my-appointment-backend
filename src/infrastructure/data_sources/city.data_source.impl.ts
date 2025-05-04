@@ -13,7 +13,7 @@ import { CityDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { CityMapper } from '../mappers/city.mapper';
 import { RECORD_STATUS } from '../../shared/constants';
-import { CityDataSource } from '../../adapters/data_sources';
+import { CityDataSource } from '../../ports/data_sources';
 
 export class CityDataSourceImpl implements CityDataSource {
   private pool: Pool;

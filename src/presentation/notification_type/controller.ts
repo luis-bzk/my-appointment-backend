@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { CustomError } from '../../domain/errors';
-import { NotificationTypeRepository } from '../../adapters/repositories';
+import { NotificationTypeRepository } from '../../ports/repositories';
 import {
   CreateNotificationTypeDto,
   DeleteNotificationTypeDto,

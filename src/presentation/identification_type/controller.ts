@@ -16,7 +16,7 @@ import {
   GetIdentificationType,
   UpdateIdentificationType,
 } from '../../domain/use_cases/identification_type';
-import { IdentificationTypeRepository } from '../../adapters/repositories';
+import { IdentificationTypeRepository } from '../../ports/repositories';
 
 export class IdentificationTypeController {
   private readonly identificationTypeRepository: IdentificationTypeRepository;

@@ -6,7 +6,7 @@ import { TotalQueryDB, UserDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { BcryptAdapter } from '../../config/bcrypt';
 import { RECORD_STATUS } from '../../shared/constants';
-import { UserDataSource } from '../../adapters/data_sources';
+import { UserDataSource } from '../../ports/data_sources';
 import {
   CreateUserDto,
   UpdateUserDto,

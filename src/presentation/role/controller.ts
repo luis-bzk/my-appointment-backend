@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { CustomError } from '../../domain/errors';
-import { RoleRepository } from '../../adapters/repositories';
+import { RoleRepository } from '../../ports/repositories';
 import {
   CreateRoleUseCase,
   DeleteRoleUseCase,

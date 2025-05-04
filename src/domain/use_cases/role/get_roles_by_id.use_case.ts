@@ -1,5 +1,5 @@
 import { Role } from '../../entities';
-import { RoleRepository } from '../../../adapters/repositories';
+import { RoleRepository } from '../../../ports/repositories';
 
 export class GetRolesByIdUseCase {
   private readonly roleRepository: RoleRepository;

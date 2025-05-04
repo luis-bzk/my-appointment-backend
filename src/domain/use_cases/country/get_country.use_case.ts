@@ -1,6 +1,6 @@
 import { GetCountryDto } from '../../dtos/country';
 import { Country } from '../../entities';
-import { CountryRepository } from '../../../adapters/repositories';
+import { CountryRepository } from '../../../ports/repositories';
 
 interface GetCountryUseCase {
   execute(getCountyDto: GetCountryDto): Promise<Country>;

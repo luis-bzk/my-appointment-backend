@@ -13,7 +13,7 @@ import {
   AuthRepository,
   EmailRepository,
   SessionRepository,
-} from '../../adapters/repositories';
+} from '../../ports/repositories';
 import { CreateSessionUseCase } from '../../domain/use_cases/session';
 import {
   RecoverPasswordEmailUseCase,

@@ -1,6 +1,6 @@
 import { Country } from '../../domain/entities';
-import { CountryRepository } from '../../adapters/repositories';
-import { CountryDataSource } from '../../adapters/data_sources';
+import { CountryRepository } from '../../ports/repositories';
+import { CountryDataSource } from '../../ports/data_sources';
 import {
   CreateCountryDto,
   DeleteCountryDto,

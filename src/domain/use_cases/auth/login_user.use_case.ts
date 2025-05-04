@@ -1,4 +1,4 @@
-import { AuthRepository } from '../../../adapters/repositories';
+import { AuthRepository } from '../../../ports/repositories';
 import { User } from '../../entities';
 import { CustomError } from '../../errors';
 import { BcryptAdapter } from '../../../config';

@@ -13,7 +13,7 @@ import { CustomError } from '../../domain/errors';
 import { ProvinceDB } from '../../data/interfaces';
 import { RECORD_STATUS } from '../../shared/constants';
 import { ProvinceMapper } from '../mappers/province.mapper';
-import { ProvinceDataSource } from '../../adapters/data_sources';
+import { ProvinceDataSource } from '../../ports/data_sources';
 
 export class ProvinceDataSourceImpl implements ProvinceDataSource {
   private pool: Pool;

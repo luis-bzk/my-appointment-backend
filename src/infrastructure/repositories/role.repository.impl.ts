@@ -1,6 +1,6 @@
 import { Role } from '../../domain/entities';
-import { RoleRepository } from '../../adapters/repositories';
-import { RoleDataSource } from '../../adapters/data_sources';
+import { RoleRepository } from '../../ports/repositories';
+import { RoleDataSource } from '../../ports/data_sources';
 import { RoleMapper } from '../mappers';
 import {
   CreateRoleDto,

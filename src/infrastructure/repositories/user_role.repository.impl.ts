@@ -1,6 +1,6 @@
 import { UserRole } from '../../domain/entities';
-import { UserRoleDataSource } from '../../adapters/data_sources';
-import { UserRoleRepository } from '../../adapters/repositories';
+import { UserRoleDataSource } from '../../ports/data_sources';
+import { UserRoleRepository } from '../../ports/repositories';
 import { UserRoleMapper } from '../mappers';
 import {
   CreateUserRoleDto,

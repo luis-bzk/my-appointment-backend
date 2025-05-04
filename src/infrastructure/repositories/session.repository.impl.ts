@@ -1,6 +1,6 @@
 import { Session } from '../../domain/entities';
-import { SessionDataSource } from '../../adapters/data_sources';
-import { SessionRepository } from '../../adapters/repositories';
+import { SessionDataSource } from '../../ports/data_sources';
+import { SessionRepository } from '../../ports/repositories';
 import { SessionMapper } from '../mappers/session.mapper';
 import {
   CreateSessionJwtDto,

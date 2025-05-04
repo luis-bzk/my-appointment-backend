@@ -1,6 +1,6 @@
 import { CustomError } from '../../errors';
 import { Role } from '../../entities';
-import { RoleRepository } from '../../../adapters/repositories';
+import { RoleRepository } from '../../../ports/repositories';
 import {
   UpdateRoleDto,
   UpdateRolePortDto,

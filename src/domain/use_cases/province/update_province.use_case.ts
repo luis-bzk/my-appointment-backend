@@ -1,6 +1,6 @@
 import { Province } from '../../entities';
 import { UpdateProvinceDto } from '../../dtos/province';
-import { ProvinceRepository } from '../../../adapters/repositories';
+import { ProvinceRepository } from '../../../ports/repositories';
 
 interface UpdateProvinceUseCase {
   execute(updateProvinceDto: UpdateProvinceDto): Promise<Province>;

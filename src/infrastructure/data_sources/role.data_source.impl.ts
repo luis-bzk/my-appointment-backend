@@ -4,7 +4,7 @@ import { PostgresDatabase } from '../../data';
 import { RoleDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
-import { RoleDataSource } from '../../adapters/data_sources';
+import { RoleDataSource } from '../../ports/data_sources';
 import {
   CreateRoleDto,
   GetAllRolesDto,
