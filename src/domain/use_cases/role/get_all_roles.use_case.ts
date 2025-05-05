@@ -22,6 +22,7 @@ export class GetAllRolesUseCase {
     }
 
     const parsedSchema: GetAllRolesDto = {
+      ...schema,
       limit: parseInt(schema.limit ?? '', 10),
       offset: parseInt(schema.offset ?? '', 10),
     };

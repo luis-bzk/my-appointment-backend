@@ -144,13 +144,12 @@ export class UserDataSourceImpl implements UserDataSource {
 
   async getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<UserDB[]> {
     const { limit, offset, filter } = getAllUsersDto;
-    console.log({ limit, offset, filter });
     try {
       let query = `
-        SELECT use.use_id, use.use_name, use.use_last_name, use.use_email,
+        select use.use_id, use.use_name, use.use_last_name, use.use_email,
                use.use_password, use.use_token, use.use_created_date, use.use_record_status
-        FROM core.core_user use
-        WHERE use.use_record_status = $1
+        from core.core_user use
+        where use.use_record_status = $1
       `;
       const params: any[] = [RECORD_STATUS.AVAILABLE];
       let paramIndex = 2;
@@ -158,24 +157,24 @@ export class UserDataSourceImpl implements UserDataSource {
       if (filter) {
         query += `
           AND (
-            use.use_name ILIKE $${paramIndex} OR
-            use.use_last_name ILIKE $${paramIndex} OR
-            use.use_email ILIKE $${paramIndex}
+            use.use_name ilike $${paramIndex} OR
+            use.use_last_name ilike $${paramIndex} OR
+            use.use_email ilike $${paramIndex}
           )
         `;
         params.push(`%${filter}%`);
         paramIndex++;
       }
 
-      query += ` ORDER BY use.use_id DESC`;
+      query += ` order by use.use_id desc`;
 
       if (limit) {
-        query += ` LIMIT $${paramIndex++}`;
+        query += ` limit $${paramIndex++}`;
         params.push(limit);
       }
 
       if (offset) {
-        query += ` OFFSET $${paramIndex++}`;
+        query += ` offset $${paramIndex++}`;
         params.push(offset);
       }
 

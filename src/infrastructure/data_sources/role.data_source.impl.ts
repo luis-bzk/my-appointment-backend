@@ -118,15 +118,29 @@ export class RoleDataSourceImpl implements RoleDataSource {
   }
 
   async getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<RoleDB[]> {
-    const { limit, offset } = getAllRolesDto;
+    const { limit, offset, filter } = getAllRolesDto;
 
     try {
       let query = `select cr.rol_id, cr.rol_name, cr.rol_description,
         cr.rol_created_date, cr.rol_record_status
         from core.core_role cr
-        where cr.rol_record_status = $1 order by cr.rol_name`;
+        where cr.rol_record_status = $1
+        `;
       const params: any[] = [RECORD_STATUS.AVAILABLE];
       let paramIndex = 2;
+
+      if (filter) {
+        query += `
+          AND (
+            cr.rol_name ilike $${paramIndex} OR
+            cr.rol_description ilike $${paramIndex}
+          )
+        `;
+        params.push(`%${filter}%`);
+        paramIndex++;
+      }
+
+      query += ` order by cr.rol_name`;
 
       if (limit) {
         query += ` limit $${paramIndex++}`;
