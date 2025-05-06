@@ -113,6 +113,9 @@ export class UserRoleController {
 
       return res.status(200).json(
         userRoles.map((ur) => ({
+          id: ur.id,
+          record_status: ur.record_status,
+          created_date: ur.created_date,
           user: usersMap.get(ur.id_user),
           role: rolesMap.get(ur.id_role),
         })),
