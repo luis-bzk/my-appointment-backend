@@ -30,9 +30,8 @@ export class UserDataSourceImpl implements UserDataSource {
         `select use.use_id, use.use_name, use.use_last_name, use.use_email,
           use.use_password, use.use_token, use.use_created_date, use.use_record_status
         from core.core_user use
-        where use.use_email = $1
-          and use.use_record_status = $2;`,
-        [email, RECORD_STATUS.AVAILABLE],
+        where use.use_email = $1;`,
+        [email],
       );
       return response.rows[0];
     } catch (error) {
@@ -85,8 +84,8 @@ export class UserDataSourceImpl implements UserDataSource {
         `select use.use_id, use.use_name, use.use_last_name, use.use_email,
           use.use_password, use.use_token, use.use_created_date, use.use_record_status
         from core.core_user use
-        where use.use_email = $1 and use.use_id <> $2 and use.use_record_status = $3;`,
-        [email, id, RECORD_STATUS.AVAILABLE],
+        where use.use_email = $1 and use.use_id <> $2;`,
+        [email, id],
       );
 
       return userWithEmail.rows[0];
@@ -107,9 +106,8 @@ export class UserDataSourceImpl implements UserDataSource {
       const updatedUser = await this.pool.query<UserDB>(
         `update core.core_user
         set use_name = $1, use_last_name = $2, use_email = $3
-        where use_id = $4 and use_record_status = $5
-        returning *;`,
-        [name, last_name, email, id, RECORD_STATUS.AVAILABLE],
+        where use_id = $4 returning *;`,
+        [name, last_name, email, id],
       );
 
       return updatedUser.rows[0];
@@ -128,8 +126,8 @@ export class UserDataSourceImpl implements UserDataSource {
         `select use.use_id, use.use_name, use.use_last_name, use.use_email,
           use.use_password, use.use_token, use.use_created_date, use.use_record_status
         from core.core_user use
-        where use.use_id = $1 and use.use_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
+        where use.use_id = $1;`,
+        [id],
       );
 
       return userFound.rows[0];
@@ -148,15 +146,13 @@ export class UserDataSourceImpl implements UserDataSource {
       let query = `
         select use.use_id, use.use_name, use.use_last_name, use.use_email,
                use.use_password, use.use_token, use.use_created_date, use.use_record_status
-        from core.core_user use
-        where use.use_record_status = $1
-      `;
-      const params: any[] = [RECORD_STATUS.AVAILABLE];
-      let paramIndex = 2;
+        from core.core_user use`;
+      const params: any[] = [];
+      let paramIndex = 1;
 
       if (filter) {
         query += `
-          AND (
+          where (
             use.use_name ilike $${paramIndex} OR
             use.use_last_name ilike $${paramIndex} OR
             use.use_email ilike $${paramIndex}
@@ -195,8 +191,8 @@ export class UserDataSourceImpl implements UserDataSource {
   async countAvailableUsers(): Promise<TotalQueryDB | null> {
     try {
       const userFound = await this.pool.query<TotalQueryDB>(
-        `select count(cu.use_id) as total from core.core_user cu where cu.use_record_status = $1;`,
-        [RECORD_STATUS.AVAILABLE],
+        `select count(cu.use_id) as total from core.core_user cu;`,
+        [],
       );
 
       return userFound.rows[0];

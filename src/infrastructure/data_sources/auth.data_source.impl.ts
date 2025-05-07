@@ -25,9 +25,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
         `select use_id, use_name, use_last_name, use_email,
           use_password, use_token, use_created_date, use_record_status
         from core.core_user use
-        where use.use_email = $1
-          and use.use_record_status = $2;`,
-        [email, RECORD_STATUS.AVAILABLE],
+        where use.use_email = $1;`,
+        [email],
       );
       return response.rows[0];
     } catch (error) {
@@ -79,8 +78,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
         `update core.core_user
         set use_token = $1
         where use_id = $2
-          and use_record_status = $3 returning *;`,
-        [GeneratorValues.tokenGenerator(), userId, RECORD_STATUS.AVAILABLE],
+        returning *;`,
+        [GeneratorValues.tokenGenerator(), userId],
       );
 
       return update_user.rows[0];
@@ -101,9 +100,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
         `select use_id, use_name, use_last_name, use_email,
           use_password, use_token, use_created_date, use_record_status
         from core.core_user use
-        where use.use_token = $1
-          and use.use_record_status = $2;`,
-        [token, RECORD_STATUS.AVAILABLE],
+        where use.use_token = $1;`,
+        [token],
       );
 
       return user_found.rows[0];
@@ -129,8 +127,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
         set use_token = $1,
           use_password = $2
         where use_token = $3
-          and use_record_status = $4 returning *;`,
-        [null, password, token, RECORD_STATUS.AVAILABLE],
+          returning *;`,
+        [null, password, token],
       );
 
       return updated_user.rows[0];
@@ -151,8 +149,8 @@ export class AuthDataSourceImpl implements AuthDataSource {
         `update core.core_user
         set use_token = $1
         where use_token = $2
-          and use_record_status = $3 returning *;`,
-        [null, token, RECORD_STATUS.AVAILABLE],
+          returning *;`,
+        [null, token],
       );
 
       return updated_user.rows[0];

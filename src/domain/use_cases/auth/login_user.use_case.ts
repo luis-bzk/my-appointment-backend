@@ -3,6 +3,7 @@ import { User } from '../../entities';
 import { CustomError } from '../../errors';
 import { BcryptAdapter } from '../../../config';
 import { LoginUserDto, LoginUserSchema } from '../../schemas/auth';
+import { RECORD_STATUS } from '../../../shared';
 
 type CompareFunction = (password: string, hashed: string) => boolean;
 
@@ -25,16 +26,13 @@ export class LoginUserUseCase {
     const user = await this.authRepository.findUserByEmailComplete(
       schema.email,
     );
-    if (!user) {
+    if (!user || user.record_status === RECORD_STATUS.UNAVAILABLE) {
       throw CustomError.badRequest('El usuario o contraseña es incorrecto');
     }
     if (user.token) {
       throw CustomError.forbidden('El usuario no se encuentra verificado');
     }
-    console.log({
-      password: schema.password,
-      hashed: user.password,
-    });
+
     const isMatching = this.comparePassword(schema.password, user.password);
     if (!isMatching) {
       throw CustomError.badRequest('El usuario o contraseña es incorrecto');

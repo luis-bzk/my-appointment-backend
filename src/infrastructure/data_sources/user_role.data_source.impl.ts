@@ -28,8 +28,8 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
         `select cur.uro_id, cur.uro_created_date, cur.uro_record_status,
         cur.id_user, cur.id_role
         from core.core_user_role cur
-        where cur.id_user = $1 and cur.id_role = $2 and cur.uro_record_status = $3;`,
-        [id_user, id_role, RECORD_STATUS.AVAILABLE],
+        where cur.id_user = $1 and cur.id_role = $2;`,
+        [id_user, id_role],
       );
 
       return existsRegister.rows[0];
@@ -71,8 +71,8 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
         `select cur.uro_id, cur.uro_created_date, cur.uro_record_status,
         cur.id_user, cur.id_role
         from core.core_user_role cur
-        where cur.uro_id = $1 and cur.uro_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
+        where cur.uro_id = $1;`,
+        [id],
       );
       return existsRegister.rows[0];
     } catch (error) {
@@ -95,8 +95,8 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
         cur.id_user, cur.id_role
         from core.core_user_role cur
         where cur.id_user = $1 and cur.id_role = $2
-          and cur.uro_id <> $3 and cur.uro_record_status = $4;`,
-        [id_user, id_role, id, RECORD_STATUS.AVAILABLE],
+          and cur.uro_id <> $3;`,
+        [id_user, id_role, id],
       );
 
       return sameRegister.rows[0];
@@ -118,7 +118,7 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
       const updated = await this.pool.query<UserRoleDB>(
         `update core.core_user_role
         set id_user = $1, id_role = $2
-        where uro_id = $3 and uro_record_status = $4 returning *;`,
+        where uro_id = $3 returning *;`,
         [id_user, id_role, id, RECORD_STATUS.AVAILABLE],
       );
       return updated.rows[0];
@@ -138,11 +138,11 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
 
     try {
       let query = `select cur.uro_id, cur.uro_created_date, cur.uro_record_status,
-               cur.id_user, cur.id_role
-        from core.core_user_role cur
-        where cur.uro_record_status = $1 order by cur.uro_id desc`;
-      const params: any[] = [RECORD_STATUS.AVAILABLE];
-      let paramIndex = 2;
+              cur.id_user, cur.id_role
+              from core.core_user_role cur
+              order by cur.uro_id desc `;
+      const params: any[] = [];
+      let paramIndex = 1;
 
       if (limit) {
         query += ` limit $${paramIndex++}`;

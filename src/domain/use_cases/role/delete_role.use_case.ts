@@ -2,6 +2,7 @@ import { Role } from '../../entities';
 import { RoleRepository } from '../../../ports/repositories';
 import { CustomError } from '../../errors';
 import { RoleIdDto, RoleIdPortDto, RoleIdSchema } from '../../schemas/role';
+import { RECORD_STATUS } from '../../../shared';
 
 export class DeleteRoleUseCase {
   private readonly roleRepository: RoleRepository;
@@ -24,6 +25,10 @@ export class DeleteRoleUseCase {
     const roleId = await this.roleRepository.findRoleById(parsedSchema.id);
     if (!roleId) {
       throw CustomError.notFound('No se ha encontrado el rol a eliminar');
+    }
+
+    if (roleId.record_status === RECORD_STATUS.UNAVAILABLE) {
+      throw CustomError.conflict('El rol ya se encuentra eliminado');
     }
 
     const deletedRole = await this.roleRepository.deleteRole(parsedSchema.id);

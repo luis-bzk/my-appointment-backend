@@ -24,8 +24,8 @@ export class RoleDataSourceImpl implements RoleDataSource {
         `select cr.rol_id, cr.rol_name, cr.rol_description,
           cr.rol_created_date,cr.rol_record_status
         from core.core_role cr
-        where lower(cr.rol_name) = $1 and cr.rol_record_status = $2;`,
-        [name, RECORD_STATUS.AVAILABLE],
+        where lower(cr.rol_name) = $1;`,
+        [name],
       );
 
       return role.rows[0];
@@ -64,8 +64,8 @@ export class RoleDataSourceImpl implements RoleDataSource {
         `select cr.rol_id, cr.rol_name, cr.rol_description,
           cr.rol_created_date,cr.rol_record_status
         from core.core_role cr
-        where cr.rol_id = $1 and cr.rol_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
+        where cr.rol_id = $1;`,
+        [id],
       );
       return role.rows[0];
     } catch (error) {
@@ -83,8 +83,8 @@ export class RoleDataSourceImpl implements RoleDataSource {
         `select cr.rol_id, cr.rol_name, cr.rol_description,
           cr.rol_created_date, cr.rol_record_status
         from core.core_role cr
-        where lower(cr.rol_name) = $1 and cr.rol_id <> $2 and cr.rol_record_status = $3;`,
-        [name, id, RECORD_STATUS.AVAILABLE],
+        where lower(cr.rol_name) = $1 and cr.rol_id <> $2;`,
+        [name, id],
       );
       return role.rows[0];
     } catch (error) {
@@ -103,8 +103,8 @@ export class RoleDataSourceImpl implements RoleDataSource {
       const updated = await this.pool.query<RoleDB>(
         `update core.core_role
         set rol_name = $1, rol_description = $2
-        where rol_id = $3 and rol_record_status = $4 returning *;`,
-        [name, description, id, RECORD_STATUS.AVAILABLE],
+        where rol_id = $3 returning *;`,
+        [name, description, id],
       );
 
       return updated.rows[0];
@@ -123,15 +123,13 @@ export class RoleDataSourceImpl implements RoleDataSource {
     try {
       let query = `select cr.rol_id, cr.rol_name, cr.rol_description,
         cr.rol_created_date, cr.rol_record_status
-        from core.core_role cr
-        where cr.rol_record_status = $1
-        `;
-      const params: any[] = [RECORD_STATUS.AVAILABLE];
-      let paramIndex = 2;
+        from core.core_role cr `;
+      const params: any[] = [];
+      let paramIndex = 1;
 
       if (filter) {
         query += `
-          AND (
+          where (
             cr.rol_name ilike $${paramIndex} OR
             cr.rol_description ilike $${paramIndex}
           )

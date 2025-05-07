@@ -2,6 +2,7 @@ import { User } from '../../entities';
 import { UserRepository } from '../../../ports/repositories';
 import { CustomError } from '../../errors';
 import { UserIdDto, UserIdPortDto, UserIdSchema } from '../../schemas/user';
+import { RECORD_STATUS } from '../../../shared';
 
 export class DeleteUserUseCase {
   private readonly userRepository: UserRepository;
@@ -25,6 +26,10 @@ export class DeleteUserUseCase {
     const user = await this.userRepository.findUserById(parsedSchema.id);
     if (!user) {
       throw CustomError.notFound('No se ha encontrado el usuario a eliminar');
+    }
+
+    if (user.record_status === RECORD_STATUS.UNAVAILABLE) {
+      throw CustomError.conflict('El usuario ya se encuentra eliminado');
     }
 
     const deletedUser = await this.userRepository.deleteUser(parsedSchema.id);

@@ -6,6 +6,7 @@ import {
   UserRoleIdPortDto,
   UserRoleIdSchema,
 } from '../../schemas/user_role';
+import { RECORD_STATUS } from '../../../shared';
 
 export class DeleteUserRoleUseCase {
   private readonly userRoleRepository: UserRoleRepository;
@@ -34,6 +35,10 @@ export class DeleteUserRoleUseCase {
       throw CustomError.notFound(
         'No se ha encontrado el usuario por rol deseado',
       );
+    }
+
+    if (userRole.record_status === RECORD_STATUS.UNAVAILABLE) {
+      throw CustomError.conflict('El Rol x Usuario ya se encuentra eliminado');
     }
 
     const deletedUserRole = await this.userRoleRepository.delete(
