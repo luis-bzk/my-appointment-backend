@@ -1,4 +1,4 @@
-import { UserRole } from '../../domain/entities';
+import { TotalQuery, UserRole } from '../../domain/entities';
 import {
   CreateUserRoleDto,
   GetAllUsersRolesDto,
@@ -29,4 +29,6 @@ export abstract class UserRoleRepository {
   ): Promise<UserRole[]>;
 
   abstract delete(id: number): Promise<UserRole | null>;
+
+  abstract countAvailableRegisters(): Promise<TotalQuery | null>;
 }

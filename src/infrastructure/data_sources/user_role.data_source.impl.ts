@@ -4,7 +4,7 @@ import { PostgresDatabase } from '../../data';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
 import { UserRoleDataSource } from '../../ports/data_sources';
-import { UserRoleDB } from '../../data/interfaces';
+import { TotalQueryDB, UserRoleDB } from '../../data/interfaces';
 import {
   CreateUserRoleDto,
   GetAllUsersRolesDto,
@@ -183,6 +183,23 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
       }
 
       throw CustomError.internalServer('Error en el Data Source al eliminar');
+    }
+  }
+
+  async countAvailableRegisters(): Promise<TotalQueryDB | null> {
+    try {
+      const registersFound = await this.pool.query<TotalQueryDB>(
+        `select count(cur.uro_id) as total  from core.core_user_role cur;`,
+        [],
+      );
+
+      return registersFound.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer('Error en el Data Source al obtener');
     }
   }
 }

@@ -1,4 +1,4 @@
-import { UserRoleDB } from '../../data/interfaces';
+import { TotalQueryDB, UserRoleDB } from '../../data/interfaces';
 import {
   CreateUserRoleDto,
   GetAllUsersRolesDto,
@@ -29,4 +29,6 @@ export abstract class UserRoleDataSource {
   ): Promise<UserRoleDB[]>;
 
   abstract deleteUserRole(id: number): Promise<UserRoleDB>;
+
+  abstract countAvailableRegisters(): Promise<TotalQueryDB | null>;
 }

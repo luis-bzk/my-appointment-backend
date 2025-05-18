@@ -1,7 +1,7 @@
-import { UserRole } from '../../domain/entities';
+import { TotalQuery, UserRole } from '../../domain/entities';
 import { UserRoleDataSource } from '../../ports/data_sources';
 import { UserRoleRepository } from '../../ports/repositories';
-import { UserRoleMapper } from '../mappers';
+import { TotalQueryMapper, UserRoleMapper } from '../mappers';
 import {
   CreateUserRoleDto,
   GetAllUsersRolesDto,
@@ -61,5 +61,10 @@ export class UserRoleRepositoryImpl implements UserRoleRepository {
   async delete(id: number): Promise<UserRole | null> {
     const userRole = await this.userRoleDataSource.deleteUserRole(id);
     return UserRoleMapper.entityFromObject(userRole);
+  }
+
+  async countAvailableRegisters(): Promise<TotalQuery | null> {
+    const row = await this.userRoleDataSource.countAvailableRegisters();
+    return TotalQueryMapper.mapTotalQuery(row);
   }
 }

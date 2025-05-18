@@ -96,12 +96,13 @@ export class UserRoleController {
 
   getAllUsersRoles = async (req: Request, res: Response) => {
     try {
-      const userRoles = await new GetAllUsersRolesDetailUseCase(
-        this.userRoleRepository,
-      ).execute(req.query);
+      const { registers, totalRegisters } =
+        await new GetAllUsersRolesDetailUseCase(
+          this.userRoleRepository,
+        ).execute(req.query);
 
-      const usersIds = userRoles.map((userRole) => userRole.id_user);
-      const rolesIds = userRoles.map((userRole) => userRole.id_role);
+      const usersIds = registers.map((userRole) => userRole.id_user);
+      const rolesIds = registers.map((userRole) => userRole.id_role);
 
       const [users, roles] = await Promise.all([
         new GetUsersByIdUseCase(this.userRepository).execute({ ids: usersIds }),
@@ -110,16 +111,14 @@ export class UserRoleController {
 
       const usersMap = new Map(users.map((u) => [u.id, u]));
       const rolesMap = new Map(roles.map((r) => [r.id, r]));
-
-      return res.status(200).json(
-        userRoles.map((ur) => ({
-          id: ur.id,
-          record_status: ur.record_status,
-          created_date: ur.created_date,
-          user: usersMap.get(ur.id_user),
-          role: rolesMap.get(ur.id_role),
-        })),
-      );
+      const userRoles = registers.map((ur) => ({
+        id: ur.id,
+        record_status: ur.record_status,
+        created_date: ur.created_date,
+        user: usersMap.get(ur.id_user),
+        role: rolesMap.get(ur.id_role),
+      }));
+      return res.status(200).json({ totalRegisters, userRoles });
     } catch (err) {
       this.handleError(err, res);
     }

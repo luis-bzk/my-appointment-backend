@@ -14,7 +14,9 @@ export class GetAllUsersRolesDetailUseCase {
     this.userRoleRepository = userRoleRepository;
   }
 
-  async execute(dto: GetAllUsersRolesPortDto): Promise<UserRole[]> {
+  async execute(
+    dto: GetAllUsersRolesPortDto,
+  ): Promise<{ totalRegisters: number; registers: UserRole[] }> {
     const {
       success,
       error,
@@ -32,6 +34,14 @@ export class GetAllUsersRolesDetailUseCase {
       offset: parseInt(schema.offset ?? '', 10),
     };
 
-    return this.userRoleRepository.getAll(parsedSchema);
+    const userRoles = await this.userRoleRepository.getAll(parsedSchema);
+
+    const totalRegisters =
+      await this.userRoleRepository.countAvailableRegisters();
+    if (!totalRegisters) {
+      throw CustomError.notFound('No se ha encontrado el total de registros');
+    }
+
+    return { totalRegisters: totalRegisters.total, registers: userRoles };
   }
 }
