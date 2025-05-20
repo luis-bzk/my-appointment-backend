@@ -1,7 +1,6 @@
 import { EmailRepository } from '../../ports/repositories';
 import { EmailService } from '../../ports/services';
-import { LoginAccountDto } from '../../domain/dtos/email';
-import { VerifyAccountDto } from '../../domain/schemas/email';
+import { LoginAccountDto, VerifyAccountDto } from '../../domain/schemas/email';
 
 export class EmailRepositoryImpl implements EmailRepository {
   private readonly emailService: EmailService;
