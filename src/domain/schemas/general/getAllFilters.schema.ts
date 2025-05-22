@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const GetAllRolesSchema = z.object({
+export const GetAllFiltersSchema = z.object({
   limit: z
     .string()
     .optional()
@@ -20,9 +20,12 @@ export const GetAllRolesSchema = z.object({
     .optional(),
 });
 
-export type GetAllRolesPortDto = z.infer<typeof GetAllRolesSchema>;
+export type GetAllFiltersPortDto = z.infer<typeof GetAllFiltersSchema>;
 
-export type GetAllRolesDto = Omit<GetAllRolesPortDto, 'limit' | 'offset'> & {
-  limit: number;
-  offset: number;
+export type GetAllFiltersDto = Omit<
+  GetAllFiltersPortDto,
+  'limit' | 'offset'
+> & {
+  limit?: number;
+  offset?: number;
 };

@@ -2,11 +2,8 @@ import { TotalQuery, User } from '../../domain/entities';
 import { UserRepository } from '../../ports/repositories';
 import { UserDataSource } from '../../ports/data_sources';
 import { TotalQueryMapper, UserMapper } from '../mappers';
-import {
-  CreateUserDto,
-  GetAllUsersDto,
-  UpdateUserDto,
-} from '../../domain/schemas/user';
+import { CreateUserDto, UpdateUserDto } from '../../domain/schemas/user';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export class UserRepositoryImpl implements UserRepository {
   private readonly userDataSource: UserDataSource;
@@ -40,7 +37,7 @@ export class UserRepositoryImpl implements UserRepository {
     return UserMapper.entityFromObject(user);
   }
 
-  async getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<User[]> {
+  async getAllUsers(getAllUsersDto: GetAllFiltersDto): Promise<User[]> {
     const users = await this.userDataSource.getAllUsers(getAllUsersDto);
     return UserMapper.entitiesFromArray(users);
   }

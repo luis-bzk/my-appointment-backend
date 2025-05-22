@@ -7,9 +7,9 @@ import { UserRoleDataSource } from '../../ports/data_sources';
 import { TotalQueryDB, UserRoleDB } from '../../data/interfaces';
 import {
   CreateUserRoleDto,
-  GetAllUsersRolesDto,
   UpdateUserRoleDto,
 } from '../../domain/schemas/user_role';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export class UserRoleDataSourceImpl implements UserRoleDataSource {
   private pool: Pool;
@@ -132,7 +132,7 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
   }
 
   async getAllUserRoles(
-    getAllUsersRolesDto: GetAllUsersRolesDto,
+    getAllUsersRolesDto: GetAllFiltersDto,
   ): Promise<UserRoleDB[]> {
     const { limit, offset } = getAllUsersRolesDto;
 

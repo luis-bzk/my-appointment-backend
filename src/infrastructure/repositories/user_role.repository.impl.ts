@@ -4,9 +4,9 @@ import { UserRoleRepository } from '../../ports/repositories';
 import { TotalQueryMapper, UserRoleMapper } from '../mappers';
 import {
   CreateUserRoleDto,
-  GetAllUsersRolesDto,
   UpdateUserRoleDto,
 } from '../../domain/schemas/user_role';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export class UserRoleRepositoryImpl implements UserRoleRepository {
   private readonly userRoleDataSource: UserRoleDataSource;
@@ -52,7 +52,7 @@ export class UserRoleRepositoryImpl implements UserRoleRepository {
     return UserRoleMapper.entityFromObject(userRole);
   }
 
-  async getAll(getAllUsersRolesDto: GetAllUsersRolesDto): Promise<UserRole[]> {
+  async getAll(getAllUsersRolesDto: GetAllFiltersDto): Promise<UserRole[]> {
     const userRoles =
       await this.userRoleDataSource.getAllUserRoles(getAllUsersRolesDto);
     return UserRoleMapper.entitiesFromArray(userRoles);

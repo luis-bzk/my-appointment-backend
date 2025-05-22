@@ -1,9 +1,6 @@
 import { RoleDB } from '../../data/interfaces';
-import {
-  CreateRoleDto,
-  GetAllRolesDto,
-  UpdateRoleDto,
-} from '../../domain/schemas/role';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
+import { CreateRoleDto, UpdateRoleDto } from '../../domain/schemas/role';
 
 export abstract class RoleDataSource {
   abstract findRoleByName(name: string): Promise<RoleDB>;
@@ -16,7 +13,7 @@ export abstract class RoleDataSource {
 
   abstract updateRole(updateRoleDto: UpdateRoleDto): Promise<RoleDB>;
 
-  abstract getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<RoleDB[]>;
+  abstract getAllRoles(getAllRolesDto: GetAllFiltersDto): Promise<RoleDB[]>;
 
   abstract deleteRole(id: number): Promise<RoleDB>;
 

@@ -1,9 +1,6 @@
 import { TotalQuery, User } from '../../domain/entities';
-import {
-  CreateUserDto,
-  GetAllUsersDto,
-  UpdateUserDto,
-} from '../../domain/schemas/user';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
+import { CreateUserDto, UpdateUserDto } from '../../domain/schemas/user';
 
 export abstract class UserRepository {
   abstract findUserByEmail(email: string): Promise<User | null>;
@@ -16,7 +13,7 @@ export abstract class UserRepository {
 
   abstract findUserById(id: number): Promise<User | null>;
 
-  abstract getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<User[]>;
+  abstract getAllUsers(getAllUsersDto: GetAllFiltersDto): Promise<User[]>;
 
   abstract countAvailableUsers(): Promise<TotalQuery | null>;
 

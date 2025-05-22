@@ -2,11 +2,8 @@ import { Role } from '../../domain/entities';
 import { RoleRepository } from '../../ports/repositories';
 import { RoleDataSource } from '../../ports/data_sources';
 import { RoleMapper } from '../mappers';
-import {
-  CreateRoleDto,
-  GetAllRolesDto,
-  UpdateRoleDto,
-} from '../../domain/schemas/role';
+import { CreateRoleDto, UpdateRoleDto } from '../../domain/schemas/role';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export class RoleRepositoryImpl implements RoleRepository {
   private readonly roleDataSource: RoleDataSource;
@@ -40,7 +37,7 @@ export class RoleRepositoryImpl implements RoleRepository {
     return RoleMapper.entityFromObject(role);
   }
 
-  async getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<Role[]> {
+  async getAllRoles(getAllRolesDto: GetAllFiltersDto): Promise<Role[]> {
     const roles = await this.roleDataSource.getAllRoles(getAllRolesDto);
     return RoleMapper.entitiesFromArray(roles);
   }

@@ -1,11 +1,11 @@
 import { Role } from '../../entities';
 import { RoleRepository } from '../../../ports/repositories';
-import {
-  GetAllRolesDto,
-  GetAllRolesPortDto,
-  GetAllRolesSchema,
-} from '../../schemas/role';
 import { CustomError } from '../../errors';
+import {
+  GetAllFiltersDto,
+  GetAllFiltersPortDto,
+  GetAllFiltersSchema,
+} from '../../schemas/general';
 
 export class GetAllRolesUseCase {
   private readonly roleRepository: RoleRepository;
@@ -14,17 +14,17 @@ export class GetAllRolesUseCase {
     this.roleRepository = roleRepository;
   }
 
-  async execute(dto: GetAllRolesPortDto): Promise<Role[]> {
-    const { success, error, data: schema } = GetAllRolesSchema.safeParse(dto);
+  async execute(dto: GetAllFiltersPortDto): Promise<Role[]> {
+    const { success, error, data: schema } = GetAllFiltersSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);
     }
 
-    const parsedSchema: GetAllRolesDto = {
+    const parsedSchema: GetAllFiltersDto = {
       ...schema,
-      limit: parseInt(schema.limit ?? '', 10),
-      offset: parseInt(schema.offset ?? '', 10),
+      limit: schema.limit ? parseInt(schema.limit ?? '', 10) : 50,
+      offset: schema.offset ? parseInt(schema.offset ?? '', 10) : undefined,
     };
 
     return await this.roleRepository.getAllRoles(parsedSchema);

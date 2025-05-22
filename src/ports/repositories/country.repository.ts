@@ -1,20 +1,31 @@
 import { Country } from '../../domain/entities';
 import {
   CreateCountryDto,
-  DeleteCountryDto,
-  GetAllCountriesDto,
-  GetCountryDto,
   UpdateCountryDto,
-} from '../../domain/dtos/country';
+} from '../../domain/schemas/country';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export abstract class CountryRepository {
-  abstract create(createCountryDto: CreateCountryDto): Promise<Country>;
+  abstract getCountryByName(name: string): Promise<Country | null>;
 
-  abstract update(updateCountryDto: UpdateCountryDto): Promise<Country>;
+  abstract createCountry(
+    createCountryDto: CreateCountryDto,
+  ): Promise<Country | null>;
 
-  abstract get(getCountryDto: GetCountryDto): Promise<Country>;
+  abstract getCountryById(id: number): Promise<Country | null>;
 
-  abstract getAll(getAllCountriesDto: GetAllCountriesDto): Promise<Country[]>;
+  abstract getCountryByNameId(
+    id: number,
+    name: string,
+  ): Promise<Country | null>;
 
-  abstract delete(deleteCountryDto: DeleteCountryDto): Promise<Country>;
+  abstract updateCountry(
+    updateCountryDto: UpdateCountryDto,
+  ): Promise<Country | null>;
+
+  abstract getAllCountries(
+    getAllCountriesDto: GetAllFiltersDto,
+  ): Promise<Country[]>;
+
+  abstract deleteCountry(id: number): Promise<Country | null>;
 }

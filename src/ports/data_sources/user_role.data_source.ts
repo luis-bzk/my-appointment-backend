@@ -1,7 +1,7 @@
 import { TotalQueryDB, UserRoleDB } from '../../data/interfaces';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 import {
   CreateUserRoleDto,
-  GetAllUsersRolesDto,
   UpdateUserRoleDto,
 } from '../../domain/schemas/user_role';
 
@@ -25,7 +25,7 @@ export abstract class UserRoleDataSource {
   ): Promise<UserRoleDB>;
 
   abstract getAllUserRoles(
-    getAllUsersRolesDto: GetAllUsersRolesDto,
+    getAllUsersRolesDto: GetAllFiltersDto,
   ): Promise<UserRoleDB[]>;
 
   abstract deleteUserRole(id: number): Promise<UserRoleDB>;

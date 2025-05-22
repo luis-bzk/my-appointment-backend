@@ -1,9 +1,6 @@
 import { TotalQueryDB, UserDB } from '../../data/interfaces';
-import {
-  CreateUserDto,
-  GetAllUsersDto,
-  UpdateUserDto,
-} from '../../domain/schemas/user';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
+import { CreateUserDto, UpdateUserDto } from '../../domain/schemas/user';
 
 export abstract class UserDataSource {
   abstract findUserByEmail(email: string): Promise<UserDB | null>;
@@ -16,7 +13,7 @@ export abstract class UserDataSource {
 
   abstract findUserById(id: number): Promise<UserDB | null>;
 
-  abstract getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<UserDB[]>;
+  abstract getAllUsers(getAllUsersDto: GetAllFiltersDto): Promise<UserDB[]>;
 
   abstract countAvailableUsers(): Promise<TotalQueryDB | null>;
 

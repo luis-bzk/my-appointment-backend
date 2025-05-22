@@ -7,11 +7,8 @@ import { CustomError } from '../../domain/errors';
 import { BcryptAdapter } from '../../config/bcrypt';
 import { RECORD_STATUS } from '../../shared/constants';
 import { UserDataSource } from '../../ports/data_sources';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  GetAllUsersDto,
-} from '../../domain/schemas/user';
+import { CreateUserDto, UpdateUserDto } from '../../domain/schemas/user';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 type HashFunction = (password: string) => string;
 
@@ -140,7 +137,7 @@ export class UserDataSourceImpl implements UserDataSource {
     }
   }
 
-  async getAllUsers(getAllUsersDto: GetAllUsersDto): Promise<UserDB[]> {
+  async getAllUsers(getAllUsersDto: GetAllFiltersDto): Promise<UserDB[]> {
     const { limit, offset, filter } = getAllUsersDto;
     try {
       let query = `

@@ -1,7 +1,7 @@
 import { TotalQuery, UserRole } from '../../domain/entities';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 import {
   CreateUserRoleDto,
-  GetAllUsersRolesDto,
   UpdateUserRoleDto,
 } from '../../domain/schemas/user_role';
 
@@ -24,9 +24,7 @@ export abstract class UserRoleRepository {
     updateUserRoleDto: UpdateUserRoleDto,
   ): Promise<UserRole | null>;
 
-  abstract getAll(
-    getAllUsersRolesDto: GetAllUsersRolesDto,
-  ): Promise<UserRole[]>;
+  abstract getAll(getAllUsersRolesDto: GetAllFiltersDto): Promise<UserRole[]>;
 
   abstract delete(id: number): Promise<UserRole | null>;
 

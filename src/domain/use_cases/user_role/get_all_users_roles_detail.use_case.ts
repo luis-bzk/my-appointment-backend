@@ -1,11 +1,12 @@
 import { UserRole } from '../../entities';
 import { UserRoleRepository } from '../../../ports/repositories';
-import {
-  GetAllUserRolesSchema,
-  GetAllUsersRolesDto,
-  GetAllUsersRolesPortDto,
-} from '../../schemas/user_role';
+
 import { CustomError } from '../../errors';
+import {
+  GetAllFiltersDto,
+  GetAllFiltersPortDto,
+  GetAllFiltersSchema,
+} from '../../schemas/general';
 
 export class GetAllUsersRolesDetailUseCase {
   private readonly userRoleRepository: UserRoleRepository;
@@ -15,23 +16,19 @@ export class GetAllUsersRolesDetailUseCase {
   }
 
   async execute(
-    dto: GetAllUsersRolesPortDto,
+    dto: GetAllFiltersPortDto,
   ): Promise<{ totalRegisters: number; registers: UserRole[] }> {
-    const {
-      success,
-      error,
-      data: schema,
-    } = GetAllUserRolesSchema.safeParse(dto);
+    const { success, error, data: schema } = GetAllFiltersSchema.safeParse(dto);
 
     if (!success) {
       const message = error.errors[0]?.message || 'Parámetros inválidos';
       throw CustomError.badRequest(message);
     }
 
-    const parsedSchema: GetAllUsersRolesDto = {
+    const parsedSchema: GetAllFiltersDto = {
       ...schema,
-      limit: parseInt(schema.limit ?? '', 10),
-      offset: parseInt(schema.offset ?? '', 10),
+      limit: schema.limit ? parseInt(schema.limit ?? '', 10) : 50,
+      offset: schema.offset ? parseInt(schema.offset ?? '', 10) : undefined,
     };
 
     const userRoles = await this.userRoleRepository.getAll(parsedSchema);

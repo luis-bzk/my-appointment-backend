@@ -5,11 +5,8 @@ import { RoleDB } from '../../data/interfaces';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
 import { RoleDataSource } from '../../ports/data_sources';
-import {
-  CreateRoleDto,
-  GetAllRolesDto,
-  UpdateRoleDto,
-} from '../../domain/schemas/role';
+import { CreateRoleDto, UpdateRoleDto } from '../../domain/schemas/role';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export class RoleDataSourceImpl implements RoleDataSource {
   private pool: Pool;
@@ -117,7 +114,7 @@ export class RoleDataSourceImpl implements RoleDataSource {
     }
   }
 
-  async getAllRoles(getAllRolesDto: GetAllRolesDto): Promise<RoleDB[]> {
+  async getAllRoles(getAllRolesDto: GetAllFiltersDto): Promise<RoleDB[]> {
     const { limit, offset, filter } = getAllRolesDto;
 
     try {
