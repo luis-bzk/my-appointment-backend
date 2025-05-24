@@ -74,4 +74,16 @@ export class ProvinceRepositoryImpl implements ProvinceRepository {
       await this.provinceDataSource.deleteProvince(provinceId);
     return ProvinceMapper.entityFromObject(deletedProvince);
   }
+
+  async getProvinceByIdAndCountry(
+    id_province: number,
+    id_country: number,
+  ): Promise<Province | null> {
+    const province = await this.provinceDataSource.getProvinceByIdAndCountry(
+      id_province,
+      id_country,
+    );
+
+    return ProvinceMapper.entityFromObject(province);
+  }
 }

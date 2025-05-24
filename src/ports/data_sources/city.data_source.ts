@@ -1,20 +1,29 @@
+import { CityDB } from '../../data/interfaces';
 import {
   CreateCityDto,
-  DeleteCityDto,
   GetAllCitiesDto,
-  GetCityDto,
   UpdateCityDto,
-} from '../../domain/dtos/city';
-import { City } from '../../domain/entities';
+} from '../../domain/schemas/city';
 
 export abstract class CityDataSource {
-  abstract create(createCityDto: CreateCityDto): Promise<City>;
+  abstract getCityByNameAndProvince(
+    name: string,
+    id_province: number,
+  ): Promise<CityDB | null>;
 
-  abstract update(updateCityDto: UpdateCityDto): Promise<City>;
+  abstract createCity(createCityDto: CreateCityDto): Promise<CityDB | null>;
 
-  abstract get(getCityDto: GetCityDto): Promise<City>;
+  abstract getCityById(id: number): Promise<CityDB | null>;
 
-  abstract getAll(getAllCitiesDto: GetAllCitiesDto): Promise<City[]>;
+  abstract getCityByNameIdAndProvince(
+    id: number,
+    name: string,
+    id_province: number,
+  ): Promise<CityDB | null>;
 
-  abstract delete(deleteCityDto: DeleteCityDto): Promise<City>;
+  abstract updateCity(updateCityDto: UpdateCityDto): Promise<CityDB | null>;
+
+  abstract getAllCities(getAllCitiesDto: GetAllCitiesDto): Promise<CityDB[]>;
+
+  abstract deleteCity(id: number): Promise<CityDB | null>;
 }

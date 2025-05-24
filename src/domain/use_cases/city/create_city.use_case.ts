@@ -1,12 +1,9 @@
 import { City } from '../../entities';
-import { CreateCityDto } from '../../dtos/city';
+import { CustomError } from '../../errors';
 import { CityRepository } from '../../../ports/repositories';
+import { CreateCityDto, CreateCitySchema } from '../../schemas/city';
 
-interface CreateCityUseCase {
-  execute(createCityDto: CreateCityDto): Promise<City>;
-}
-
-export class CreateCity implements CreateCityUseCase {
+export class CreateCityUseCase {
   private readonly cityRepository: CityRepository;
 
   constructor(cityRepository: CityRepository) {
@@ -14,6 +11,31 @@ export class CreateCity implements CreateCityUseCase {
   }
 
   async execute(createCityDto: CreateCityDto): Promise<City> {
-    return this.cityRepository.create(createCityDto);
+    const {
+      success,
+      error,
+      data: schema,
+    } = CreateCitySchema.safeParse(createCityDto);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const cityName = await this.cityRepository.getCityByNameAndProvince(
+      schema.name,
+      schema.id_province,
+    );
+    if (cityName) {
+      throw CustomError.conflict(
+        'Ya existe una ciudad con el nombre ingresado en la provincia seleccionada',
+      );
+    }
+
+    const createdCity = await this.cityRepository.createCity(schema);
+    if (!createdCity) {
+      throw CustomError.internalServer('No se pudo crear la ciudad');
+    }
+
+    return createdCity;
   }
 }

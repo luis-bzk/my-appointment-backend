@@ -205,4 +205,26 @@ export class ProvinceDataSourceImpl implements ProvinceDataSource {
       throw CustomError.internalServer('Error en el Data Source al eliminar');
     }
   }
+  async getProvinceByIdAndCountry(
+    id_province: number,
+    id_country: number,
+  ): Promise<ProvinceDB | null> {
+    try {
+      const province = await this.pool.query<ProvinceDB>(
+        `select pro.pro_id, pro.pro_name, pro.pro_code, pro.pro_prefix, 
+        pro.pro_created_date, pro.pro_record_status, pro.id_country
+        from core.core_province pro
+        where pro.pro_id = $1 and pro.id_country = $2;`,
+        [id_province, id_country],
+      );
+
+      return province.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer('Error en el Data Source al actualizar');
+    }
+  }
 }

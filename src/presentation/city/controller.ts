@@ -1,86 +1,112 @@
 import { Request, Response } from 'express';
 
-import { CustomError } from '../../domain/errors';
-import { CityRepository } from '../../ports/repositories';
 import {
-  CreateCityDto,
-  DeleteCityDto,
-  GetAllCitiesDto,
-  GetCityDto,
-  UpdateCityDto,
-} from '../../domain/dtos/city';
-import {
-  CreateCity,
-  DeleteCity,
-  GetAllCities,
-  GetCity,
-  UpdateCity,
+  CreateCityUseCase,
+  DeleteCityUseCase,
+  GetAllCitiesUseCase,
+  GetCityUseCase,
+  UpdateCityUseCase,
 } from '../../domain/use_cases/city';
+import { BaseController } from '../BaseController';
+import {
+  CityRepository,
+  CountryRepository,
+  ProvinceRepository,
+} from '../../ports/repositories';
+import { GetCountryUseCase } from '../../domain/use_cases/country';
+import { GetProvinceCountryUseCase } from '../../domain/use_cases/province';
 
-export class CityController {
+export class CityController extends BaseController {
   private readonly cityRepository: CityRepository;
+  private readonly provinceRepository: ProvinceRepository;
+  private readonly countryRepository: CountryRepository;
 
-  constructor(cityRepository: CityRepository) {
+  constructor(
+    cityRepository: CityRepository,
+    provinceRepository: ProvinceRepository,
+    countryRepository: CountryRepository,
+  ) {
+    super();
     this.cityRepository = cityRepository;
+    this.provinceRepository = provinceRepository;
+    this.countryRepository = countryRepository;
   }
 
-  private handleError(error: unknown, res: Response) {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
+  createCity = async (req: Request, res: Response) => {
+    try {
+      await new GetCountryUseCase(this.countryRepository).execute({
+        id: req.body.id_country ? req.body.id_country.toString() : undefined,
+      });
+      await new GetProvinceCountryUseCase(this.provinceRepository).execute({
+        id_province: req.body.id_province,
+        id_country: req.body.id_country,
+      });
+
+      const data = await new CreateCityUseCase(this.cityRepository).execute(
+        req.body,
+      );
+
+      return res.status(201).json(data);
+    } catch (error) {
+      this.handleError(error, res);
     }
-
-    // unknown error
-    console.log(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
-  }
-
-  createCity = (req: Request, res: Response) => {
-    const [error, createCityDto] = CreateCityDto.create(req.body);
-    if (error) return res.status(400).json({ message: error });
-
-    new CreateCity(this.cityRepository)
-      .execute(createCityDto!)
-      .then((data) => res.status(201).json(data))
-      .catch((error) => this.handleError(error, res));
   };
 
-  updateCity = (req: Request, res: Response) => {
-    const [error, updateCityDto] = UpdateCityDto.create(req.params, req.body);
-    if (error) return res.status(400).json({ message: error });
+  updateCity = async (req: Request, res: Response) => {
+    try {
+      await new GetCountryUseCase(this.countryRepository).execute({
+        id: req.body.id_country ? req.body.id_country.toString() : undefined,
+      });
 
-    new UpdateCity(this.cityRepository)
-      .execute(updateCityDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      await new GetProvinceCountryUseCase(this.provinceRepository).execute({
+        id_province: req.body.id_province,
+        id_country: req.body.id_country,
+      });
+
+      const data = await new UpdateCityUseCase(this.cityRepository).execute({
+        ...req.params,
+        ...req.body,
+      });
+
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getCity = (req: Request, res: Response) => {
-    const [error, getCityDto] = GetCityDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
+  getCity = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetCityUseCase(this.cityRepository).execute({
+        id: req.params.id,
+      });
 
-    new GetCity(this.cityRepository)
-      .execute(getCityDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getAllCities = (req: Request, res: Response) => {
-    const [error, getAllCitiesDto] = GetAllCitiesDto.create(req.query);
-    if (error) return res.status(400).json({ message: error });
+  getAllCities = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetAllCitiesUseCase(this.cityRepository).execute({
+        ...req.query,
+      });
 
-    new GetAllCities(this.cityRepository)
-      .execute(getAllCitiesDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  deleteCity = (req: Request, res: Response) => {
-    const [error, deleteCityDto] = DeleteCityDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
+  deleteCity = async (req: Request, res: Response) => {
+    try {
+      const data = await new DeleteCityUseCase(this.cityRepository).execute({
+        id: req.params.id,
+      });
 
-    new DeleteCity(this.cityRepository)
-      .execute(deleteCityDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 }

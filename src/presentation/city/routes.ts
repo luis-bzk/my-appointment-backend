@@ -1,16 +1,34 @@
 import { Router } from 'express';
 
 import { CityController } from './controller';
-import { CityDataSourceImpl } from '../../infrastructure/data_sources';
-import { CityRepositoryImpl } from '../../infrastructure/repositories';
+import {
+  CityDataSourceImpl,
+  CountryDataSourceImpl,
+  ProvinceDataSourceImpl,
+} from '../../infrastructure/data_sources';
+import {
+  CityRepositoryImpl,
+  CountryRepositoryImpl,
+  ProvinceRepositoryImpl,
+} from '../../infrastructure/repositories';
 
 export class CityRoutes {
   static get getRoutes(): Router {
     const router = Router();
 
-    const dataSource = new CityDataSourceImpl();
-    const repository = new CityRepositoryImpl(dataSource);
-    const controller = new CityController(repository);
+    const cityDataSource = new CityDataSourceImpl();
+    const provinceDataSource = new ProvinceDataSourceImpl();
+    const countryDataSource = new CountryDataSourceImpl();
+
+    const cityRepository = new CityRepositoryImpl(cityDataSource);
+    const provinceRepository = new ProvinceRepositoryImpl(provinceDataSource);
+    const countryRepository = new CountryRepositoryImpl(countryDataSource);
+
+    const controller = new CityController(
+      cityRepository,
+      provinceRepository,
+      countryRepository,
+    );
 
     // routes
     router.post('/create', controller.createCity);

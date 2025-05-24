@@ -1,20 +1,29 @@
 import {
   CreateCityDto,
-  DeleteCityDto,
   GetAllCitiesDto,
-  GetCityDto,
   UpdateCityDto,
-} from '../../domain/dtos/city';
+} from '../../domain/schemas/city';
 import { City } from '../../domain/entities';
 
 export abstract class CityRepository {
-  abstract create(createCityDto: CreateCityDto): Promise<City>;
+  abstract getCityByNameAndProvince(
+    name: string,
+    id_province: number,
+  ): Promise<City | null>;
 
-  abstract update(updateCityDto: UpdateCityDto): Promise<City>;
+  abstract createCity(createCityDto: CreateCityDto): Promise<City | null>;
 
-  abstract get(getCityDto: GetCityDto): Promise<City>;
+  abstract getCityById(id: number): Promise<City | null>;
 
-  abstract getAll(getAllCitiesDto: GetAllCitiesDto): Promise<City[]>;
+  abstract getCityByNameIdAndProvince(
+    id: number,
+    name: string,
+    id_province: number,
+  ): Promise<City | null>;
 
-  abstract delete(deleteCityDto: DeleteCityDto): Promise<City>;
+  abstract updateCity(updateCityDto: UpdateCityDto): Promise<City | null>;
+
+  abstract getAllCities(getAllCitiesDto: GetAllCitiesDto): Promise<City[]>;
+
+  abstract deleteCity(id: number): Promise<City | null>;
 }

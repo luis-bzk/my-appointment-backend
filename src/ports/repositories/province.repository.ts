@@ -32,4 +32,9 @@ export abstract class ProvinceRepository {
   ): Promise<Province[]>;
 
   abstract deleteProvince(provinceId: number): Promise<Province | null>;
+
+  abstract getProvinceByIdAndCountry(
+    id_province: number,
+    id_country: number,
+  ): Promise<Province | null>;
 }

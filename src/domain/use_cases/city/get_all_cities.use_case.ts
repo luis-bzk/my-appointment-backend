@@ -1,19 +1,42 @@
 import { City } from '../../entities';
-import { GetAllCitiesDto } from '../../dtos/city';
+import {
+  GetAllCitiesDto,
+  GetAllCitiesPortDto,
+  GetAllCitiesSchema,
+} from '../../schemas/city';
+import { CustomError } from '../../errors';
 import { CityRepository } from '../../../ports/repositories';
 
-interface GetAllCitiesUseCase {
-  execute(getAllCitiesDto: GetAllCitiesDto): Promise<City[]>;
-}
-
-export class GetAllCities implements GetAllCitiesUseCase {
+export class GetAllCitiesUseCase {
   private readonly cityRepository: CityRepository;
 
   constructor(cityRepository: CityRepository) {
     this.cityRepository = cityRepository;
   }
 
-  execute(getAllCitiesDto: GetAllCitiesDto): Promise<City[]> {
-    return this.cityRepository.getAll(getAllCitiesDto);
+  async execute(getAllCitiesDto: GetAllCitiesPortDto): Promise<City[]> {
+    const {
+      success,
+      error,
+      data: schema,
+    } = GetAllCitiesSchema.safeParse(getAllCitiesDto);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const parsedSchema: GetAllCitiesDto = {
+      ...schema,
+      limit: schema.limit ? parseInt(schema.limit, 10) : undefined,
+      offset: schema.offset ? parseInt(schema.offset, 10) : undefined,
+      id_country: schema.id_country
+        ? parseInt(schema.id_country, 10)
+        : undefined,
+      id_province: schema.id_province
+        ? parseInt(schema.id_province, 10)
+        : undefined,
+    };
+
+    return await this.cityRepository.getAllCities(parsedSchema);
   }
 }

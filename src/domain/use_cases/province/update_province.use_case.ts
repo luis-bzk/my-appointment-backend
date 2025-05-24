@@ -46,7 +46,7 @@ export class UpdateProvinceUseCase {
     );
     if (provinceNameId) {
       throw CustomError.conflict(
-        'Ya existe una provincia con el nombre ingresado',
+        'Ya existe una provincia con el nombre ingresado en el país seleccionado',
       );
     }
 
