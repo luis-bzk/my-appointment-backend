@@ -11,12 +11,14 @@ export const UpdateRoleSchema = z.object({
     .string({
       required_error: 'El nombre del rol es requerido',
     })
-    .max(100, 'El nombre del rol no puede tener más de 100 caracteres')
+    .min(1, 'El nombre del rol es requerido')
+    .max(50, 'El nombre del rol no puede tener más de 50 caracteres')
     .transform((s) => s.toLowerCase()),
   description: z
     .string({
       required_error: 'La descripción del rol es requerida',
     })
+    .min(1, 'La descripción del rol es requerida')
     .max(200, 'La descripción del rol no puede tener más de 200 caracteres')
     .transform((s) => s.toLowerCase()),
 });

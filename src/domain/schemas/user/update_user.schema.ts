@@ -8,14 +8,17 @@ export const UpdateUserSchema = z.object({
     }),
   name: z
     .string({ required_error: 'El nombre del usuario es requerido' })
-    .max(100, 'El nombre del usuario no puede tener más de 100 caracteres')
+    .min(1, 'El nombre del usuario es requerido')
+    .max(50, 'El nombre del usuario no puede tener más de 50 caracteres')
     .transform((s) => s.toLowerCase()),
   last_name: z
     .string({ required_error: 'El apellido del usuario es requerido' })
-    .max(100, 'El apellido del usuario no puede tener más de 100 caracteres')
+    .min(1, 'El apellido del usuario es requerido')
+    .max(50, 'El apellido del usuario no puede tener más de 50 caracteres')
     .transform((s) => s.toLowerCase()),
   email: z
     .string({ required_error: 'El email del usuario es requerido' })
+    .min(1, 'El email del usuario es requerido')
     .max(100, 'El email del usuario no puede tener más de 100 caracteres')
     .email('El email del usuario no es válido')
     .transform((s) => s.toLowerCase()),
