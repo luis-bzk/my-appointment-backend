@@ -8,18 +8,31 @@ import {
   UpdateProvinceUseCase,
 } from '../../domain/use_cases/province';
 import { BaseController } from '../BaseController';
-import { ProvinceRepository } from '../../ports/repositories';
+import {
+  CountryRepository,
+  ProvinceRepository,
+} from '../../ports/repositories';
+import { GetCountryUseCase } from '../../domain/use_cases/country';
 
 export class ProvinceController extends BaseController {
   private readonly provinceRepository: ProvinceRepository;
+  private readonly countryRepository: CountryRepository;
 
-  constructor(provinceRepository: ProvinceRepository) {
+  constructor(
+    provinceRepository: ProvinceRepository,
+    countryRepository: CountryRepository,
+  ) {
     super();
     this.provinceRepository = provinceRepository;
+    this.countryRepository = countryRepository;
   }
 
   createProvince = async (req: Request, res: Response) => {
     try {
+      await new GetCountryUseCase(this.countryRepository).execute({
+        id: req.body.id_country,
+      });
+
       const data = await new CreateProvinceUseCase(
         this.provinceRepository,
       ).execute(req.body);
@@ -32,6 +45,10 @@ export class ProvinceController extends BaseController {
 
   updateProvince = async (req: Request, res: Response) => {
     try {
+      await new GetCountryUseCase(this.countryRepository).execute({
+        id: req.body.id_country,
+      });
+
       const data = await new UpdateProvinceUseCase(
         this.provinceRepository,
       ).execute({ ...req.params, ...req.body });
@@ -44,7 +61,9 @@ export class ProvinceController extends BaseController {
 
   getProvince = async (req: Request, res: Response) => {
     try {
-      const data = new GetProvinceUseCase(this.provinceRepository).execute({
+      const data = await new GetProvinceUseCase(
+        this.provinceRepository,
+      ).execute({
         id: req.params.id,
       });
 

@@ -1,16 +1,29 @@
 import { Router } from 'express';
 
 import { ProvinceController } from './controller';
-import { ProvinceDataSourceImpl } from '../../infrastructure/data_sources';
-import { ProvinceRepositoryImpl } from '../../infrastructure/repositories';
+import {
+  CountryDataSourceImpl,
+  ProvinceDataSourceImpl,
+} from '../../infrastructure/data_sources';
+import {
+  CountryRepositoryImpl,
+  ProvinceRepositoryImpl,
+} from '../../infrastructure/repositories';
 
 export class ProvinceRoutes {
   static get getRoutes(): Router {
     const router = Router();
 
-    const dataSource = new ProvinceDataSourceImpl();
-    const repository = new ProvinceRepositoryImpl(dataSource);
-    const controller = new ProvinceController(repository);
+    const provinceDataSource = new ProvinceDataSourceImpl();
+    const countryDataSource = new CountryDataSourceImpl();
+
+    const provinceRepository = new ProvinceRepositoryImpl(provinceDataSource);
+    const countryRepository = new CountryRepositoryImpl(countryDataSource);
+
+    const controller = new ProvinceController(
+      provinceRepository,
+      countryRepository,
+    );
 
     // routes
     router.post('/create', controller.createProvince);

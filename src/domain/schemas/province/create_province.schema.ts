@@ -18,13 +18,20 @@ export const CreateProvinceSchema = z.object({
     .transform((s) => s.toLowerCase()),
   id_country: z.preprocess(
     (val) => {
-      if (typeof val === 'string' && /^\d+$/.test(val)) {
-        return Number(val);
+      if (typeof val === 'string') {
+        if (/^\d+$/.test(val)) {
+          return Number(val);
+        } else {
+          return NaN;
+        }
       }
       return val;
     },
     z
-      .number({ required_error: 'El ID del país es requerido' })
+      .number({
+        required_error: 'El ID del país es requerido',
+        invalid_type_error: 'El ID del país debe ser un número válido',
+      })
       .int('El ID del país debe ser un número entero')
       .min(1, 'El ID del país debe ser mayor que 0')
       .max(500, 'El ID del país debe ser menor o igual a 500'),

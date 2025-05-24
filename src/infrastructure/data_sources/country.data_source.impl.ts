@@ -180,13 +180,14 @@ export class CountryDataSourceImpl implements CountryDataSource {
 
   async deleteCountry(id: number): Promise<CountryDB | null> {
     try {
-      const deleted = await this.pool.query<CountryDB>(
-        `delete from core.core_country cou
-        where cou.cou_id = $1 returning *;`,
-        [id],
+      const countryUpdated = await this.pool.query<CountryDB>(
+        `update core.core_country
+        set cou_record_status = $1
+        where cou_id = $2 returning *;`,
+        [RECORD_STATUS.UNAVAILABLE, id],
       );
 
-      return deleted.rows[0];
+      return countryUpdated.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
