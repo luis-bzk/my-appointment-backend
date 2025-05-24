@@ -1,20 +1,35 @@
-import { Province } from '../../domain/entities';
 import {
   CreateProvinceDto,
-  DeleteProvinceDto,
   GetAllProvincesDto,
-  GetProvinceDto,
   UpdateProvinceDto,
-} from '../../domain/dtos/province';
+} from '../../domain/schemas/province';
+import { ProvinceDB } from '../../data/interfaces';
 
 export abstract class ProvinceDataSource {
-  abstract create(createProvinceDto: CreateProvinceDto): Promise<Province>;
+  abstract getProvinceByName(
+    name: string,
+    id_country: number,
+  ): Promise<ProvinceDB | null>;
 
-  abstract update(updateProvinceDto: UpdateProvinceDto): Promise<Province>;
+  abstract createProvince(
+    createProvinceDto: CreateProvinceDto,
+  ): Promise<ProvinceDB | null>;
 
-  abstract get(getProvinceDto: GetProvinceDto): Promise<Province>;
+  abstract getProvinceById(id: number): Promise<ProvinceDB | null>;
 
-  abstract getAll(getAllProvinceDto: GetAllProvincesDto): Promise<Province[]>;
+  abstract getProvinceByIdName(
+    id: number,
+    name: string,
+    id_country: number,
+  ): Promise<ProvinceDB | null>;
 
-  abstract delete(deleteProvinceDto: DeleteProvinceDto): Promise<Province>;
+  abstract updateProvince(
+    updateProvinceDto: UpdateProvinceDto,
+  ): Promise<ProvinceDB | null>;
+
+  abstract getAllProvinces(
+    getAllProvincesDto: GetAllProvincesDto,
+  ): Promise<ProvinceDB[]>;
+
+  abstract deleteProvince(provinceId: number): Promise<ProvinceDB | null>;
 }

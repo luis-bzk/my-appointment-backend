@@ -1,19 +1,39 @@
 import { Province } from '../../entities';
 import { ProvinceRepository } from '../../../ports/repositories';
-import { GetAllProvincesDto } from '../../dtos/province';
+import {
+  GetAllProvincesDto,
+  GetAllProvincesPortDto,
+  GetAllProvincesSchema,
+} from '../../schemas/province';
+import { CustomError } from '../../errors';
 
-interface GetAllProvincesUseCase {
-  execute(getAllProvincesDto: GetAllProvincesDto): Promise<Province[]>;
-}
-
-export class GetAllProvinces implements GetAllProvincesUseCase {
+export class GetAllProvincesUseCase {
   private readonly provinceRepository: ProvinceRepository;
 
   constructor(provinceRepository: ProvinceRepository) {
     this.provinceRepository = provinceRepository;
   }
 
-  async execute(getAllProvincesDto: GetAllProvincesDto): Promise<Province[]> {
-    return await this.provinceRepository.getAll(getAllProvincesDto);
+  async execute(dto: GetAllProvincesPortDto): Promise<Province[]> {
+    const {
+      success,
+      error,
+      data: schema,
+    } = GetAllProvincesSchema.safeParse(dto);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const schemaParse: GetAllProvincesDto = {
+      ...schema,
+      id_country: schema.id_country
+        ? parseInt(schema.id_country, 10)
+        : undefined,
+      limit: schema.limit ? parseInt(schema.limit ?? '', 10) : 50,
+      offset: schema.offset ? parseInt(schema.offset ?? '', 10) : undefined,
+    };
+
+    return await this.provinceRepository.getAllProvinces(schemaParse);
   }
 }

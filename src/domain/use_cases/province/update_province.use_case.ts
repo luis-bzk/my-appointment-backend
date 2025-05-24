@@ -1,12 +1,13 @@
 import { Province } from '../../entities';
-import { UpdateProvinceDto } from '../../dtos/province';
+import {
+  UpdateProvinceDto,
+  UpdateProvinceSchema,
+} from '../../schemas/province';
+import { CustomError } from '../../errors';
+import { RECORD_STATUS } from '../../../shared';
 import { ProvinceRepository } from '../../../ports/repositories';
 
-interface UpdateProvinceUseCase {
-  execute(updateProvinceDto: UpdateProvinceDto): Promise<Province>;
-}
-
-export class UpdateProvince implements UpdateProvinceUseCase {
+export class UpdateProvinceUseCase {
   private readonly provinceRepository: ProvinceRepository;
 
   constructor(provinceRepository: ProvinceRepository) {
@@ -14,6 +15,47 @@ export class UpdateProvince implements UpdateProvinceUseCase {
   }
 
   async execute(updateProvinceDto: UpdateProvinceDto): Promise<Province> {
-    return await this.provinceRepository.update(updateProvinceDto);
+    const {
+      success,
+      error,
+      data: schema,
+    } = UpdateProvinceSchema.safeParse(updateProvinceDto);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const schemaParsed: UpdateProvinceDto = {
+      ...schema,
+      id: parseInt(schema.id, 10),
+    };
+
+    const provinceId = await this.provinceRepository.getProvinceById(
+      schemaParsed.id,
+    );
+    if (!provinceId || provinceId.record_status === RECORD_STATUS.UNAVAILABLE) {
+      throw CustomError.notFound(
+        'No se ha encontrado la provincia a actualizar',
+      );
+    }
+
+    const provinceNameId = await this.provinceRepository.getProvinceByIdName(
+      schemaParsed.id,
+      schemaParsed.name,
+      schemaParsed.id_country,
+    );
+    if (provinceNameId) {
+      throw CustomError.conflict(
+        'Ya existe una provincia con el nombre ingresado',
+      );
+    }
+
+    const updatedProvince =
+      await this.provinceRepository.updateProvince(schemaParsed);
+    if (!updatedProvince) {
+      throw CustomError.internalServer('No se pudo actualizar la provincia');
+    }
+
+    return updatedProvince;
   }
 }

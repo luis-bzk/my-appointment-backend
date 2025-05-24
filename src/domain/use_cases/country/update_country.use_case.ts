@@ -17,12 +17,10 @@ export class UpdateCountryUseCase {
 
   async execute(dto: UpdateCountryPortDto): Promise<Country> {
     const { success, error, data: schema } = UpdateCountrySchema.safeParse(dto);
-
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';
       throw CustomError.badRequest(message);
     }
-
     const schemaParsed: UpdateCountryDto = {
       ...schema,
       id: parseInt(schema.id, 10),
@@ -31,7 +29,6 @@ export class UpdateCountryUseCase {
     const countryId = await this.countryRepository.getCountryById(
       schemaParsed.id,
     );
-
     if (!countryId || countryId.record_status === RECORD_STATUS.UNAVAILABLE) {
       throw CustomError.notFound('No se ha encontrado el país a actualizar');
     }

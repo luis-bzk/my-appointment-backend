@@ -1,13 +1,12 @@
 import { Province } from '../../domain/entities';
 import { ProvinceRepository } from '../../ports/repositories';
 import { ProvinceDataSource } from '../../ports/data_sources';
+import { ProvinceMapper } from '../mappers';
 import {
   CreateProvinceDto,
-  DeleteProvinceDto,
   GetAllProvincesDto,
-  GetProvinceDto,
   UpdateProvinceDto,
-} from '../../domain/dtos/province';
+} from '../../domain/schemas/province';
 
 export class ProvinceRepositoryImpl implements ProvinceRepository {
   private readonly provinceDataSource: ProvinceDataSource;
@@ -16,23 +15,63 @@ export class ProvinceRepositoryImpl implements ProvinceRepository {
     this.provinceDataSource = provinceDataSource;
   }
 
-  create(createProvinceDto: CreateProvinceDto): Promise<Province> {
-    return this.provinceDataSource.create(createProvinceDto);
+  async getProvinceByName(
+    name: string,
+    id_country: number,
+  ): Promise<Province | null> {
+    const province = await this.provinceDataSource.getProvinceByName(
+      name,
+      id_country,
+    );
+    return ProvinceMapper.entityFromObject(province);
   }
 
-  update(updateProvinceDto: UpdateProvinceDto): Promise<Province> {
-    return this.provinceDataSource.update(updateProvinceDto);
+  async createProvince(
+    createProvinceDto: CreateProvinceDto,
+  ): Promise<Province | null> {
+    const province =
+      await this.provinceDataSource.createProvince(createProvinceDto);
+    return ProvinceMapper.entityFromObject(province);
   }
 
-  get(getProvinceDto: GetProvinceDto): Promise<Province> {
-    return this.provinceDataSource.get(getProvinceDto);
+  async getProvinceById(id: number): Promise<Province | null> {
+    const province = await this.provinceDataSource.getProvinceById(id);
+    return ProvinceMapper.entityFromObject(province);
   }
 
-  getAll(getAllProvinceDto: GetAllProvincesDto): Promise<Province[]> {
-    return this.provinceDataSource.getAll(getAllProvinceDto);
+  async getProvinceByIdName(
+    id: number,
+    name: string,
+    id_country: number,
+  ): Promise<Province | null> {
+    const province = await this.provinceDataSource.getProvinceByIdName(
+      id,
+      name,
+      id_country,
+    );
+
+    return ProvinceMapper.entityFromObject(province);
   }
 
-  delete(deleteProvinceDto: DeleteProvinceDto): Promise<Province> {
-    return this.provinceDataSource.delete(deleteProvinceDto);
+  async updateProvince(
+    updateProvinceDto: UpdateProvinceDto,
+  ): Promise<Province | null> {
+    const province =
+      await this.provinceDataSource.updateProvince(updateProvinceDto);
+    return ProvinceMapper.entityFromObject(province);
+  }
+
+  async getAllProvinces(
+    getAllProvincesDto: GetAllProvincesDto,
+  ): Promise<Province[]> {
+    const provinces =
+      await this.provinceDataSource.getAllProvinces(getAllProvincesDto);
+    return ProvinceMapper.entitiesFromArray(provinces);
+  }
+
+  async deleteProvince(provinceId: number): Promise<Province | null> {
+    const deletedProvince =
+      await this.provinceDataSource.deleteProvince(provinceId);
+    return ProvinceMapper.entityFromObject(deletedProvince);
   }
 }

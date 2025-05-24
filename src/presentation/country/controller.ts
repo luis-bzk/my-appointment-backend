@@ -7,23 +7,16 @@ import {
   GetCountryUseCase,
   UpdateCountryUseCase,
 } from '../../domain/use_cases/country';
-import { CustomError } from '../../domain/errors';
+import { BaseController } from '../BaseController';
 import { CountryRepository } from '../../ports/repositories';
 
-export class CountryController {
+export class CountryController extends BaseController {
   private readonly countryRepository: CountryRepository;
 
   constructor(countryRepository: CountryRepository) {
+    super();
     this.countryRepository = countryRepository;
   }
-
-  private handleError = (error: unknown, res: Response) => {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    return res.status(500).json({ message: 'Internal Server Error' });
-  };
 
   createCountry = async (req: Request, res: Response) => {
     try {
@@ -46,7 +39,7 @@ export class CountryController {
         ...req.body,
       });
 
-      return res.status(201).json(data);
+      return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);
     }
@@ -58,7 +51,7 @@ export class CountryController {
         id: req.params.id,
       });
 
-      return res.status(201).json(data);
+      return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);
     }
@@ -70,7 +63,7 @@ export class CountryController {
         this.countryRepository,
       ).execute(req.query);
 
-      return res.status(201).json(data);
+      return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);
     }
@@ -82,7 +75,7 @@ export class CountryController {
         this.countryRepository,
       ).execute({ id: req.params.id });
 
-      return res.status(201).json(data);
+      return res.status(200).json(data);
     } catch (err) {
       this.handleError(err, res);
     }
