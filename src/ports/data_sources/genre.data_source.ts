@@ -1,20 +1,19 @@
-import {
-  CreateGenreDto,
-  DeleteGenreDto,
-  GetAllGenresDto,
-  GetGenreDto,
-  UpdateGenreDto,
-} from '../../domain/dtos/genre';
-import { Genre } from '../../domain/entities';
+import { GenreDB } from '../../data/interfaces';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
+import { CreateGenreDto, UpdateGenreDto } from '../../domain/schemas/genre';
 
 export abstract class GenreDataSource {
-  abstract create(createGenreDto: CreateGenreDto): Promise<Genre>;
+  abstract getGenreByName(name: string): Promise<GenreDB | null>;
 
-  abstract update(updateGenreDto: UpdateGenreDto): Promise<Genre>;
+  abstract createGenre(createGenreDto: CreateGenreDto): Promise<GenreDB | null>;
 
-  abstract get(getGenreDto: GetGenreDto): Promise<Genre>;
+  abstract getGenreById(id: number): Promise<GenreDB | null>;
 
-  abstract getAll(getAllGenreDto: GetAllGenresDto): Promise<Genre[]>;
+  abstract getGenreByNameId(id: number, name: string): Promise<GenreDB | null>;
 
-  abstract delete(deleteGenreDto: DeleteGenreDto): Promise<Genre>;
+  abstract updateGenre(updateGenreDto: UpdateGenreDto): Promise<GenreDB | null>;
+
+  abstract getAllGenres(dto: GetAllFiltersDto): Promise<GenreDB[]>;
+
+  abstract deleteGenre(id: number): Promise<GenreDB | null>;
 }

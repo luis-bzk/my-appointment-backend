@@ -134,7 +134,7 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
   async getAllUserRoles(
     getAllUsersRolesDto: GetAllFiltersDto,
   ): Promise<UserRoleDB[]> {
-    const { limit, offset } = getAllUsersRolesDto;
+    const { limit = 50, offset = 0 } = getAllUsersRolesDto;
 
     try {
       let query = `select cur.uro_id, cur.uro_created_date, cur.uro_record_status,
@@ -144,15 +144,11 @@ export class UserRoleDataSourceImpl implements UserRoleDataSource {
       const params: any[] = [];
       let paramIndex = 1;
 
-      if (limit) {
-        query += ` limit $${paramIndex++}`;
-        params.push(limit);
-      }
+      query += ` limit $${paramIndex++}`;
+      params.push(limit);
 
-      if (offset) {
-        query += ` offset $${paramIndex++}`;
-        params.push(offset);
-      }
+      query += ` offset $${paramIndex++}`;
+      params.push(offset);
 
       const registers = await this.pool.query<UserRoleDB>(query, params);
 

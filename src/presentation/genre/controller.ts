@@ -1,20 +1,14 @@
 import { Request, Response } from 'express';
-import {
-  CreateGenreDto,
-  DeleteGenreDto,
-  GetAllGenresDto,
-  GetGenreDto,
-  UpdateGenreDto,
-} from '../../domain/dtos/genre';
-import {
-  CreateGenre,
-  DeleteGenre,
-  GetAllGenres,
-  GetGenre,
-  UpdateGenre,
-} from '../../domain/use_cases/genre';
+
 import { GenreRepository } from '../../ports/repositories';
 import { BaseController } from '../BaseController';
+import {
+  CreateGenreUseCase,
+  DeleteGenreUseCase,
+  GetAllGenresUseCase,
+  GetGenreUseCase,
+  UpdateGenreUseCase,
+} from '../../domain/use_cases/genre';
 
 export class GenreController extends BaseController {
   private readonly genreRepository: GenreRepository;
@@ -24,53 +18,60 @@ export class GenreController extends BaseController {
     this.genreRepository = genreRepository;
   }
 
-  createGenre = (req: Request, res: Response) => {
-    const [error, createGenreDto] = CreateGenreDto.create(req.body);
-    if (error) return res.status(400).json({ message: error });
+  createGenre = async (req: Request, res: Response) => {
+    try {
+      const data = await new CreateGenreUseCase(this.genreRepository).execute(
+        req.body,
+      );
 
-    new CreateGenre(this.genreRepository)
-      .execute(createGenreDto!)
-      .then((data) => res.status(201).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(201).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  updateGenre = (req: Request, res: Response) => {
-    const [error, updateGenreDto] = UpdateGenreDto.create(req.params, req.body);
-    if (error) return res.status(400).json({ message: error });
-
-    new UpdateGenre(this.genreRepository)
-      .execute(updateGenreDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+  updateGenre = async (req: Request, res: Response) => {
+    try {
+      const data = await new UpdateGenreUseCase(this.genreRepository).execute({
+        ...req.params,
+        ...req.body,
+      });
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getGenre = (req: Request, res: Response) => {
-    const [error, getGenreDto] = GetGenreDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
-
-    new GetGenre(this.genreRepository)
-      .execute(getGenreDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+  getGenre = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetGenreUseCase(this.genreRepository).execute({
+        id: req.params.id,
+      });
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getAllGenres = (req: Request, res: Response) => {
-    const [error, getAllGenresDto] = GetAllGenresDto.create(req.query);
-    if (error) return res.status(400).json({ message: error });
-
-    new GetAllGenres(this.genreRepository)
-      .execute(getAllGenresDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+  getAllGenres = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetAllGenresUseCase(this.genreRepository).execute(
+        req.query,
+      );
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  deleteGenre = (req: Request, res: Response) => {
-    const [error, deleteGenreDto] = DeleteGenreDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
-
-    new DeleteGenre(this.genreRepository)
-      .execute(deleteGenreDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+  deleteGenre = async (req: Request, res: Response) => {
+    try {
+      const data = await new DeleteGenreUseCase(this.genreRepository).execute({
+        id: req.params.id,
+      });
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 }

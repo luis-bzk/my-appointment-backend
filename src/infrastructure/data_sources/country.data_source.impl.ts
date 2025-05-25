@@ -129,7 +129,7 @@ export class CountryDataSourceImpl implements CountryDataSource {
   async getAllCountries(
     getAllCountriesDto: GetAllFiltersDto,
   ): Promise<CountryDB[]> {
-    const { limit = 50, offset, filter } = getAllCountriesDto;
+    const { limit = 50, offset = 0, filter } = getAllCountriesDto;
 
     console.log({ limit, offset, filter });
 
@@ -158,10 +158,8 @@ export class CountryDataSourceImpl implements CountryDataSource {
       query += ` limit $${paramIndex++}`;
       params.push(limit);
 
-      if (offset) {
-        query += ` offset $${paramIndex++}`;
-        params.push(offset);
-      }
+      query += ` offset $${paramIndex++}`;
+      params.push(offset);
 
       const result = await this.pool.query<CountryDB>(query, params);
       return result.rows;

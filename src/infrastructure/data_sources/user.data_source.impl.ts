@@ -138,7 +138,7 @@ export class UserDataSourceImpl implements UserDataSource {
   }
 
   async getAllUsers(getAllUsersDto: GetAllFiltersDto): Promise<UserDB[]> {
-    const { limit, offset, filter } = getAllUsersDto;
+    const { limit = 50, offset = 0, filter } = getAllUsersDto;
     try {
       let query = `
         select use.use_id, use.use_name, use.use_last_name, use.use_email,
@@ -161,15 +161,11 @@ export class UserDataSourceImpl implements UserDataSource {
 
       query += ` order by use.use_id desc`;
 
-      if (limit) {
-        query += ` limit $${paramIndex++}`;
-        params.push(limit);
-      }
+      query += ` limit $${paramIndex++}`;
+      params.push(limit);
 
-      if (offset) {
-        query += ` offset $${paramIndex++}`;
-        params.push(offset);
-      }
+      query += ` offset $${paramIndex++}`;
+      params.push(offset);
 
       const users = await this.pool.query<UserDB>(query, params);
 

@@ -15,7 +15,6 @@ export class GetAllCountriesUseCase {
   }
 
   async execute(dto: GetAllFiltersPortDto): Promise<Country[]> {
-    console.log({ dto });
     const { success, error, data: schema } = GetAllFiltersSchema.safeParse(dto);
     if (!success) {
       const message = error.errors[0]?.message || 'Datos inválidos';

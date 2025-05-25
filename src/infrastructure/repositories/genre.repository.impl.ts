@@ -1,13 +1,9 @@
-import {
-  CreateGenreDto,
-  DeleteGenreDto,
-  GetAllGenresDto,
-  GetGenreDto,
-  UpdateGenreDto,
-} from '../../domain/dtos/genre';
+import { GenreMapper } from '../mappers';
 import { Genre } from '../../domain/entities';
 import { GenreRepository } from '../../ports/repositories';
 import { GenreDataSource } from '../../ports/data_sources';
+import { CreateGenreDto, UpdateGenreDto } from '../../domain/schemas/genre';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export class GenreRepositoryImpl implements GenreRepository {
   private readonly genreDataSource: GenreDataSource;
@@ -16,23 +12,37 @@ export class GenreRepositoryImpl implements GenreRepository {
     this.genreDataSource = genreDAtaSource;
   }
 
-  create(createGenreDto: CreateGenreDto): Promise<Genre> {
-    return this.genreDataSource.create(createGenreDto);
+  async getGenreByName(name: string): Promise<Genre | null> {
+    const genre = await this.genreDataSource.getGenreByName(name);
+    return GenreMapper.entityFromObject(genre);
   }
 
-  update(updateGenreDto: UpdateGenreDto): Promise<Genre> {
-    return this.genreDataSource.update(updateGenreDto);
+  async createGenre(createGenreDto: CreateGenreDto): Promise<Genre | null> {
+    const genre = await this.genreDataSource.createGenre(createGenreDto);
+    return GenreMapper.entityFromObject(genre);
+  }
+  async getGenreById(id: number): Promise<Genre | null> {
+    const genre = await this.genreDataSource.getGenreById(id);
+    return GenreMapper.entityFromObject(genre);
   }
 
-  get(getGenreDto: GetGenreDto): Promise<Genre> {
-    return this.genreDataSource.get(getGenreDto);
+  async getGenreByNameId(id: number, name: string): Promise<Genre | null> {
+    const genre = await this.genreDataSource.getGenreByNameId(id, name);
+    return GenreMapper.entityFromObject(genre);
   }
 
-  getAll(getAllGenreDto: GetAllGenresDto): Promise<Genre[]> {
-    return this.genreDataSource.getAll(getAllGenreDto);
+  async updateGenre(updateGenreDto: UpdateGenreDto): Promise<Genre | null> {
+    const genre = await this.genreDataSource.updateGenre(updateGenreDto);
+    return GenreMapper.entityFromObject(genre);
   }
 
-  delete(deleteGenreDto: DeleteGenreDto): Promise<Genre> {
-    return this.genreDataSource.delete(deleteGenreDto);
+  async getAllGenres(dto: GetAllFiltersDto): Promise<Genre[]> {
+    const genres = await this.genreDataSource.getAllGenres(dto);
+    return GenreMapper.entitiesFromArray(genres);
+  }
+
+  async deleteGenre(id: number): Promise<Genre | null> {
+    const genre = await this.genreDataSource.deleteGenre(id);
+    return GenreMapper.entityFromObject(genre);
   }
 }

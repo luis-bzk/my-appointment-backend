@@ -6,3 +6,4 @@ export * from './country.mapper';
 export * from './province.mapper';
 export * from './city.mapper';
 export * from './identification_type.mapper';
+export * from './genre.mapper';

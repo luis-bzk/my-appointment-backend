@@ -1,19 +1,29 @@
 import { Genre } from '../../entities';
-import { GetGenreDto } from '../../dtos/genre';
+import { CustomError } from '../../errors';
 import { GenreRepository } from '../../../ports/repositories';
+import { GenreIdPortDto, GenreIdSchema } from '../../schemas/genre';
 
-interface GetGenreUseCase {
-  execute(getGenreDto: GetGenreDto): Promise<Genre>;
-}
-
-export class GetGenre implements GetGenreUseCase {
+export class GetGenreUseCase {
   private readonly genreRepository: GenreRepository;
 
   constructor(genreRepository: GenreRepository) {
     this.genreRepository = genreRepository;
   }
 
-  async execute(getGenreDto: GetGenreDto): Promise<Genre> {
-    return this.genreRepository.get(getGenreDto);
+  async execute(dto: GenreIdPortDto): Promise<Genre> {
+    const { success, error, data: schema } = GenreIdSchema.safeParse(dto);
+    if (!success) {
+      const errorMessage = error.errors[0].message || 'Datos inválidos';
+      throw CustomError.badRequest(errorMessage);
+    }
+
+    const parsedId = parseInt(schema.id, 10);
+
+    const genre = await this.genreRepository.getGenreById(parsedId);
+    if (!genre) {
+      throw CustomError.notFound('No se encontró el género solicitado');
+    }
+
+    return genre;
   }
 }

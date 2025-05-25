@@ -115,7 +115,7 @@ export class RoleDataSourceImpl implements RoleDataSource {
   }
 
   async getAllRoles(getAllRolesDto: GetAllFiltersDto): Promise<RoleDB[]> {
-    const { limit, offset, filter } = getAllRolesDto;
+    const { limit = 50, offset = 0, filter } = getAllRolesDto;
 
     try {
       let query = `select cr.rol_id, cr.rol_name, cr.rol_description,
@@ -137,15 +137,11 @@ export class RoleDataSourceImpl implements RoleDataSource {
 
       query += ` order by cr.rol_name`;
 
-      if (limit) {
-        query += ` limit $${paramIndex++}`;
-        params.push(limit);
-      }
+      query += ` limit $${paramIndex++}`;
+      params.push(limit);
 
-      if (offset) {
-        query += ` offset $${paramIndex++}`;
-        params.push(offset);
-      }
+      query += ` offset $${paramIndex++}`;
+      params.push(offset);
 
       const roles = await this.pool.query<RoleDB>(query, params);
 

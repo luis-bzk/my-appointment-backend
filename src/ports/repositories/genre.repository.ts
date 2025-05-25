@@ -1,20 +1,19 @@
-import {
-  CreateGenreDto,
-  DeleteGenreDto,
-  GetAllGenresDto,
-  GetGenreDto,
-  UpdateGenreDto,
-} from '../../domain/dtos/genre';
 import { Genre } from '../../domain/entities';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
+import { CreateGenreDto, UpdateGenreDto } from '../../domain/schemas/genre';
 
 export abstract class GenreRepository {
-  abstract create(createGenreDto: CreateGenreDto): Promise<Genre>;
+  abstract getGenreByName(name: string): Promise<Genre | null>;
 
-  abstract update(updateGenreDto: UpdateGenreDto): Promise<Genre>;
+  abstract createGenre(createGenreDto: CreateGenreDto): Promise<Genre | null>;
 
-  abstract get(getGenreDto: GetGenreDto): Promise<Genre>;
+  abstract getGenreById(id: number): Promise<Genre | null>;
 
-  abstract getAll(getAllGenreDto: GetAllGenresDto): Promise<Genre[]>;
+  abstract getGenreByNameId(id: number, name: string): Promise<Genre | null>;
 
-  abstract delete(deleteGenreDto: DeleteGenreDto): Promise<Genre>;
+  abstract updateGenre(updateGenreDto: UpdateGenreDto): Promise<Genre | null>;
+
+  abstract getAllGenres(dto: GetAllFiltersDto): Promise<Genre[]>;
+
+  abstract deleteGenre(id: number): Promise<Genre | null>;
 }
