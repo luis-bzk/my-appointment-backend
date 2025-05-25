@@ -9,6 +9,5 @@ export * from './genre.db';
 export * from './identification_type.db';
 export * from './phone_type.db';
 export * from './notification_type.db';
-export * from './notification.db';
 export * from './session.db';
 export * from './common.db';
