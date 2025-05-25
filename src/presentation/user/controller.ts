@@ -7,23 +7,16 @@ import {
   GetUserUseCase,
   UpdateUserUseCase,
 } from '../../domain/use_cases/user';
-import { CustomError } from '../../domain/errors';
 import { UserRepository } from '../../ports/repositories';
+import { BaseController } from '../BaseController';
 
-export class UserController {
+export class UserController extends BaseController {
   private readonly userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
+    super();
     this.userRepository = userRepository;
   }
-
-  private handleError = (error: unknown, res: Response) => {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    return res.status(500).json({ message: 'Internal Server Error' });
-  };
 
   createUser = async (req: Request, res: Response) => {
     try {

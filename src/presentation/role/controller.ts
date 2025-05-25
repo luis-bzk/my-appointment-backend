@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 
-import { CustomError } from '../../domain/errors';
 import { RoleRepository } from '../../ports/repositories';
 import {
   CreateRoleUseCase,
@@ -9,21 +8,15 @@ import {
   GetRoleUseCase,
   UpdateRoleUseCase,
 } from '../../domain/use_cases/role';
+import { BaseController } from '../BaseController';
 
-export class RoleController {
+export class RoleController extends BaseController {
   private readonly roleRepository: RoleRepository;
 
   constructor(roleRepository: RoleRepository) {
+    super();
     this.roleRepository = roleRepository;
   }
-
-  private handleError = (error: unknown, res: Response) => {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    return res.status(500).json({ message: 'Internal Server Error' });
-  };
 
   createRole = async (req: Request, res: Response) => {
     try {

@@ -8,7 +8,6 @@ import {
   ConfirmAccount,
   SignUpUserUseCase,
 } from '../../domain/use_cases/auth';
-import { CustomError } from '../../domain/errors';
 import {
   AuthRepository,
   EmailRepository,
@@ -19,8 +18,9 @@ import {
   RecoverPasswordEmailUseCase,
   VerifyAccountEmailUseCase,
 } from '../../domain/use_cases/email';
+import { BaseController } from '../BaseController';
 
-export class AuthController {
+export class AuthController extends BaseController {
   private readonly authRepository: AuthRepository;
   private readonly sessionRepository: SessionRepository;
   private readonly emailRepository: EmailRepository;
@@ -30,17 +30,11 @@ export class AuthController {
     sessionRepository: SessionRepository,
     emailRepository: EmailRepository,
   ) {
+    super();
     this.authRepository = authRepository;
     this.sessionRepository = sessionRepository;
     this.emailRepository = emailRepository;
   }
-
-  private handleError = (error: unknown, res: Response) => {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-    return res.status(500).json({ message: 'Internal Server Error' });
-  };
 
   loginUser = async (req: Request, res: Response) => {
     try {

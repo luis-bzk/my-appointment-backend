@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { CustomError } from '../../domain/errors';
 import {
   CreateGenreDto,
   DeleteGenreDto,
@@ -15,23 +14,15 @@ import {
   UpdateGenre,
 } from '../../domain/use_cases/genre';
 import { GenreRepository } from '../../ports/repositories';
+import { BaseController } from '../BaseController';
 
-export class GenreController {
+export class GenreController extends BaseController {
   private readonly genreRepository: GenreRepository;
 
   constructor(genreRepository: GenreRepository) {
+    super();
     this.genreRepository = genreRepository;
   }
-
-  private handleError = (error: unknown, res: Response) => {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    // unknown error
-    console.log(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
-  };
 
   createGenre = (req: Request, res: Response) => {
     const [error, createGenreDto] = CreateGenreDto.create(req.body);

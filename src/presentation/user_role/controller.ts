@@ -7,7 +7,6 @@ import {
   GetUserRoleUseCase,
   UpdateUserRoleUseCase,
 } from '../../domain/use_cases/user_role';
-import { CustomError } from '../../domain/errors';
 import {
   RoleRepository,
   UserRepository,
@@ -21,8 +20,9 @@ import {
   GetRoleUseCase,
   GetRolesByIdUseCase,
 } from '../../domain/use_cases/role';
+import { BaseController } from '../BaseController';
 
-export class UserRoleController {
+export class UserRoleController extends BaseController {
   private readonly userRoleRepository: UserRoleRepository;
   private readonly userRepository: UserRepository;
   private readonly roleRepository: RoleRepository;
@@ -32,19 +32,10 @@ export class UserRoleController {
     userRepository: UserRepository,
     roleRepository: RoleRepository,
   ) {
+    super();
     this.userRoleRepository = userRoleREpository;
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
-  }
-
-  private handleError(error: unknown, res: Response) {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    // unknown error
-    console.log(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
   }
 
   createUserRole = async (req: Request, res: Response) => {

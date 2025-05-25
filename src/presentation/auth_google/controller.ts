@@ -4,12 +4,12 @@ import {
   GoogleAuth,
   GoogleAuthCallbackUseCase,
 } from '../../domain/use_cases/auth';
-import { CustomError } from '../../domain/errors';
 import { AuthRepository, SessionRepository } from '../../ports/repositories';
 import { getGoogleUser, oAuth2Client } from '../../domain/external';
 import { CreateSessionUseCase } from '../../domain/use_cases/session';
+import { BaseController } from '../BaseController';
 
-export class AuthGoogleController {
+export class AuthGoogleController extends BaseController {
   private readonly authRepository: AuthRepository;
   private readonly sessionRepository: SessionRepository;
 
@@ -17,17 +17,10 @@ export class AuthGoogleController {
     authRepository: AuthRepository,
     sessionRepository: SessionRepository,
   ) {
+    super();
     this.authRepository = authRepository;
     this.sessionRepository = sessionRepository;
   }
-
-  private handleError = (error: unknown, res: Response) => {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    return res.status(500).json({ message: 'Internal Server Error' });
-  };
 
   authGoogle = async (_req: Request, res: Response) => {
     try {
