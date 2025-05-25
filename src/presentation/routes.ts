@@ -7,7 +7,6 @@ import { CountryRoutes } from './country/routes';
 import { GenreRoutes } from './genre/routes';
 import { IdentificationTypeRoutes } from './identification_type/routes';
 import { NotificationTypeRoutes } from './notification_type/routes';
-import { PaymentMethodRoutes } from './payment_method/routes';
 import { PhoneTypeRoutes } from './phone_type/routes';
 import { ProvinceRoutes } from './province/routes';
 import { RoleRoutes } from './role/routes';
@@ -33,7 +32,6 @@ export class AppRoutes {
       IdentificationTypeRoutes.getRoutes,
     );
     router.use('/api/v1/phone-type', PhoneTypeRoutes.getRoutes);
-    router.use('/api/v1/payment-method', PaymentMethodRoutes.getRoutes);
     router.use('/api/v1/notification-type', NotificationTypeRoutes.getRoutes);
 
     // security not found route

@@ -7,6 +7,12 @@ export const UserRoleIdSchema = z.object({
     })
     .refine((val) => !isNaN(parseInt(val)), {
       message: 'El ID del registro debe ser un número válido',
+    })
+    .refine((val) => parseInt(val, 10) >= 1, {
+      message: 'El ID del registro no puede ser menor a 1',
+    })
+    .refine((val) => parseInt(val, 10) <= 100000, {
+      message: 'El ID del registro no puede ser mayor a 100000',
     }),
 });
 

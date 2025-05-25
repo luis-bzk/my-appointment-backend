@@ -1,25 +1,16 @@
 import { Pool } from 'pg';
 
 import { PostgresDatabase } from '../../data';
-import {
-  CreateIdentTypeDto,
-  DeleteIdentTypeDto,
-  GetAllIdentTypesDto,
-  GetIdentTypeDto,
-  UpdateIdentTypeDto,
-} from '../../domain/dtos/identification_type';
 import { CustomError } from '../../domain/errors';
-import {
-  IdentificationType,
-  IdentificationTypeDetail,
-} from '../../domain/entities';
-import {
-  IdentificationTypeDB,
-  IdentificationTypeDetailDB,
-} from '../../data/interfaces';
+
+import { IdentificationTypeDB } from '../../data/interfaces';
 import { RECORD_STATUS } from '../../shared/constants';
 import { IdentificationTypeDataSource } from '../../ports/data_sources';
-import { IdentificationTypeMapper } from '../mappers/identification_type.mapper';
+import {
+  CreateIdentTypeDto,
+  GetAllIdentTypesDto,
+  UpdateIdentTypeDto,
+} from '../../domain/schemas/identification_type';
 
 export class IdentificationTypeDataSourceImpl
   implements IdentificationTypeDataSource
@@ -30,44 +21,39 @@ export class IdentificationTypeDataSourceImpl
     this.pool = PostgresDatabase.getPool();
   }
 
-  async create(
+  async getIdentTypeByName(name: string): Promise<IdentificationTypeDB | null> {
+    try {
+      const identTypeName = await this.pool.query<IdentificationTypeDB>(
+        `select cit.ity_id, cit.ity_name, cit.ity_description, cit.ity_abbreviation, 
+        cit.ity_created_date, cit.ity_record_status, cit.id_country 
+         from core.core_identification_type cit
+        where lower(cit.ity_name) = $1;`,
+        [name],
+      );
+
+      return identTypeName.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener por nombre',
+      );
+    }
+  }
+
+  async createIdentType(
     createIdentTypeDto: CreateIdentTypeDto,
-  ): Promise<IdentificationType> {
+  ): Promise<IdentificationTypeDB | null> {
     const { name, description, abbreviation, id_country } = createIdentTypeDto;
 
     try {
-      // search by name
-      const identTypeName = await this.pool.query<IdentificationTypeDB>(
-        `select
-          cit.ity_id,
-          cit.ity_record_status
-        from
-          core.core_identification_type cit
-        where
-          lower(cit.ity_name) = $1
-          and cit.ity_record_status = $2;`,
-        [name, RECORD_STATUS.AVAILABLE],
-      );
-
-      if (identTypeName.rows.length > 0) {
-        throw CustomError.conflict(
-          'Ya existe un tipo de identificación con el mismo nombre',
-        );
-      }
-
-      // create
       const identTypeCreated = await this.pool.query<IdentificationTypeDB>(
-        `insert into
-          core.core_identification_type (
-            ity_name,
-            ity_description,
-            ity_abbreviation,
-            id_country,
-            ity_created_date,
-            ity_record_status
-          )
-        values
-          ($1, $2, $3, $4, $5, $6) returning *;`,
+        `insert into core.core_identification_type (
+            ity_name, ity_description, ity_abbreviation,
+            id_country, ity_created_date, ity_record_status
+          ) values ($1, $2, $3, $4, $5, $6) returning *;`,
         [
           name,
           description,
@@ -78,9 +64,7 @@ export class IdentificationTypeDataSourceImpl
         ],
       );
 
-      return IdentificationTypeMapper.entityFromObject(
-        identTypeCreated.rows[0],
-      );
+      return identTypeCreated.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -90,64 +74,67 @@ export class IdentificationTypeDataSourceImpl
     }
   }
 
-  async update(
-    updateIdentTypeDto: UpdateIdentTypeDto,
-  ): Promise<IdentificationType> {
-    const { id, name, description, abbreviation, id_country } =
-      updateIdentTypeDto;
-
+  async getIdentTypeById(id: number): Promise<IdentificationTypeDB | null> {
     try {
-      // find by id
       const identType = await this.pool.query<IdentificationTypeDB>(
-        `select
-          cit.ity_id,
-          cit.ity_record_status
-        from
-          core.core_identification_type cit
-        where
-          cit.ity_id = $1
-          and cit.ity_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
+        `select cit.ity_id, cit.ity_name, cit.ity_description, cit.ity_abbreviation, 
+        cit.ity_created_date, cit.ity_record_status, cit.id_country 
+         from core.core_identification_type cit where cit.ity_id = $1;`,
+        [id],
       );
-      if (identType.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el tipo de identificación',
-        );
+
+      return identType.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
       }
 
-      // find name other id
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener por id',
+      );
+    }
+  }
+
+  async getIdentTypeByNameAndCountry(
+    name: string,
+    id_country: number,
+  ): Promise<IdentificationTypeDB | null> {
+    try {
+      const identType = await this.pool.query<IdentificationTypeDB>(
+        `select cit.ity_id, cit.ity_name, cit.ity_description, cit.ity_abbreviation, 
+        cit.ity_created_date, cit.ity_record_status, cit.id_country 
+         from core.core_identification_type cit 
+         where lower(cit.ity_name) = $1 and cit.id_country = $2;`,
+        [name, id_country],
+      );
+
+      return identType.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener por id',
+      );
+    }
+  }
+
+  async getIdentTypeByNameIdAndCountry(
+    id: number,
+    name: string,
+    id_country: number,
+  ): Promise<IdentificationTypeDB | null> {
+    try {
       const identTypeName = await this.pool.query<IdentificationTypeDB>(
-        `select
-          cit.ity_id,
-          cit.ity_record_status
-        from
-          core.core_identification_type cit
-        where
-          lower(cit.ity_name) = $1
-          and cit.ity_id <> $2
-          and cit.ity_record_status = $3;`,
-        [name, id, RECORD_STATUS.AVAILABLE],
-      );
-      if (identTypeName.rows.length > 0) {
-        throw CustomError.conflict(
-          'Ya existe un tipo de identificación con el mismo nombre',
-        );
-      }
-
-      // update
-      const updatedRegister = await this.pool.query<IdentificationTypeDB>(
-        `update core.core_identification_type
-        set
-          ity_name = $1,
-          ity_description = $2,
-          ity_abbreviation = $3,
-          id_country = $4
-        where
-          ity_id = $5 returning *;`,
-        [name, description, abbreviation, id_country, id],
+        `select cit.ity_id, cit.ity_name, cit.ity_description, cit.ity_abbreviation, 
+        cit.ity_created_date, cit.ity_record_status, cit.id_country 
+         from core.core_identification_type cit 
+        where lower(cit.ity_name) = $1 and cit.ity_id <> $2 and cit.id_country <> $3;`,
+        [name, id, id_country],
       );
 
-      return IdentificationTypeMapper.entityFromObject(updatedRegister.rows[0]);
+      return identTypeName.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -157,148 +144,78 @@ export class IdentificationTypeDataSourceImpl
     }
   }
 
-  async get(getIdentTypeDto: GetIdentTypeDto): Promise<IdentificationType> {
-    const { id } = getIdentTypeDto;
-    try {
-      // find by id
-      const identType = await this.pool.query<IdentificationTypeDB>(
-        `select
-          cit.ity_id,
-          cit.ity_name,
-          cit.ity_description,
-          cit.ity_abbreviation,
-          cit.id_country,
-          cit.ity_created_date,
-          cit.ity_record_status
-        from
-          core.core_identification_type cit
-        where
-          cit.ity_id = $1
-          and cit.ity_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
-      );
-      if (identType.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el tipo de identificación',
-        );
-      }
+  async updateIdentType(
+    updateIdentTypeDto: UpdateIdentTypeDto,
+  ): Promise<IdentificationTypeDB | null> {
+    const { id, name, description, abbreviation, id_country } =
+      updateIdentTypeDto;
 
-      return IdentificationTypeMapper.entityFromObject(identType.rows[0]);
+    try {
+      const updatedRegister = await this.pool.query<IdentificationTypeDB>(
+        `update core.core_identification_type
+        set ity_name = $1, ity_description = $2, ity_abbreviation = $3, id_country = $4
+        where ity_id = $5 returning *;`,
+        [name, description, abbreviation, id_country, id],
+      );
+      return updatedRegister.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
 
-      throw CustomError.internalServer('Error en el Data Source al obtener');
+      throw CustomError.internalServer('Error en el Data Source al actualizar');
     }
   }
 
-  async getAll(
+  async getAllIdentTypes(
     getAllIdentTypesDto: GetAllIdentTypesDto,
-  ): Promise<IdentificationType[]> {
-    const { limit, offset } = getAllIdentTypesDto;
+  ): Promise<IdentificationTypeDB[]> {
+    const { id_country } = getAllIdentTypesDto;
     try {
+      let query = `select cit.ity_id, cit.ity_name, cit.ity_description, cit.ity_abbreviation, 
+        cit.ity_created_date, cit.ity_record_status, cit.id_country 
+         from core.core_identification_type cit `;
+
+      const conditions: string[] = [];
+      const params: (string | number)[] = [];
+
+      if (id_country) {
+        conditions.push(`cit.id_country = $1 `);
+        params.push(id_country);
+      }
+
+      if (conditions.length > 0) {
+        query += ` where ${conditions.join(' and ')} `;
+      }
+
+      query += ` order by cit.ity_name`;
+
       const registers = await this.pool.query<IdentificationTypeDB>(
-        `select
-          cit.ity_id,
-          cit.ity_name,
-          cit.ity_description,
-          cit.ity_abbreviation,
-          cit.id_country,
-          cit.ity_created_date,
-          cit.ity_record_status
-        from
-          core.core_identification_type cit
-        where
-          cit.ity_record_status = $1
-        order by
-          cit.ity_name
-        limit $2 offset $3;`,
-        [RECORD_STATUS.AVAILABLE, limit, offset],
+        query,
+        params,
       );
 
-      return IdentificationTypeMapper.entitiesFromArray(registers.rows);
+      return registers.rows;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
 
-      throw CustomError.internalServer('Error en el Data Source al obtener');
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener todos',
+      );
     }
   }
 
-  async getAllDetail(
-    getAllIdentTypesDetailDto: GetAllIdentTypesDto,
-  ): Promise<IdentificationTypeDetail[]> {
-    const { limit, offset } = getAllIdentTypesDetailDto;
+  async deleteIdentType(id: number): Promise<IdentificationTypeDB | null> {
     try {
-      const registers = await this.pool.query<IdentificationTypeDetailDB>(
-        `select
-          cit.ity_id,
-          cit.ity_name,
-          cit.ity_description,
-          cit.ity_abbreviation,
-          cit.id_country,
-          cit.ity_created_date,
-          cit.ity_record_status,
-          cc.cou_id,
-          cc.cou_name,
-          cc.cou_code,
-          cc.cou_prefix,
-          cc.cou_created_date,
-          cc.cou_record_status
-        from
-          core.core_identification_type cit
-          join core.core_country cc on cit.id_country = cc.cou_id
-        where
-          cit.ity_record_status = $1
-        order by
-          cit.ity_name
-        limit $2 offset $3;`,
-        [RECORD_STATUS.AVAILABLE, limit, offset],
-      );
-
-      return IdentificationTypeMapper.entitiesFromArrayDetail(registers.rows);
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-
-      throw CustomError.internalServer('Error en el Data Source al obtener');
-    }
-  }
-
-  async delete(
-    deleteIdentTypeDto: DeleteIdentTypeDto,
-  ): Promise<IdentificationType> {
-    const { id } = deleteIdentTypeDto;
-    try {
-      // find by id
-      const identType = await this.pool.query<IdentificationTypeDB>(
-        `select
-          cit.ity_id,
-          cit.ity_record_status
-        from
-          core.core_identification_type cit
-        where
-          cit.ity_id = $1
-          and cit.ity_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
-      );
-      if (identType.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el tipo de identificación',
-        );
-      }
-
-      // delete
       const deletedRegister = await this.pool.query<IdentificationTypeDB>(
-        `delete from core.core_identification_type
-        where
-          ity_id = $1 returning *;`,
-        [id],
+        `update core.core_identification_type
+        set ity_record_status = $1
+        where ity_id = $2 returning *;`,
+        [RECORD_STATUS.UNAVAILABLE, id],
       );
-      return IdentificationTypeMapper.entityFromObject(deletedRegister.rows[0]);
+      return deletedRegister.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

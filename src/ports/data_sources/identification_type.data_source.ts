@@ -1,35 +1,39 @@
+import { IdentificationTypeDB } from '../../data/interfaces';
 import {
   CreateIdentTypeDto,
-  DeleteIdentTypeDto,
   GetAllIdentTypesDto,
-  GetIdentTypeDto,
   UpdateIdentTypeDto,
-} from '../../domain/dtos/identification_type';
-import {
-  IdentificationType,
-  IdentificationTypeDetail,
-} from '../../domain/entities';
+} from '../../domain/schemas/identification_type';
 
 export abstract class IdentificationTypeDataSource {
-  abstract create(
+  abstract getIdentTypeByName(
+    name: string,
+  ): Promise<IdentificationTypeDB | null>;
+
+  abstract createIdentType(
     createIdentTypeDto: CreateIdentTypeDto,
-  ): Promise<IdentificationType>;
+  ): Promise<IdentificationTypeDB | null>;
 
-  abstract update(
+  abstract getIdentTypeById(id: number): Promise<IdentificationTypeDB | null>;
+
+  abstract getIdentTypeByNameIdAndCountry(
+    id: number,
+    name: string,
+    id_country: number,
+  ): Promise<IdentificationTypeDB | null>;
+
+  abstract getIdentTypeByNameAndCountry(
+    name: string,
+    id_country: number,
+  ): Promise<IdentificationTypeDB | null>;
+
+  abstract updateIdentType(
     updateIdentTypeDto: UpdateIdentTypeDto,
-  ): Promise<IdentificationType>;
+  ): Promise<IdentificationTypeDB | null>;
 
-  abstract get(getIdentTypeDto: GetIdentTypeDto): Promise<IdentificationType>;
-
-  abstract getAll(
+  abstract getAllIdentTypes(
     getAllIdentTypesDto: GetAllIdentTypesDto,
-  ): Promise<IdentificationType[]>;
+  ): Promise<IdentificationTypeDB[]>;
 
-  abstract getAllDetail(
-    getAllIdentTypesDetailDto: GetAllIdentTypesDto,
-  ): Promise<IdentificationTypeDetail[]>;
-
-  abstract delete(
-    deleteIdentTypeDto: DeleteIdentTypeDto,
-  ): Promise<IdentificationType>;
+  abstract deleteIdentType(id: number): Promise<IdentificationTypeDB | null>;
 }

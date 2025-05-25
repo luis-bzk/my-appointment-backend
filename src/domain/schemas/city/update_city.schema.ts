@@ -7,6 +7,12 @@ export const UpdateCitySchema = z.object({
     .string({ required_error: 'El ID de la ciudad es necesario' })
     .refine((val) => !isNaN(parseInt(val)), {
       message: 'El ID de la ciudad no es válido',
+    })
+    .refine((val) => parseInt(val, 10) >= 1, {
+      message: 'El ID de la ciudad no puede ser menor a 1',
+    })
+    .refine((val) => parseInt(val, 10) <= 10000, {
+      message: 'El ID de la ciudad no puede ser mayor a 10000',
     }),
 });
 

@@ -1,26 +1,19 @@
 import { z } from 'zod';
+import { CreateRoleSchema } from './create_role.schema';
 
 export const UpdateRoleSchema = z.object({
+  ...CreateRoleSchema.shape,
   id: z
     .string({ required_error: 'El ID del rol es necesario' })
     .refine((val) => !isNaN(parseInt(val)), {
       message: 'El ID del rol no es válido',
+    })
+    .refine((val) => parseInt(val, 10) >= 1, {
+      message: 'El ID del rol no puede ser menor a 1',
+    })
+    .refine((val) => parseInt(val, 10) <= 50, {
+      message: 'El ID del rol no puede ser mayor a 50',
     }),
-
-  name: z
-    .string({
-      required_error: 'El nombre del rol es requerido',
-    })
-    .min(1, 'El nombre del rol es requerido')
-    .max(50, 'El nombre del rol no puede tener más de 50 caracteres')
-    .transform((s) => s.toLowerCase()),
-  description: z
-    .string({
-      required_error: 'La descripción del rol es requerida',
-    })
-    .min(1, 'La descripción del rol es requerida')
-    .max(200, 'La descripción del rol no puede tener más de 200 caracteres')
-    .transform((s) => s.toLowerCase()),
 });
 
 export type UpdateRolePortDto = z.infer<typeof UpdateRoleSchema>;

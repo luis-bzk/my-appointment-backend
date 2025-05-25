@@ -1,27 +1,19 @@
 import { z } from 'zod';
+import { CreateUserSchema } from './create_user.schema';
 
 export const UpdateUserSchema = z.object({
+  ...CreateUserSchema.shape,
   id: z
     .string({ required_error: 'El ID del usuario es necesario' })
     .refine((val) => !isNaN(parseInt(val)), {
       message: 'El ID del usuario no es válido',
+    })
+    .refine((val) => parseInt(val, 10) >= 1, {
+      message: 'El ID del usuario no puede ser menor a 1',
+    })
+    .refine((val) => parseInt(val, 10) <= 50000, {
+      message: 'El ID del usuario no puede ser mayor a 50000',
     }),
-  name: z
-    .string({ required_error: 'El nombre del usuario es requerido' })
-    .min(1, 'El nombre del usuario es requerido')
-    .max(50, 'El nombre del usuario no puede tener más de 50 caracteres')
-    .transform((s) => s.toLowerCase()),
-  last_name: z
-    .string({ required_error: 'El apellido del usuario es requerido' })
-    .min(1, 'El apellido del usuario es requerido')
-    .max(50, 'El apellido del usuario no puede tener más de 50 caracteres')
-    .transform((s) => s.toLowerCase()),
-  email: z
-    .string({ required_error: 'El email del usuario es requerido' })
-    .min(1, 'El email del usuario es requerido')
-    .max(100, 'El email del usuario no puede tener más de 100 caracteres')
-    .email('El email del usuario no es válido')
-    .transform((s) => s.toLowerCase()),
 });
 
 export type UpdateUserParamsDto = z.infer<typeof UpdateUserSchema>;

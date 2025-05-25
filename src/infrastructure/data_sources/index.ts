@@ -8,6 +8,5 @@ export * from './user_role.data_source.impl';
 export * from './genre.data_source.impl';
 export * from './identification_type.data_source.impl';
 export * from './phone_type.data_source.impl';
-export * from './payment_method.data_source.impl';
 export * from './notification_type.data_source.impl';
 export * from './sessions.data_sources.impl';

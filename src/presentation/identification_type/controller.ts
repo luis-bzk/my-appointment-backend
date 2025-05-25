@@ -1,99 +1,98 @@
 import { Request, Response } from 'express';
 
 import {
-  CreateIdentTypeDto,
-  DeleteIdentTypeDto,
-  GetAllIdentTypesDto,
-  GetIdentTypeDto,
-  UpdateIdentTypeDto,
-} from '../../domain/dtos/identification_type';
-import { CustomError } from '../../domain/errors';
+  CountryRepository,
+  IdentificationTypeRepository,
+} from '../../ports/repositories';
+import { BaseController } from '../BaseController';
+import { GetCountryUseCase } from '../../domain/use_cases/country';
 import {
-  CreateIdentificationType,
-  DeleteIdentificationType,
-  GetAllIdentificationTypes,
-  GetAllIdentificationTypesDetail,
-  GetIdentificationType,
-  UpdateIdentificationType,
+  CreateIdentificationTypeUseCase,
+  DeleteIdentificationTypeUseCase,
+  GetAllIdentificationTypesUseCase,
+  GetIdentificationTypeUseCase,
+  UpdateIdentificationTypeUseCase,
 } from '../../domain/use_cases/identification_type';
-import { IdentificationTypeRepository } from '../../ports/repositories';
 
-export class IdentificationTypeController {
-  private readonly identificationTypeRepository: IdentificationTypeRepository;
+export class IdentificationTypeController extends BaseController {
+  private readonly identTypeRepository: IdentificationTypeRepository;
+  private readonly countryRepository: CountryRepository;
 
-  constructor(identificationTypeRepository: IdentificationTypeRepository) {
-    this.identificationTypeRepository = identificationTypeRepository;
+  constructor(
+    identTypeRepository: IdentificationTypeRepository,
+    countryRepository: CountryRepository,
+  ) {
+    super();
+    this.identTypeRepository = identTypeRepository;
+    this.countryRepository = countryRepository;
   }
 
-  private handleError(error: unknown, res: Response) {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ message: error.message });
+  createIdentType = async (req: Request, res: Response) => {
+    try {
+      await new GetCountryUseCase(this.countryRepository).execute({
+        id: req.body.id_country ? req.body.id_country.toString() : '',
+      });
+
+      const data = await new CreateIdentificationTypeUseCase(
+        this.identTypeRepository,
+      ).execute(req.body);
+
+      return res.status(201).json(data);
+    } catch (error) {
+      this.handleError(error, res);
     }
-    // unknown error
-    console.log(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
-  }
-
-  createIdentType = (req: Request, res: Response) => {
-    const [error, createIdentTypeDto] = CreateIdentTypeDto.create(req.body);
-    if (error) return res.status(400).json({ message: error });
-
-    new CreateIdentificationType(this.identificationTypeRepository)
-      .execute(createIdentTypeDto!)
-      .then((data) => res.status(201).json(data))
-      .catch((error) => this.handleError(error, res));
   };
 
-  updateIdentType = (req: Request, res: Response) => {
-    const [error, updateIdentTypeDto] = UpdateIdentTypeDto.create(
-      req.params,
-      req.body,
-    );
-    if (error) return res.status(400).json({ message: error });
+  updateIdentType = async (req: Request, res: Response) => {
+    try {
+      await new GetCountryUseCase(this.countryRepository).execute({
+        id: req.body.id_country ? req.body.id_country.toString() : '',
+      });
 
-    new UpdateIdentificationType(this.identificationTypeRepository)
-      .execute(updateIdentTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      const data = await new UpdateIdentificationTypeUseCase(
+        this.identTypeRepository,
+      ).execute({ ...req.params, ...req.body });
+
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getIdentType = (req: Request, res: Response) => {
-    const [error, getIdentTypeDto] = GetIdentTypeDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
-
-    new GetIdentificationType(this.identificationTypeRepository)
-      .execute(getIdentTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+  getIdentType = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetIdentificationTypeUseCase(
+        this.identTypeRepository,
+      ).execute({
+        id: req.params.id,
+      });
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getAllIdentTypes = (req: Request, res: Response) => {
-    const [error, getAllIdentTypesDto] = GetAllIdentTypesDto.create(req.query);
-    if (error) return res.status(400).json({ message: error });
-
-    new GetAllIdentificationTypes(this.identificationTypeRepository)
-      .execute(getAllIdentTypesDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+  getAllIdentTypes = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetAllIdentificationTypesUseCase(
+        this.identTypeRepository,
+      ).execute({ ...req.query });
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getAllIdentTypesDetail = (req: Request, res: Response) => {
-    const [error, getAllIdentTypesDto] = GetAllIdentTypesDto.create(req.query);
-    if (error) return res.status(400).json({ message: error });
-
-    new GetAllIdentificationTypesDetail(this.identificationTypeRepository)
-      .execute(getAllIdentTypesDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
-  };
-
-  deleteIdentType = (req: Request, res: Response) => {
-    const [error, deleteIdentTypeDto] = DeleteIdentTypeDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
-
-    new DeleteIdentificationType(this.identificationTypeRepository)
-      .execute(deleteIdentTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+  deleteIdentType = async (req: Request, res: Response) => {
+    try {
+      const data = await new DeleteIdentificationTypeUseCase(
+        this.identTypeRepository,
+      ).execute({
+        id: req.params.id,
+      });
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 }

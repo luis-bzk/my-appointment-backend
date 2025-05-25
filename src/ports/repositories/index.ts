@@ -8,7 +8,6 @@ export * from './user_role.repository';
 export * from './genre.repository';
 export * from './identification_type.repository';
 export * from './phone_type.repository';
-export * from './payment_method.repository';
 export * from './notification_type.repository';
 export * from './session.repository';
 export * from './email.repository';

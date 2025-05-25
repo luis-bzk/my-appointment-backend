@@ -9,7 +9,6 @@ export * from './user_role.repository.impl';
 export * from './genre.repository.impl';
 export * from './identification_type.repository.impl';
 export * from './phone_type.repository.impl';
-export * from './payment_method.repository.impl';
 export * from './notification_type.repository.impl';
 export * from './session.repository.impl';
 export * from './email.repository.impl';
