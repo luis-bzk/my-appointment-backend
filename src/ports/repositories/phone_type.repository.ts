@@ -1,22 +1,29 @@
 import {
   CreatePhoneTypeDto,
-  DeletePhoneTypeDto,
-  GetAllPhoneTypesDto,
-  GetPhoneTypeDto,
   UpdatePhoneTypeDto,
-} from '../../domain/dtos/phone_type';
+} from '../../domain/schemas/phone_type';
 import { PhoneType } from '../../domain/entities';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export abstract class PhoneTypeRepository {
-  abstract create(createPhoneTypeDto: CreatePhoneTypeDto): Promise<PhoneType>;
+  abstract getPhoneTypeByName(name: string): Promise<PhoneType | null>;
 
-  abstract update(updatePhoneTypeDto: UpdatePhoneTypeDto): Promise<PhoneType>;
+  abstract createPhoneType(
+    createPhoneTypeDto: CreatePhoneTypeDto,
+  ): Promise<PhoneType | null>;
 
-  abstract get(getPhoneTypeDto: GetPhoneTypeDto): Promise<PhoneType>;
+  abstract getPhoneTypeById(id: number): Promise<PhoneType | null>;
 
-  abstract getAll(
-    getAllPhoneTypesDto: GetAllPhoneTypesDto,
-  ): Promise<PhoneType[]>;
+  abstract getPhoneTypeByNameId(
+    id: number,
+    name: string,
+  ): Promise<PhoneType | null>;
 
-  abstract delete(deletePhoneTypeDto: DeletePhoneTypeDto): Promise<PhoneType>;
+  abstract updatePhoneType(
+    updatePhoneTypeDto: UpdatePhoneTypeDto,
+  ): Promise<PhoneType | null>;
+
+  abstract getAllPhoneTypes(dto: GetAllFiltersDto): Promise<PhoneType[]>;
+
+  abstract deletePhoneType(id: number): Promise<PhoneType | null>;
 }

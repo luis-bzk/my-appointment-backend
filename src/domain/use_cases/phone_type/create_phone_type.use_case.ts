@@ -1,12 +1,12 @@
+import {
+  CreatePhoneTypeDto,
+  CreatePhoneTypeSchema,
+} from '../../schemas/phone_type';
+import { CustomError } from '../../errors';
 import { PhoneType } from '../../entities';
 import { PhoneTypeRepository } from '../../../ports/repositories';
-import { CreatePhoneTypeDto } from '../../dtos/phone_type';
 
-interface CreatePhoneTypeUseCase {
-  execute(createPhoneTypeDto: CreatePhoneTypeDto): Promise<PhoneType>;
-}
-
-export class CreatePhoneType implements CreatePhoneTypeUseCase {
+export class CreatePhoneTypeUseCase {
   private readonly phoneTypeRepository: PhoneTypeRepository;
 
   constructor(phoneTypeRepository: PhoneTypeRepository) {
@@ -14,6 +14,31 @@ export class CreatePhoneType implements CreatePhoneTypeUseCase {
   }
 
   async execute(createPhoneTypeDto: CreatePhoneTypeDto): Promise<PhoneType> {
-    return this.phoneTypeRepository.create(createPhoneTypeDto);
+    const {
+      success,
+      error,
+      data: schema,
+    } = CreatePhoneTypeSchema.safeParse(createPhoneTypeDto);
+    if (!success) {
+      const errorMessage = error.errors[0].message || 'Datos inválidos';
+      throw CustomError.badRequest(errorMessage);
+    }
+
+    const existingPhoneType = await this.phoneTypeRepository.getPhoneTypeByName(
+      schema.name,
+    );
+    if (existingPhoneType) {
+      throw CustomError.conflict(
+        'Ya existe un tipo de teléfono con el nombre ingresado',
+      );
+    }
+
+    const createdPhoneType =
+      await this.phoneTypeRepository.createPhoneType(schema);
+    if (!createdPhoneType) {
+      throw CustomError.internalServer('No se pudo crear el tipo de teléfono');
+    }
+
+    return createdPhoneType;
   }
 }

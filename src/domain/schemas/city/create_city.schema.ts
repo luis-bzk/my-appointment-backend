@@ -4,7 +4,7 @@ export const CreateCitySchema = z.object({
   name: z
     .string({ required_error: 'El nombre de la ciudad es requerido' })
     .min(1, 'El nombre de la ciudad es requerido')
-    .max(100, 'El nombre de la ciudad no puede tener más de 100 caracteres')
+    .max(50, 'El nombre de la ciudad no puede tener más de 50 caracteres')
     .transform((s) => s.toLowerCase()),
   id_country: z.preprocess(
     (val) => {

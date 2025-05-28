@@ -7,3 +7,4 @@ export * from './province.mapper';
 export * from './city.mapper';
 export * from './identification_type.mapper';
 export * from './genre.mapper';
+export * from './phone_type.mapper';

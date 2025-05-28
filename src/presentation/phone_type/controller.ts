@@ -2,18 +2,11 @@ import { Request, Response } from 'express';
 import { PhoneTypeRepository } from '../../ports/repositories';
 import { CustomError } from '../../domain/errors';
 import {
-  CreatePhoneTypeDto,
-  DeletePhoneTypeDto,
-  GetAllPhoneTypesDto,
-  GetPhoneTypeDto,
-  UpdatePhoneTypeDto,
-} from '../../domain/dtos/phone_type';
-import {
-  CreatePhoneType,
-  DeletePhoneType,
-  GetAllPhoneTypes,
-  GetPhoneType,
-  UpdatePhoneType,
+  CreatePhoneTypeUseCase,
+  DeletePhoneTypeUseCase,
+  GetAllPhoneTypesUseCase,
+  GetPhoneTypeUseCase,
+  UpdatePhoneTypeUseCase,
 } from '../../domain/use_cases/phone_type';
 
 export class PhoneTypeController {
@@ -31,56 +24,63 @@ export class PhoneTypeController {
     return res.status(500).json({ message: 'Internal server error' });
   }
 
-  createPhoneType = (req: Request, res: Response) => {
-    const [error, createPhoneTypeDto] = CreatePhoneTypeDto.create(req.body);
-    if (error) return res.status(400).json({ message: error });
+  createPhoneType = async (req: Request, res: Response) => {
+    try {
+      const data = await new CreatePhoneTypeUseCase(
+        this.phoneTypeRepository,
+      ).execute(req.body);
 
-    new CreatePhoneType(this.phoneTypeRepository)
-      .execute(createPhoneTypeDto!)
-      .then((data) => res.status(201).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(201).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  updatePhoneType = (req: Request, res: Response) => {
-    const [error, updatePhoneTypeDto] = UpdatePhoneTypeDto.create(
-      req.params,
-      req.body,
-    );
-    if (error) return res.status(400).json({ message: error });
+  updatePhoneType = async (req: Request, res: Response) => {
+    try {
+      const data = await new UpdatePhoneTypeUseCase(
+        this.phoneTypeRepository,
+      ).execute({ ...req.params, ...req.body });
 
-    new UpdatePhoneType(this.phoneTypeRepository)
-      .execute(updatePhoneTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getPhoneType = (req: Request, res: Response) => {
-    const [error, getPhoneTypeDto] = GetPhoneTypeDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
+  getPhoneType = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetPhoneTypeUseCase(
+        this.phoneTypeRepository,
+      ).execute({ id: req.params.id });
 
-    new GetPhoneType(this.phoneTypeRepository)
-      .execute(getPhoneTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getAllPhoneTypes = (req: Request, res: Response) => {
-    const [error, getAllPhoneTypeDtos] = GetAllPhoneTypesDto.create(req.query);
-    if (error) return res.status(400).json({ message: error });
+  getAllPhoneTypes = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetAllPhoneTypesUseCase(
+        this.phoneTypeRepository,
+      ).execute(req.query);
 
-    new GetAllPhoneTypes(this.phoneTypeRepository)
-      .execute(getAllPhoneTypeDtos!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  deletePhoneType = (req: Request, res: Response) => {
-    const [error, deletePhoneTypeDto] = DeletePhoneTypeDto.create(req.params);
-    if (error) return res.status(400).json({ message: error });
+  deletePhoneType = async (req: Request, res: Response) => {
+    try {
+      const data = await new DeletePhoneTypeUseCase(
+        this.phoneTypeRepository,
+      ).execute({ id: req.params.id });
 
-    new DeletePhoneType(this.phoneTypeRepository)
-      .execute(deletePhoneTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 }

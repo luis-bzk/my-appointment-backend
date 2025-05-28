@@ -1,21 +1,35 @@
 import { PhoneType } from '../../entities';
 import { PhoneTypeRepository } from '../../../ports/repositories';
-import { GetAllPhoneTypesDto } from '../../dtos/phone_type';
+import {
+  GetAllFiltersDto,
+  GetAllFiltersPortDto,
+  GetAllFiltersSchema,
+} from '../../schemas/general';
+import { CustomError } from '../../errors';
 
-interface GetAllPhoneTypesUseCase {
-  execute(getAllPhoneTypesDto: GetAllPhoneTypesDto): Promise<PhoneType[]>;
-}
-
-export class GetAllPhoneTypes implements GetAllPhoneTypesUseCase {
+export class GetAllPhoneTypesUseCase {
   private readonly phoneTypeRepository: PhoneTypeRepository;
 
   constructor(phoneTypeRepository: PhoneTypeRepository) {
     this.phoneTypeRepository = phoneTypeRepository;
   }
 
-  async execute(
-    getAllPhoneTypesDto: GetAllPhoneTypesDto,
-  ): Promise<PhoneType[]> {
-    return this.phoneTypeRepository.getAll(getAllPhoneTypesDto);
+  async execute(dto: GetAllFiltersPortDto): Promise<PhoneType[]> {
+    const { success, error, data: schema } = GetAllFiltersSchema.safeParse(dto);
+    if (!success) {
+      const errorMessage = error.errors[0].message || 'Datos inválidos';
+      throw CustomError.badRequest(errorMessage);
+    }
+
+    const parsedSchema: GetAllFiltersDto = {
+      ...schema,
+      limit: schema.limit ? parseInt(schema.limit ?? '', 10) : 50,
+      offset: schema.offset ? parseInt(schema.offset ?? '', 10) : undefined,
+    };
+
+    const phoneTypes =
+      await this.phoneTypeRepository.getAllPhoneTypes(parsedSchema);
+
+    return phoneTypes;
   }
 }

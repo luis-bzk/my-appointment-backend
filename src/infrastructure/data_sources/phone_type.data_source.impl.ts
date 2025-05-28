@@ -1,19 +1,15 @@
 import { Pool } from 'pg';
 
-import {
-  CreatePhoneTypeDto,
-  DeletePhoneTypeDto,
-  GetAllPhoneTypesDto,
-  GetPhoneTypeDto,
-  UpdatePhoneTypeDto,
-} from '../../domain/dtos/phone_type';
 import { PostgresDatabase } from '../../data';
-import { PhoneType } from '../../domain/entities';
 import { CustomError } from '../../domain/errors';
 import { PhoneTypeDB } from '../../data/interfaces';
 import { RECORD_STATUS } from '../../shared/constants';
-import { PhoneTypeMapper } from '../mappers/phone_type.mapper';
 import { PhoneTypeDataSource } from '../../ports/data_sources';
+import {
+  CreatePhoneTypeDto,
+  UpdatePhoneTypeDto,
+} from '../../domain/schemas/phone_type';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export class PhoneTypeDataSourceImpl implements PhoneTypeDataSource {
   private pool: Pool;
@@ -22,44 +18,41 @@ export class PhoneTypeDataSourceImpl implements PhoneTypeDataSource {
     this.pool = PostgresDatabase.getPool();
   }
 
-  async create(createPhoneTypeDto: CreatePhoneTypeDto): Promise<PhoneType> {
-    const { name, description } = createPhoneTypeDto;
+  async getPhoneTypeByName(name: string): Promise<PhoneTypeDB | null> {
     try {
-      // search by name
       const phoneTypeName = await this.pool.query<PhoneTypeDB>(
-        `select
-          cpt.pty_id,
-          cpt.pty_record_status
-        from
-          core.core_phone_type cpt
-        where
-          lower(cpt.pty_name) = $1
-          and cpt.pty_record_status = $2;`,
-        [name, RECORD_STATUS.AVAILABLE],
+        `select cpt.pty_id, cpt.pty_name, cpt.pty_description, 
+        cpt.pty_created_date, cpt.pty_record_status 
+        from core.core_phone_type cpt
+        where lower(cpt.pty_name) = $1;`,
+        [name],
       );
-      if (phoneTypeName.rows.length > 0) {
-        throw CustomError.conflict(
-          'Ya existe un registro con el nombre deseado',
-        );
+
+      return phoneTypeName.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
       }
 
-      // create
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener por nombre',
+      );
+    }
+  }
+
+  async createPhoneType(
+    createPhoneTypeDto: CreatePhoneTypeDto,
+  ): Promise<PhoneTypeDB | null> {
+    const { name, description } = createPhoneTypeDto;
+    try {
       const newPhoneType = await this.pool.query<PhoneTypeDB>(
-        `insert into
-          core.core_phone_type (
-            pty_name,
-            pty_description,
-            pty_created_date,
-            pty_record_status
-          )
-        values
-          ($1, $2, $3, $4)
-        returning
-          *;`,
+        `insert into core.core_phone_type (
+        pty_name, pty_description, pty_created_date, pty_record_status
+        ) values ($1, $2, $3, $4) returning *;`,
         [name, description, new Date(), RECORD_STATUS.AVAILABLE],
       );
 
-      return PhoneTypeMapper.entityFromObject(newPhoneType.rows[0]);
+      return newPhoneType.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -69,164 +62,116 @@ export class PhoneTypeDataSourceImpl implements PhoneTypeDataSource {
     }
   }
 
-  async update(updatePhoneTypeDto: UpdatePhoneTypeDto): Promise<PhoneType> {
+  async getPhoneTypeById(id: number): Promise<PhoneTypeDB | null> {
+    try {
+      const phoneType = await this.pool.query<PhoneTypeDB>(
+        `select cpt.pty_id, cpt.pty_name, cpt.pty_description, 
+        cpt.pty_created_date, cpt.pty_record_status 
+        from core.core_phone_type cpt
+        where cpt.pty_id = $1;`,
+        [id],
+      );
+      return phoneType.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener por id',
+      );
+    }
+  }
+
+  async getPhoneTypeByNameId(
+    id: number,
+    name: string,
+  ): Promise<PhoneTypeDB | null> {
+    try {
+      const phoneTypeName = await this.pool.query<PhoneTypeDB>(
+        `select cpt.pty_id, cpt.pty_name, cpt.pty_description, 
+        cpt.pty_created_date, cpt.pty_record_status 
+        from core.core_phone_type cpt
+        where lower(cpt.pty_name) = $1 and cpt.pty_id <> $2;`,
+        [name, id],
+      );
+
+      return phoneTypeName.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener por nombre e id',
+      );
+    }
+  }
+
+  async updatePhoneType(
+    updatePhoneTypeDto: UpdatePhoneTypeDto,
+  ): Promise<PhoneTypeDB | null> {
     const { id, name, description } = updatePhoneTypeDto;
     try {
-      // search by id
-      const phoneType = await this.pool.query<PhoneTypeDB>(
-        `select
-          cpt.pty_id,
-          cpt.pty_record_status
-        from
-          core.core_phone_type cpt
-        where
-          cpt.pty_id = $1
-          and cpt.pty_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
-      );
-      if (phoneType.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el registro a actualizar',
-        );
-      }
-
-      // search instance same name
-      const phoneTypeName = await this.pool.query<PhoneTypeDB>(
-        `select
-          cpt.pty_id,
-          cpt.pty_record_status
-        from
-          core.core_phone_type cpt
-        where
-          lower(cpt.pty_name) = $1
-          and cpt.pty_id <> $2
-          and cpt.pty_record_status = $3;`,
-        [name, id, RECORD_STATUS.AVAILABLE],
-      );
-      if (phoneTypeName.rows.length > 0) {
-        throw CustomError.conflict(
-          'Ya existe otro registro con el nombre deseado',
-        );
-      }
-
-      // update
       const phoneTypeUpdated = await this.pool.query<PhoneTypeDB>(
         `update core.core_phone_type
-        set
-          pty_name = $1,
-          pty_description = $2
-        where
-          pty_id = $3
-        returning
-          *;`,
+        set pty_name = $1, pty_description = $2
+        where pty_id = $3 returning *;`,
         [name, description, id],
       );
 
-      return PhoneTypeMapper.entityFromObject(phoneTypeUpdated.rows[0]);
+      return phoneTypeUpdated.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
 
-      throw CustomError.internalServer('Error en el Data Source al crear');
+      throw CustomError.internalServer('Error en el Data Source al actualizar');
     }
   }
 
-  async get(getPhoneTypeDto: GetPhoneTypeDto): Promise<PhoneType> {
-    const { id } = getPhoneTypeDto;
+  async getAllPhoneTypes(dto: GetAllFiltersDto): Promise<PhoneTypeDB[]> {
+    const { limit = 50, offset = 0 } = dto;
     try {
-      // search by id
-      const phoneType = await this.pool.query<PhoneTypeDB>(
-        `select
-          cpt.pty_id,
-          cpt.pty_name,
-          cpt.pty_description,
-          cpt.pty_created_date,
-          cpt.pty_record_status
-        from
-          core.core_phone_type cpt
-        where
-          cpt.pty_id = $1
-          and cpt.pty_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
-      );
-      if (phoneType.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el registro a actualizar',
-        );
-      }
+      let query = `select cpt.pty_id, cpt.pty_name, cpt.pty_description, 
+      cpt.pty_created_date, cpt.pty_record_status 
+      from core.core_phone_type cpt `;
 
-      return PhoneTypeMapper.entityFromObject(phoneType.rows[0]);
+      const params: any[] = [];
+      let paramIndex = 1;
+
+      query += ` order by cpt.pty_name `;
+
+      query += ` limit $${paramIndex++}`;
+      params.push(limit);
+
+      query += ` offset $${paramIndex++}`;
+      params.push(offset);
+
+      const registers = await this.pool.query<PhoneTypeDB>(query, params);
+
+      return registers.rows;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
 
-      throw CustomError.internalServer('Error en el Data Source al crear');
+      throw CustomError.internalServer(
+        'Error en el Data Source al obtener los tipos de teléfono',
+      );
     }
   }
 
-  async getAll(getAllPhoneTypesDto: GetAllPhoneTypesDto): Promise<PhoneType[]> {
-    const { limit, offset } = getAllPhoneTypesDto;
+  async deletePhoneType(id: number): Promise<PhoneTypeDB | null> {
     try {
-      const registers = await this.pool.query<PhoneTypeDB>(
-        `select
-          cpt.pty_id,
-          cpt.pty_name,
-          cpt.pty_description,
-          cpt.pty_created_date,
-          cpt.pty_record_status
-        from
-          core.core_phone_type cpt
-        where
-          cpt.pty_record_status = $1
-        order by
-          cpt.pty_name
-        limit $2 offset $3;`,
-        [RECORD_STATUS.AVAILABLE, limit, offset],
-      );
-
-      return PhoneTypeMapper.entitiesFromArray(registers.rows);
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-
-      throw CustomError.internalServer('Error en el Data Source al crear');
-    }
-  }
-
-  async delete(deletePhoneTypeDto: DeletePhoneTypeDto): Promise<PhoneType> {
-    const { id } = deletePhoneTypeDto;
-    try {
-      // search by id
-      const phoneType = await this.pool.query<PhoneTypeDB>(
-        `select
-          cpt.pty_id,
-          cpt.pty_record_status
-        from
-          core.core_phone_type cpt
-        where
-          cpt.pty_id = $1
-          and cpt.pty_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
-      );
-      if (phoneType.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el registro a actualizar',
-        );
-      }
-
       const phoneTypeDeleted = await this.pool.query<PhoneTypeDB>(
-        `delete from core.core_phone_type
-        where
-          pty_id = $1
-        returning
-          *;`,
-        [id],
+        `update core.core_phone_type
+        set pty_record_status = $1
+        where pty_id = $2 returning *;`,
+        [RECORD_STATUS.UNAVAILABLE, id],
       );
 
-      return PhoneTypeMapper.entityFromObject(phoneTypeDeleted.rows[0]);
+      return phoneTypeDeleted.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
