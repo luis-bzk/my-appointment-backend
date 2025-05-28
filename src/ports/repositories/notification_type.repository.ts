@@ -1,30 +1,35 @@
+import { NotificationType } from '../../domain/entities';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 import {
   CreateNotificationTypeDto,
-  DeleteNotificationTypeDto,
-  GetAllNotificationTypesDto,
-  GetNotificationTypeDto,
   UpdateNotificationTypeDto,
-} from '../../domain/dtos/notification_type';
-import { NotificationType } from '../../domain/entities';
+} from '../../domain/schemas/notification_type';
 
 export abstract class NotificationTypeRepository {
-  abstract create(
+  abstract getNotificationTypeByName(
+    name: string,
+  ): Promise<NotificationType | null>;
+
+  abstract createNotificationType(
     createNotificationTypeDto: CreateNotificationTypeDto,
-  ): Promise<NotificationType>;
+  ): Promise<NotificationType | null>;
 
-  abstract update(
+  abstract getNotificationTypeById(
+    id: number,
+  ): Promise<NotificationType | null>;
+
+  abstract getNotificationTypeByIdName(
+    id: number,
+    name: string,
+  ): Promise<NotificationType | null>;
+
+  abstract updateNotificationType(
     updateNotificationTypeDto: UpdateNotificationTypeDto,
-  ): Promise<NotificationType>;
+  ): Promise<NotificationType | null>;
 
-  abstract get(
-    getNotificationTypeDto: GetNotificationTypeDto,
-  ): Promise<NotificationType>;
-
-  abstract getAll(
-    getAllNotificationTypesDto: GetAllNotificationTypesDto,
+  abstract getAllNotificationTypes(
+    dto: GetAllFiltersDto,
   ): Promise<NotificationType[]>;
 
-  abstract delete(
-    deleteNotificationTypeDto: DeleteNotificationTypeDto,
-  ): Promise<NotificationType>;
+  abstract deleteNotificationType(id: number): Promise<NotificationType | null>;
 }

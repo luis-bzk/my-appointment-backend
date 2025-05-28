@@ -1,30 +1,37 @@
 import {
   CreateNotificationTypeDto,
-  DeleteNotificationTypeDto,
-  GetAllNotificationTypesDto,
-  GetNotificationTypeDto,
   UpdateNotificationTypeDto,
-} from '../../domain/dtos/notification_type';
-import { NotificationType } from '../../domain/entities';
+} from '../../domain/schemas/notification_type';
+import { NotificationTypeDB } from '../../data/interfaces';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 
 export abstract class NotificationTypeDataSource {
-  abstract create(
+  abstract getNotificationTypeByName(
+    name: string,
+  ): Promise<NotificationTypeDB | null>;
+
+  abstract createNotificationType(
     createNotificationTypeDto: CreateNotificationTypeDto,
-  ): Promise<NotificationType>;
+  ): Promise<NotificationTypeDB | null>;
 
-  abstract update(
+  abstract getNotificationTypeById(
+    id: number,
+  ): Promise<NotificationTypeDB | null>;
+
+  abstract getNotificationTypeByIdName(
+    id: number,
+    name: string,
+  ): Promise<NotificationTypeDB | null>;
+
+  abstract updateNotificationType(
     updateNotificationTypeDto: UpdateNotificationTypeDto,
-  ): Promise<NotificationType>;
+  ): Promise<NotificationTypeDB | null>;
 
-  abstract get(
-    getNotificationTypeDto: GetNotificationTypeDto,
-  ): Promise<NotificationType>;
+  abstract getAllNotificationTypes(
+    dto: GetAllFiltersDto,
+  ): Promise<NotificationTypeDB[]>;
 
-  abstract getAll(
-    getAllNotificationTypeDto: GetAllNotificationTypesDto,
-  ): Promise<NotificationType[]>;
-
-  abstract delete(
-    deleteNotificationTypeDto: DeleteNotificationTypeDto,
-  ): Promise<NotificationType>;
+  abstract deleteNotificationType(
+    id: number,
+  ): Promise<NotificationTypeDB | null>;
 }

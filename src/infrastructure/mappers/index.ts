@@ -1,5 +1,6 @@
 export * from './user.mapper';
 export * from './role.mapper';
+export * from './session.mapper';
 export * from './user_role.mapper';
 export * from './common.mapper';
 export * from './country.mapper';
@@ -8,3 +9,4 @@ export * from './city.mapper';
 export * from './identification_type.mapper';
 export * from './genre.mapper';
 export * from './phone_type.mapper';
+export * from './notification_type.mapper';

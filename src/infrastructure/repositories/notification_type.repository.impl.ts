@@ -1,13 +1,12 @@
+import { NotificationType } from '../../domain/entities';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
 import {
   CreateNotificationTypeDto,
-  DeleteNotificationTypeDto,
-  GetAllNotificationTypesDto,
-  GetNotificationTypeDto,
   UpdateNotificationTypeDto,
-} from '../../domain/dtos/notification_type';
-import { NotificationType } from '../../domain/entities';
+} from '../../domain/schemas/notification_type';
 import { NotificationTypeDataSource } from '../../ports/data_sources';
 import { NotificationTypeRepository } from '../../ports/repositories';
+import { NotificationTypeMapper } from '../mappers';
 
 export class NotificationTypeRepositoryImpl
   implements NotificationTypeRepository
@@ -18,33 +17,63 @@ export class NotificationTypeRepositoryImpl
     this.notificationTypeDataSource = notificationTypeDataSource;
   }
 
-  create(
+  async getNotificationTypeByName(
+    name: string,
+  ): Promise<NotificationType | null> {
+    const notificationType =
+      await this.notificationTypeDataSource.getNotificationTypeByName(name);
+    return NotificationTypeMapper.entityFromObject(notificationType);
+  }
+
+  async createNotificationType(
     createNotificationTypeDto: CreateNotificationTypeDto,
-  ): Promise<NotificationType> {
-    return this.notificationTypeDataSource.create(createNotificationTypeDto);
+  ): Promise<NotificationType | null> {
+    const notificationType =
+      await this.notificationTypeDataSource.createNotificationType(
+        createNotificationTypeDto,
+      );
+    return NotificationTypeMapper.entityFromObject(notificationType);
   }
 
-  update(
+  async getNotificationTypeById(id: number): Promise<NotificationType | null> {
+    const notificationType =
+      await this.notificationTypeDataSource.getNotificationTypeById(id);
+    return NotificationTypeMapper.entityFromObject(notificationType);
+  }
+
+  async getNotificationTypeByIdName(
+    id: number,
+    name: string,
+  ): Promise<NotificationType | null> {
+    const notificationType =
+      await this.notificationTypeDataSource.getNotificationTypeByIdName(
+        id,
+        name,
+      );
+    return NotificationTypeMapper.entityFromObject(notificationType);
+  }
+
+  async updateNotificationType(
     updateNotificationTypeDto: UpdateNotificationTypeDto,
-  ): Promise<NotificationType> {
-    return this.notificationTypeDataSource.update(updateNotificationTypeDto);
+  ): Promise<NotificationType | null> {
+    const notificationType =
+      await this.notificationTypeDataSource.updateNotificationType(
+        updateNotificationTypeDto,
+      );
+    return NotificationTypeMapper.entityFromObject(notificationType);
   }
 
-  get(
-    getNotificationTypeDto: GetNotificationTypeDto,
-  ): Promise<NotificationType> {
-    return this.notificationTypeDataSource.get(getNotificationTypeDto);
-  }
-
-  getAll(
-    getAllNotificationTypesDto: GetAllNotificationTypesDto,
+  async getAllNotificationTypes(
+    dto: GetAllFiltersDto,
   ): Promise<NotificationType[]> {
-    return this.notificationTypeDataSource.getAll(getAllNotificationTypesDto);
+    const notificationTypes =
+      await this.notificationTypeDataSource.getAllNotificationTypes(dto);
+    return NotificationTypeMapper.entitiesFromArray(notificationTypes);
   }
 
-  delete(
-    deleteNotificationTypeDto: DeleteNotificationTypeDto,
-  ): Promise<NotificationType> {
-    return this.notificationTypeDataSource.delete(deleteNotificationTypeDto);
+  async deleteNotificationType(id: number): Promise<NotificationType | null> {
+    const notificationType =
+      await this.notificationTypeDataSource.deleteNotificationType(id);
+    return NotificationTypeMapper.entityFromObject(notificationType);
   }
 }

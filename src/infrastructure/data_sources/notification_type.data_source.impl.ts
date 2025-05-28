@@ -1,19 +1,15 @@
 import { Pool } from 'pg';
 
 import { PostgresDatabase } from '../../data';
-import { NotificationType } from '../../domain/entities';
-import { NotificationTypeDataSource } from '../../ports/data_sources';
-import {
-  CreateNotificationTypeDto,
-  DeleteNotificationTypeDto,
-  GetAllNotificationTypesDto,
-  GetNotificationTypeDto,
-  UpdateNotificationTypeDto,
-} from '../../domain/dtos/notification_type';
 import { CustomError } from '../../domain/errors';
 import { RECORD_STATUS } from '../../shared/constants';
 import { NotificationTypeDB } from '../../data/interfaces';
-import { NotificationTypeMapper } from '../mappers/notification_type.mapper';
+import {
+  CreateNotificationTypeDto,
+  UpdateNotificationTypeDto,
+} from '../../domain/schemas/notification_type';
+import { GetAllFiltersDto } from '../../domain/schemas/general';
+import { NotificationTypeDataSource } from '../../ports/data_sources';
 
 export class NotificationTypeDataSourceImpl
   implements NotificationTypeDataSource
@@ -23,44 +19,41 @@ export class NotificationTypeDataSourceImpl
   constructor() {
     this.pool = PostgresDatabase.getPool();
   }
-
-  async create(
-    createNotificationTypeDto: CreateNotificationTypeDto,
-  ): Promise<NotificationType> {
-    const { name, description } = createNotificationTypeDto;
+  async getNotificationTypeByName(
+    name: string,
+  ): Promise<NotificationTypeDB | null> {
     try {
-      // search register
       const registerName = await this.pool.query<NotificationTypeDB>(
-        `select
-          cnt.nty_id,
-          cnt.nty_record_status
-        from
-          core.core_notification_type cnt
-        where
-          lower(cnt.nty_name) = $1
-          and cnt.nty_record_status = $2;`,
-        [name, RECORD_STATUS.AVAILABLE],
+        `select cnt.nty_id, cnt.nty_name, cnt.nty_description, 
+        cnt.nty_created_date, cnt.nty_record_status 
+        from core.core_notification_type cnt 
+        where lower(cnt.nty_name) = $1;`,
+        [name],
       );
-
-      if (registerName.rows.length > 0) {
-        throw CustomError.conflict('Ya existe un registro con el mismo nombre');
+      return registerName.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
       }
 
-      // insert
+      throw CustomError.internalServer('Error en el Data Source al crear');
+    }
+  }
+
+  async createNotificationType(
+    createNotificationTypeDto: CreateNotificationTypeDto,
+  ): Promise<NotificationTypeDB | null> {
+    const { name, description } = createNotificationTypeDto;
+    try {
       const newRegister = await this.pool.query<NotificationTypeDB>(
-        `insert into
-          core.core_notification_type (
-            nty_name,
-            nty_description,
-            nty_created_date,
-            nty_record_status
-          )
-        values
-          ($1, $2, $3, $4) returning *;`,
+        `insert into core.core_notification_type (
+            nty_name, nty_description,
+            nty_created_date, nty_record_status
+          ) values ($1, $2, $3, $4) returning *;`,
         [name, description, new Date(), RECORD_STATUS.AVAILABLE],
       );
 
-      return NotificationTypeMapper.entityFromObject(newRegister.rows[0]);
+      return newRegister.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -70,170 +63,113 @@ export class NotificationTypeDataSourceImpl
     }
   }
 
-  async update(
-    updateNotificationTypeDto: UpdateNotificationTypeDto,
-  ): Promise<NotificationType> {
-    const { id, name, description } = updateNotificationTypeDto;
+  async getNotificationTypeById(
+    id: number,
+  ): Promise<NotificationTypeDB | null> {
     try {
-      // find by id
       const register = await this.pool.query<NotificationTypeDB>(
-        `select
-          cnt.nty_id,
-          cnt.nty_record_status
-        from
-          core.core_notification_type cnt
-        where
-          cnt.nty_id = $1
-          and cnt.nty_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
-      );
-
-      if (register.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el registro solicitado',
-        );
-      }
-
-      // find same name other id
-      const registerName = await this.pool.query<NotificationTypeDB>(
-        `select
-          cnt.nty_id,
-          cnt.nty_record_status
-        from
-          core.core_notification_type cnt
-        where
-          lower(cnt.nty_name) = $1
-          and cnt.nty_id <> $2
-          and cnt.nty_record_status = $2;`,
-        [name, id, RECORD_STATUS.AVAILABLE],
-      );
-      if (registerName.rows.length > 0) {
-        throw CustomError.conflict('ya existe un registro con el mismo nombre');
-      }
-
-      // update
-      const registerUpdated = await this.pool.query<NotificationTypeDB>(
-        `update core.core_notification_type cnt
-        set
-          nty_name = $1,
-          nty_description = $2
-        where
-          nty_id = $3 returning *;`,
-        [name, description, id],
-      );
-
-      return NotificationTypeMapper.entityFromObject(registerUpdated.rows[0]);
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-
-      throw CustomError.internalServer('Error en el Data Source al crear');
-    }
-  }
-
-  async get(
-    getNotificationTypeDto: GetNotificationTypeDto,
-  ): Promise<NotificationType> {
-    const { id } = getNotificationTypeDto;
-    try {
-      // find by id
-      const register = await this.pool.query<NotificationTypeDB>(
-        `select
-          cnt.nty_id,
-          cnt.nty_name,
-          cnt.nty_description,
-          cnt.nty_created_date,
-          cnt.nty_record_status
-        from
-          core.core_notification_type cnt
-        where
-          cnt.nty_id = $1
-          and cnt.nty_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
-      );
-
-      if (register.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el registro solicitado',
-        );
-      }
-
-      return NotificationTypeMapper.entityFromObject(register.rows[0]);
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-
-      throw CustomError.internalServer('Error en el Data Source al crear');
-    }
-  }
-
-  async getAll(
-    getAllNotificationTypeDto: GetAllNotificationTypesDto,
-  ): Promise<NotificationType[]> {
-    const { limit, offset } = getAllNotificationTypeDto;
-    try {
-      const registers = await this.pool.query<NotificationTypeDB>(
-        `select
-          cnt.nty_id,
-          cnt.nty_name,
-          cnt.nty_description,
-          cnt.nty_created_date,
-          cnt.nty_record_status
-        from
-          core.core_notification_type cnt
-        where
-          cnt.nty_record_status = $1
-        order by
-          cnt.nty_name
-        limit $2 offset $3;`,
-        [RECORD_STATUS.AVAILABLE, limit, offset],
-      );
-
-      return NotificationTypeMapper.entitiesFromArray(registers.rows);
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-
-      throw CustomError.internalServer('Error en el Data Source al crear');
-    }
-  }
-
-  async delete(
-    deleteNotificationTypeDto: DeleteNotificationTypeDto,
-  ): Promise<NotificationType> {
-    const { id } = deleteNotificationTypeDto;
-    try {
-      // find by id
-      const register = await this.pool.query<NotificationTypeDB>(
-        `select
-          cnt.nty_id,
-          cnt.nty_record_status
-        from
-          core.core_notification_type cnt
-        where
-          cnt.nty_id = $1
-          and cnt.nty_record_status = $2;`,
-        [id, RECORD_STATUS.AVAILABLE],
-      );
-
-      if (register.rows.length === 0) {
-        throw CustomError.notFound(
-          'No se ha encontrado el registro solicitado',
-        );
-      }
-
-      // delete
-      const deletedRegister = await this.pool.query<NotificationTypeDB>(
-        `delete from core.core_notification_type
-        where
-          nty_id = $1 returning *;`,
+        `select cnt.nty_id, cnt.nty_name, cnt.nty_description, 
+        cnt.nty_created_date, cnt.nty_record_status 
+        from core.core_notification_type cnt 
+        where cnt.nty_id = $1;`,
         [id],
       );
 
-      return NotificationTypeMapper.entityFromObject(deletedRegister.rows[0]);
+      return register.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer('Error en el Data Source al crear');
+    }
+  }
+
+  async getNotificationTypeByIdName(
+    id: number,
+    name: string,
+  ): Promise<NotificationTypeDB | null> {
+    try {
+      const registerName = await this.pool.query<NotificationTypeDB>(
+        `select cnt.nty_id, cnt.nty_name, cnt.nty_description, 
+        cnt.nty_created_date, cnt.nty_record_status 
+        from core.core_notification_type cnt 
+        where lower(cnt.nty_name) = $1 and cnt.nty_id <> $2;`,
+        [name, id],
+      );
+
+      return registerName.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer('Error en el Data Source al crear');
+    }
+  }
+
+  async updateNotificationType(
+    updateNotificationTypeDto: UpdateNotificationTypeDto,
+  ): Promise<NotificationTypeDB | null> {
+    const { id, name, description } = updateNotificationTypeDto;
+    try {
+      const registerUpdated = await this.pool.query<NotificationTypeDB>(
+        `update core.core_notification_type cnt
+        set nty_name = $1, nty_description = $2
+        where nty_id = $3 returning *;`,
+        [name, description, id],
+      );
+
+      return registerUpdated.rows[0];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer('Error en el Data Source al crear');
+    }
+  }
+
+  async getAllNotificationTypes(
+    dto: GetAllFiltersDto,
+  ): Promise<NotificationTypeDB[]> {
+    const { limit, offset } = dto;
+    try {
+      let query = `select cnt.nty_id, cnt.nty_name, cnt.nty_description, 
+      cnt.nty_created_date, cnt.nty_record_status 
+      from core.core_notification_type cnt  `;
+      const params: any[] = [];
+      let paramIndex = 1;
+
+      query += ` order by cnt.nty_name `;
+
+      query += ` limit $${paramIndex++}`;
+      params.push(limit);
+
+      query += ` offset $${paramIndex++}`;
+      params.push(offset);
+
+      const genres = await this.pool.query<NotificationTypeDB>(query, params);
+
+      return genres.rows;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+
+      throw CustomError.internalServer('Error en el Data Source al crear');
+    }
+  }
+
+  async deleteNotificationType(id: number): Promise<NotificationTypeDB | null> {
+    try {
+      const registerUpdated = await this.pool.query<NotificationTypeDB>(
+        `update core.core_notification_type cnt
+        set nty_record_status = $1
+        where nty_id = $2 returning *;`,
+        [RECORD_STATUS.UNAVAILABLE, id],
+      );
+      return registerUpdated.rows[0];
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

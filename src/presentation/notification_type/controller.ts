@@ -3,18 +3,11 @@ import { Request, Response } from 'express';
 import { CustomError } from '../../domain/errors';
 import { NotificationTypeRepository } from '../../ports/repositories';
 import {
-  CreateNotificationTypeDto,
-  DeleteNotificationTypeDto,
-  GetAllNotificationTypesDto,
-  GetNotificationTypeDto,
-  UpdateNotificationTypeDto,
-} from '../../domain/dtos/notification_type';
-import {
-  CreateNotificationType,
-  UpdateNotificationType,
-  DeleteNotificationType,
-  GetAllNotificationTypes,
-  GetNotificationType,
+  CreateNotificationTypeUseCase,
+  DeleteNotificationTypeUseCase,
+  GetAllNotificationTypesUseCase,
+  GetNotificationTypeUseCase,
+  UpdateNotificationTypeUseCase,
 } from '../../domain/use_cases/notification_type';
 
 export class NotificationTypeController {
@@ -34,63 +27,62 @@ export class NotificationTypeController {
     return res.status(500).json({ message: 'Internal Server Error' });
   };
 
-  createNotificationType = (req: Request, res: Response) => {
-    const [error, createNotificationTypeDto] = CreateNotificationTypeDto.create(
-      req.body,
-    );
-    if (error) return res.status(400).json({ message: error });
-
-    new CreateNotificationType(this.notificationTypeRepository)
-      .execute(createNotificationTypeDto!)
-      .then((data) => res.status(201).json(data))
-      .catch((error) => this.handleError(error, res));
+  createNotificationType = async (req: Request, res: Response) => {
+    try {
+      const data = await new CreateNotificationTypeUseCase(
+        this.notificationTypeRepository,
+      ).execute(req.body);
+      return res.status(201).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  updateNotificationType = (req: Request, res: Response) => {
-    const [error, updateNotificationTypeDto] = UpdateNotificationTypeDto.create(
-      req.params,
-      req.body,
-    );
-    if (error) return res.status(400).json({ message: error });
+  updateNotificationType = async (req: Request, res: Response) => {
+    try {
+      const data = await new UpdateNotificationTypeUseCase(
+        this.notificationTypeRepository,
+      ).execute({ ...req.params, ...req.body });
 
-    new UpdateNotificationType(this.notificationTypeRepository)
-      .execute(updateNotificationTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getNotificationType = (req: Request, res: Response) => {
-    const [error, getNotificationTypeDto] = GetNotificationTypeDto.create(
-      req.params,
-    );
-    if (error) return res.status(400).json({ message: error });
+  getNotificationType = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetNotificationTypeUseCase(
+        this.notificationTypeRepository,
+      ).execute({ id: req.params.id });
 
-    new GetNotificationType(this.notificationTypeRepository)
-      .execute(getNotificationTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  getAllNotificationTypes = (req: Request, res: Response) => {
-    const [error, getAllNotificationTypesDto] =
-      GetAllNotificationTypesDto.create(req.query);
-    if (error) return res.status(400).json({ message: error });
+  getAllNotificationTypes = async (req: Request, res: Response) => {
+    try {
+      const data = await new GetAllNotificationTypesUseCase(
+        this.notificationTypeRepository,
+      ).execute(req.query);
 
-    new GetAllNotificationTypes(this.notificationTypeRepository)
-      .execute(getAllNotificationTypesDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 
-  deleteNotificationTypes = (req: Request, res: Response) => {
-    const [error, deleteNotificationTypeDto] = DeleteNotificationTypeDto.create(
-      req.params,
-    );
-    if (error) return res.status(400).json({ message: error });
+  deleteNotificationTypes = async (req: Request, res: Response) => {
+    try {
+      const data = await new DeleteNotificationTypeUseCase(
+        this.notificationTypeRepository,
+      ).execute({ id: req.params.id });
 
-    new DeleteNotificationType(this.notificationTypeRepository)
-      .execute(deleteNotificationTypeDto!)
-      .then((data) => res.status(200).json(data))
-      .catch((error) => this.handleError(error, res));
+      return res.status(200).json(data);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   };
 }

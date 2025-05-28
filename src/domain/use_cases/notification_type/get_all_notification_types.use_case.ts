@@ -1,25 +1,34 @@
 import { NotificationType } from '../../entities';
 import { NotificationTypeRepository } from '../../../ports/repositories';
-import { GetAllNotificationTypesDto } from '../../dtos/notification_type';
+import {
+  GetAllFiltersDto,
+  GetAllFiltersPortDto,
+  GetAllFiltersSchema,
+} from '../../schemas/general';
+import { CustomError } from '../../errors';
 
-interface GetAllNotificationTypesUseCase {
-  execute(
-    getAllNotificationTypesDto: GetAllNotificationTypesDto,
-  ): Promise<NotificationType[]>;
-}
-
-export class GetAllNotificationTypes implements GetAllNotificationTypesUseCase {
+export class GetAllNotificationTypesUseCase {
   private readonly notificationTypeRepository: NotificationTypeRepository;
 
   constructor(notificationTypeRepository: NotificationTypeRepository) {
     this.notificationTypeRepository = notificationTypeRepository;
   }
 
-  async execute(
-    getAllNotificationTypesDto: GetAllNotificationTypesDto,
-  ): Promise<NotificationType[]> {
-    return await this.notificationTypeRepository.getAll(
-      getAllNotificationTypesDto,
+  async execute(dto: GetAllFiltersPortDto): Promise<NotificationType[]> {
+    const { success, error, data: schema } = GetAllFiltersSchema.safeParse(dto);
+    if (!success) {
+      const message = error.errors[0]?.message || 'Datos inválidos';
+      throw CustomError.badRequest(message);
+    }
+
+    const parsedSchema: GetAllFiltersDto = {
+      ...schema,
+      limit: schema.limit ? parseInt(schema.limit ?? '', 10) : 50,
+      offset: schema.offset ? parseInt(schema.offset ?? '', 10) : undefined,
+    };
+
+    return await this.notificationTypeRepository.getAllNotificationTypes(
+      parsedSchema,
     );
   }
 }

@@ -1,7 +1,7 @@
 import { Session } from '../../domain/entities';
 import { SessionDataSource } from '../../ports/data_sources';
 import { SessionRepository } from '../../ports/repositories';
-import { SessionMapper } from '../mappers/session.mapper';
+import { SessionMapper } from '../mappers';
 import {
   CreateSessionJwtDto,
   SessionJwtDto,
