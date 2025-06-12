@@ -30,7 +30,7 @@ export class ProvinceController extends BaseController {
   createProvince = async (req: Request, res: Response) => {
     try {
       await new GetCountryUseCase(this.countryRepository).execute({
-        id: req.body.id_country,
+        id: req.body.id_country.toString(),
       });
 
       const data = await new CreateProvinceUseCase(
@@ -46,7 +46,7 @@ export class ProvinceController extends BaseController {
   updateProvince = async (req: Request, res: Response) => {
     try {
       await new GetCountryUseCase(this.countryRepository).execute({
-        id: req.body.id_country,
+        id: req.body.id_country.toString(),
       });
 
       const data = await new UpdateProvinceUseCase(
