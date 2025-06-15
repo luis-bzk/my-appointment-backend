@@ -133,7 +133,7 @@ export class NotificationTypeDataSourceImpl
   async getAllNotificationTypes(
     dto: GetAllFiltersDto,
   ): Promise<NotificationTypeDB[]> {
-    const { limit, offset } = dto;
+    const { limit = 50, offset = 0 } = dto;
     try {
       let query = `select cnt.nty_id, cnt.nty_name, cnt.nty_description, 
       cnt.nty_created_date, cnt.nty_record_status 
