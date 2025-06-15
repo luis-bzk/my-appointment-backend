@@ -23,7 +23,7 @@ export class GetAllRolesUseCase {
 
     const parsedSchema: GetAllFiltersDto = {
       ...schema,
-      limit: schema.limit ? parseInt(schema.limit ?? '', 10) : 50,
+      limit: schema.limit ? parseInt(schema.limit ?? '', 10) : undefined,
       offset: schema.offset ? parseInt(schema.offset ?? '', 10) : undefined,
     };
 
